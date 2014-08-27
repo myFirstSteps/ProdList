@@ -6,8 +6,7 @@
 
 <web-app>
     <icon> 
-        <small-icon>logo32x32.ico</small-icon> 
-        <large-icon>logo32x32.ico</large-icon>
+        <small-icon>/OCP_JavaSE7Programmer.gif</small-icon> 
     </icon>
    
 <servlet>
@@ -31,7 +30,7 @@
             all
         </web-resource-name>
         <url-pattern>
-            /*
+            /web-inf/*
         </url-pattern>
         <http-method>POST</http-method>
         <http-method>GET</http-method>
@@ -46,7 +45,7 @@
 <login-config>
 <auth-method>FORM</auth-method>
 <form-login-config>
-<form-login-page>/loginPage.html</form-login-page>
+<form-login-page>/loginPage.jsp</form-login-page>
 <form-error-page>/loginError.html</form-error-page>
 </form-login-config>
 </login-config>

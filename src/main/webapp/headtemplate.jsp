@@ -4,6 +4,6 @@
     Author     : pankratov
 --%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<h1>
-    <b>Тупанул конкретно</b>
-</h>
+ <span>Интерактивное резюме.<br>
+    Панкратов Михаил</span> <img src="OCP_JavaSE7Programmer.gif" alt="ytnQ"></p> 
+

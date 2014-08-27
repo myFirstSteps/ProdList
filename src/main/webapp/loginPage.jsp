@@ -1,12 +1,6 @@
-
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@taglib prefix="c" uri="http://java.sun.com/jstl/core"%>
 <!DOCTYPE html>
-<!--
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
--->
-
- 
 <html>
     
     <head>
@@ -16,7 +10,7 @@ and open the template in the editor.
     </head>
     <body>
        
-        <%@ c:import url="headtemplate.jsp">
+        <c:import url="headtemplate.jsp" charEncoding="UTF-8" />
         
         <div>
             <form method="POST" action="j_security_check">
@@ -28,6 +22,6 @@ and open the template in the editor.
                 <div> <input type="file" name="file"></div>
             </form> 
         </div>
-        
+<img src="OCP_JavaSE7Programmer.gif" alt="ytnQ">        
     </body>
 </html>
