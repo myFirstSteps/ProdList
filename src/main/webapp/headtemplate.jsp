@@ -4,6 +4,7 @@
     Author     : pankratov
 --%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
- <span>Интерактивное резюме.<br>
-    Панкратов Михаил</span> <img src="OCP_JavaSE7Programmer.gif" alt="ytnQ"></p> 
+<%@taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
+ <div id="Head">Интерактивное резюме на позицию Java junior developer.
+     Панкратов Михаил  </div> <img src="OCP_JavaSE7Programmer.gif" alt="ytnQ"></p> 
 

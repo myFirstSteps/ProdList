@@ -1,12 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app version="3.1" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
+    <filter>
+        <filter-name>SessionInitFilter</filter-name>
+        <filter-class>com.pankratov.prodlist.web.filters.SessionInitFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>SessionInitFilter</filter-name>
+        <url-pattern>/index.jsp</url-pattern>
+    </filter-mapping>
     <servlet>
-        <servlet-name>NewServlet</servlet-name>
-        <servlet-class>com.pankratov.prodlist.NewServlet</servlet-class>
+        <servlet-name>IndexServ</servlet-name>
+        <servlet-class>com.pankratov.prodlist.web.IndexServ</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>NewServlet</servlet-name>
-        <url-pattern>/NewServlet</url-pattern>
+        <servlet-name>IndexServ</servlet-name>
+        <url-pattern>/index.jsp</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
