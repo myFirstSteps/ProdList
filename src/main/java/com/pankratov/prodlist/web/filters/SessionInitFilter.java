@@ -3,10 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.pankratov.prodlist.web.filters;
 
 import java.io.IOException;
+import java.util.*;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -23,19 +23,12 @@ import javax.servlet.http.*;
  * @author pankratov
  */
 public class SessionInitFilter implements Filter {
-    
-   
 
     // The filter configuration object we are associated with.  If
     // this value is null, this filter instance is not currently
     // configured. 
     private FilterConfig filterConfig = null;
-    
-    
-    
-       
-    
-  
+
     /**
      *
      * @param request The servlet request we are processing
@@ -49,32 +42,30 @@ public class SessionInitFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response,
             FilterChain chain)
             throws IOException, ServletException {
-        
-      
-       
-        
-      
+        HttpServletRequest req = (HttpServletRequest) request;
+        HttpServletResponse resp = (HttpServletResponse) response;
+
         try {
-            if(((HttpServletRequest)request).getSession().isNew()){System.out.println("I do my best");
-                request.getRequestDispatcher("loginPage.jsp").forward(request, response);  }else{
-            chain.doFilter(request, response);}
+            if (req.getSession(false).isNew()) {
+                for(Cookie c: req.getCookies()){System.out.println(c.getName()+":"+c.getValue());}
+                resp.sendRedirect(resp.encodeRedirectURL(req.getRequestURL().toString()));
+            } else {
+                for(Cookie c: req.getCookies()){System.out.println(c.getName()+":"+c.getValue());}
+                chain.doFilter(request, response);
+            }
         } catch (Throwable t) {
 	    // If an exception is thrown somewhere down the filter chain,
             // we still want to execute our after processing, and then
             // rethrow the problem after that.
-         
-          
         }
-        
-       ;
+        ;
 
-	
-       
     }
 
     /**
      * Return the filter configuration object for this filter.
-     * @return 
+     *
+     * @return
      */
     public FilterConfig getFilterConfig() {
         return (this.filterConfig);
@@ -93,23 +84,16 @@ public class SessionInitFilter implements Filter {
      * Destroy method for this filter
      */
     @Override
-    public void destroy() {        
+    public void destroy() {
     }
 
     /**
      * Init method for this filter
      */
     @Override
-    public void init(FilterConfig filterConfig) {        
+    public void init(FilterConfig filterConfig) {
         this.filterConfig = filterConfig;
-       
+
     }
 
-    
-    
-   
-  
-    
-    
-    
 }

@@ -6,7 +6,9 @@
     </filter>
     <filter-mapping>
         <filter-name>SessionInitFilter</filter-name>
-        <url-pattern>/index.jsp</url-pattern>
+        
+        <url-pattern>*.jsp</url-pattern>
+     
     </filter-mapping>
     <servlet>
         <servlet-name>IndexServ</servlet-name>

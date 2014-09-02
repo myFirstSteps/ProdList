@@ -60,6 +60,8 @@ public class IndexServ extends HttpServlet {
             throws ServletException, IOException {
         HttpSession session =request.getSession();
         { System.out.println("This is" +session.isNew());}
+        response.getWriter().
+                println("This is" +session.isNew());
         
        // processRequest(request, response);
     }
