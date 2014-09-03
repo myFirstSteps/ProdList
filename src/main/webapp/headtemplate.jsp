@@ -7,8 +7,7 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
 
 <div id="HeadT">
-    ${pageContext.request.}
-    <c:if test="${  pageContext. }"
+   
     <form ID="LoginF" action="LogIn" method="post">
     Авторизация:<br>
     <input type="text" name="username">
