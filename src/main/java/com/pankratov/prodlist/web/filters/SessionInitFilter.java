@@ -44,16 +44,18 @@ public class SessionInitFilter implements Filter {
             throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse resp = (HttpServletResponse) response;
-
-        try {
-            if (req.getSession(false).isNew()) {
-                for(Cookie c: req.getCookies()){System.out.println(c.getName()+":"+c.getValue());}
+        HttpSession ses= req.getSession(false);
+        req.isUserInRole("**");
+        req.getRemoteUser();
+        try {   
+            if (ses==null) {
+                req.getSession();      
                 resp.sendRedirect(resp.encodeRedirectURL(req.getRequestURL().toString()));
             } else {
-                for(Cookie c: req.getCookies()){System.out.println(c.getName()+":"+c.getValue());}
                 chain.doFilter(request, response);
             }
         } catch (Throwable t) {
+            
 	    // If an exception is thrown somewhere down the filter chain,
             // we still want to execute our after processing, and then
             // rethrow the problem after that.

@@ -5,8 +5,7 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@taglib prefix="c" uri="http://java.sun.com/jstl/core"%>
-<!DOCTYPE html>
+
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -15,13 +14,6 @@
         <link type="image/x-icon" rel="icon" href="Logo32x32.ico"/>
     </head>
     <body>
-          <c:import url="headtemplate.jsp" charEncoding="UTF-8"/>
-          
-        <h1>Hello Michael!
-        <br>
-        <br>
-        <br>
-        <br>
-        </h1>
+          55
     </body>
 </html>
