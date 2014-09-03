@@ -15,7 +15,5 @@
     </head>
     <body>
         <c:import url="headtemplate.jsp" charEncoding="UTF-8"/>
-        <h1>Hello World! Micha</h1>
-        <h2>????W</h2>
     </body>
 </html>
