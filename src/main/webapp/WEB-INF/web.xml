@@ -17,11 +17,9 @@
             <http-method>POST</http-method>
         </web-resource-collection>
         <auth-constraint>
-            <role-name>Member</role-name>
+            <role-name>Adin</role-name>
         </auth-constraint>
-        <user-data-constraint>
-            <transport-guarantee>CONFIDENTIAL</transport-guarantee>
-        </user-data-constraint>
+        
     </security-constraint>
 
     <filter>

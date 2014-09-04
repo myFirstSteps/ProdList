@@ -10,7 +10,7 @@
     <div id="RC"> 
         <c:choose>
             <c:when test="${pageContext.request.getRemoteUser()==null}">
-                <form ID="LoginF" action="/loginPage.jsp"  method="get">
+                <form ID="LoginF" action="/ProdList/loginPage.jsp"  method="get">
                     Вход не выполнен.<br>
                     <center><input type="submit" value="Войти"> </center>
                 </form> 

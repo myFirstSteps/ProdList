@@ -6,7 +6,7 @@
 
 <!DOCTYPE html>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@taglib prefix="c" uri="http://java.sun.com/jstl/core"%>
+<%@taglib prefix="c" uri="http://java.sun.com/jstl/core_rt"%>
 <html> 
     <head>
         <title>Start Page</title>
@@ -15,5 +15,6 @@
     </head>
     <body>
         <c:import url="headtemplate.jsp" charEncoding="UTF-8"/>
+        dfdfdfdf
     </body>
 </html>
