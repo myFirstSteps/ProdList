@@ -7,10 +7,7 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
 
 <div id="HeadT">
-    <c:choose >
-        
-        <c:when test="${pageContext.request.asyncStarted}"> ttyty</c:when>
-    </c:choose>
+  
     <form ID="LoginF" action="LogIn" method="post">
     Авторизация:<br>
     <input type="text" name="username">
