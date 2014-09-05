@@ -17,11 +17,22 @@
         <auth-constraint>
             <role-name>Adin</role-name>
         </auth-constraint>
+
         <user-data-constraint>
             <transport-guarantee>CONFIDENTIAL</transport-guarantee>
         </user-data-constraint>
     </security-constraint>
-    
+
+    <filter>
+        <filter-name>SessionInitFilter</filter-name>
+        <filter-class>com.pankratov.prodlist.web.filters.SessionInitFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>SessionInitFilter</filter-name>
+        
+        <url-pattern>/index11.jsp</url-pattern>
+     
+    </filter-mapping>
     <servlet>
         <servlet-name>IndexServ</servlet-name>
         <servlet-class>com.pankratov.prodlist.web.IndexServ</servlet-class>
