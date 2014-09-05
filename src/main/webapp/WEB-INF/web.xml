@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app version="3.1" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
+<<<<<<< HEAD
+=======
+   
+>>>>>>> 91317c9861381d8d45807b178346d2bc5acd5211
     <login-config>
         <auth-method>FORM</auth-method>
         <form-login-config>
@@ -7,20 +11,34 @@
             <form-error-page>/loginError.html</form-error-page>
         </form-login-config>
     </login-config>
+<<<<<<< HEAD
     <security-constraint>
         <web-resource-collection>
             <web-resource-name>All</web-resource-name>
             <url-pattern>/*</url-pattern>
+=======
+     
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>All</web-resource-name>
+            <url-pattern>/loginPage.jsp</url-pattern>
+>>>>>>> 91317c9861381d8d45807b178346d2bc5acd5211
             <http-method>GET</http-method>
             <http-method>POST</http-method>
         </web-resource-collection>
         <auth-constraint>
             <role-name>Adin</role-name>
         </auth-constraint>
+<<<<<<< HEAD
 
         <user-data-constraint>
             <transport-guarantee>CONFIDENTIAL</transport-guarantee>
         </user-data-constraint>
+=======
+        <user-data-constraint>
+            <transport-guarantee>CONFIDENTIAL</transport-guarantee> 
+        </user-data-constraint> 
+>>>>>>> 91317c9861381d8d45807b178346d2bc5acd5211
     </security-constraint>
 
     <filter>
@@ -29,9 +47,13 @@
     </filter>
     <filter-mapping>
         <filter-name>SessionInitFilter</filter-name>
+<<<<<<< HEAD
         
         <url-pattern>/index11.jsp</url-pattern>
      
+=======
+        <url-pattern>/122.jsp</url-pattern>
+>>>>>>> 91317c9861381d8d45807b178346d2bc5acd5211
     </filter-mapping>
     <servlet>
         <servlet-name>IndexServ</servlet-name>

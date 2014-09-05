@@ -1,0 +1,11 @@
+body{ font-family:serif;  font-size:small; padding:0px; margin:0em; }
+table{text-align:center; padding: 4px  }
+em{font-size: 120%}
+#HeadT{ background-color:#303030; padding:4px; color:white }
+#HeadT td{padding: 0px 5px 0px 5px}
+#HeadT img{border-radius: 4px}
+#HeadT span{font-size:120%}
+form{float:right}
+#RC{float:right;}
+#LoginF{position:relative; top:20px;}
+#AuthForm{position:fixed; top:300px; left:300px;  background-color:#f0f0f0;  width:400px; height:500px;  margin:auto; }

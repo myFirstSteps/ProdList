@@ -45,9 +45,7 @@ public class SessionInitFilter implements Filter {
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse resp = (HttpServletResponse) response;
         HttpSession ses= req.getSession(false);
-        req.isUserInRole("**");
-        
-        req.getRemoteUser();
+
         try {   
             if (ses==null) {
                 req.getSession();      

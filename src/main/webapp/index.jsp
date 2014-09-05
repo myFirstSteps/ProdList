@@ -4,17 +4,19 @@
     Author     : pankratov
 --%>
 
-<!DOCTYPE html>
+
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jstl/core_rt"%>
+
+<!DOCTYPE html>
 <html> 
     <head>
         <title>Start Page</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <link href="mainCSS.css" type="text/css" rel="stylesheet">
+        <style><%@include file="WEB-INF/CSSdoc/mainCSS.css"%></style>
     </head>
     <body>
-        <c:import url="headtemplate.jsp" charEncoding="UTF-8"/>
-        dfdfdfdf
+
+        <c:import url="/WEB-INF/template/headtemplate.jsp" charEncoding="UTF-8"/> 
     </body>
 </html>
