@@ -10,9 +10,11 @@
     <div id="RC"> 
         <c:choose>
             <c:when test="${pageContext.request.getRemoteUser()==null}">
-                <form ID="LoginF" action="${pageContext.response.encodeURL("loginPage.jsp")}"  method="get">
-                    Вход не выполнен.<br>
-                    <center><input type="submit" value="Войти"> </center>
+                <form ID="LoginF" action="${pageContext.response.encodeURL("loginPage.jsp")}"  method="get">  
+                    <c:if test="${pageContext.request.getServletPath()ne'/loginPage.jsp'}">
+                        Вход не выполнен.<br>
+                        <center><input type="submit" value="Войти"> </center>
+                    </c:if> 
                 </form> 
             </c:when>
             <c:otherwise>   
@@ -22,7 +24,7 @@
     </div>
 
     <table><td><span>Интерактивное резюме на<br>позицию Java Junior Developer.<br><em>Панкратов Михаил</em></span></td>
-        <td><img src="OCP_JavaSE7Programmer.gif" allign="top" width="140" height="71" alt="OCP_JavaSE7Programmer.gif"><br></td>
+        <td><img src="<c:url value="/resources/OCP_JavaSE7Programmer.gif"/>" allign="top" width="140" height="71" alt="OCP_JavaSE7Programmer.gif"><br></td>
     </table>
 </div>
 

@@ -1,26 +1,3 @@
-
-
-<<<<<<< HEAD
-
-<!DOCTYPE html>
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@taglib prefix="c" uri="http://java.sun.com/jstl/core_rt"%>
-<html> 
-    <head>
-        <title>Start Page</title>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <link href="mainCSS.css" type="text/css" rel="stylesheet">
-    </head>
-    <body>
-        <c:import url="headtemplate.jsp" charEncoding="UTF-8"/>
-        <div>
-            <form method="POST" action="j_security_check">
-                <input type="text" name="j_username">
-                <input type="password" name="j_password">  
-                <input type="submit" value="Войти">
-            </form> 
-        </div>      
-=======
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jstl/core_rt"%>
 <!DOCTYPE html>
@@ -30,69 +7,21 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <style><%@include file="WEB-INF/CSSdoc/mainCSS.css"%></style>
     </head>
-    <body>      
-        <c:import url="/WEB-INF/template/headtemplate.jsp" charEncoding="UTF-8"/>
-        <div ID="AuthForm">
-            <form  method="POST" action="j_security_check">
-                <input type="text" name="j_username"><br>
-                <input type="password" name="j_password"><br>  
-                <input type="submit" value="Войти">
-            </form> 
+    <body>
+
+        <div id="doc">
+            <div id="header">
+                <c:import url="/WEB-INF/template/headtemplate.jsp" charEncoding="UTF-8"/>
+            </div>
+            <div ID="AuthForm">
+                <h4 align="center">Для входа в систему введите<br> имя пользователя и пароль.</h4>
+                <form  method="POST" action="j_security_check">
+                    <p>имя:<br><input type="text" name="j_username"></p>
+                    <p>пароль:<br><input type="password" name="j_password"></p>  
+                    <p><input type="submit" value="Войти"></p>
+                </form> 
+            </div>
         </div>
-        v<br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        v
-        
-        v
-        v
-        v
-        v
-        
->>>>>>> 91317c9861381d8d45807b178346d2bc5acd5211
     </body>
 </html>
 
