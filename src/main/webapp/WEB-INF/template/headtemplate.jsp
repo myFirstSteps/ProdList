@@ -14,6 +14,7 @@
                     <c:if test="${pageContext.request.getServletPath()ne'/loginPage.jsp'}">
                         Вход не выполнен.<br>
                         <center><input type="submit" value="Войти"> </center>
+                        <c:set var="lastpage" scope="session" value="${pageContext.request.getServletPath()}"/>
                     </c:if> 
                 </form> 
             </c:when>

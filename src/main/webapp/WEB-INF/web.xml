@@ -7,7 +7,7 @@
         <auth-method>FORM</auth-method>
         <form-login-config>
             <form-login-page>/loginPage.jsp</form-login-page>
-            <form-error-page>/loginError.html</form-error-page>
+            <form-error-page>/loginError.jsp</form-error-page>
         </form-login-config>
     </login-config>
     <security-constraint>
@@ -40,7 +40,7 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>IndexServ</servlet-name>
-        <url-pattern>/index111.jsp</url-pattern>
+        <url-pattern>/index11.jsp</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
