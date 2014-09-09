@@ -8,7 +8,6 @@
         <style><%@include file="WEB-INF/CSSdoc/mainCSS.css"%></style>
     </head>
     <body>
-
         <div id="doc">
             <div id="header">
                 <c:import url="/WEB-INF/template/headtemplate.jsp" charEncoding="UTF-8"/>
@@ -25,7 +24,7 @@
             </div>
                 </c:when>
                     <c:otherwise>
-                        <c:set var='${cookie.}' scope="session" value="">
+                        <c:set target='${cookie}' property="login"> ${pageContext.request.getRemoteUser()}</c:set>    
                         <c:redirect  url="${pageContext.session.getAttribute('lastpage')}"/>
                     </c:otherwise>
                 </c:choose>

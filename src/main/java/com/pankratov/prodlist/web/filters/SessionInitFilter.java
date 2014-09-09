@@ -47,13 +47,14 @@ public class SessionInitFilter implements Filter {
         HttpSession ses= req.getSession(false);
         try {   
             if (ses==null) {
-                ses=req.getSession();
+                req.getSession();
+               /* ses=req.getSession();
                  Cookie [] c= req.getCookies();
                  for(Cookie co:c){
                      if(co.getName().equals("login")){
                         ses.setAttribute("login", co.getValue());
                      };
-                 }
+                 }*/
                  
                 resp.sendRedirect(resp.encodeRedirectURL(req.getRequestURL().toString()));
             } else {
