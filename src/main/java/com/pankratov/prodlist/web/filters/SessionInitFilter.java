@@ -47,20 +47,21 @@ public class SessionInitFilter implements Filter {
         HttpSession ses= req.getSession(false);
         try {   
             if (ses==null) {
-                req.getSession();
-               /* ses=req.getSession();
+              
+                ses=req.getSession();
                  Cookie [] c= req.getCookies();
+                 if (c!=null){
                  for(Cookie co:c){
                      if(co.getName().equals("login")){
                         ses.setAttribute("login", co.getValue());
                      };
-                 }*/
-                 
+                 }
+                 }
                 resp.sendRedirect(resp.encodeRedirectURL(req.getRequestURL().toString()));
             } else {
                 chain.doFilter(request, response);
             }
-        } catch (Throwable t) {
+        } catch (Throwable t) { System.out.println(t);
             
 	    // If an exception is thrown somewhere down the filter chain,
             // we still want to execute our after processing, and then

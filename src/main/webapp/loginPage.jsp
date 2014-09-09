@@ -12,22 +12,17 @@
             <div id="header">
                 <c:import url="/WEB-INF/template/headtemplate.jsp" charEncoding="UTF-8"/>
             </div>
-                <c:choose>
-                    <c:when test="${pageContext.request.getRemoteUser()==null}">
-            <div ID="AuthForm">
-                <h4 align="center">Для входа в систему введите<br> имя пользователя и пароль.</h4>
-                <form  method="POST" action="<c:url value='j_security_check'/>">
-                    <p>имя:<br><input type="text" name="j_username"></p>
-                    <p>пароль:<br><input type="password" name="j_password"></p>  
-                    <p><input type="submit" value="Войти"></p>
-                </form> 
-            </div>
+            <c:choose>
+                <c:when test="${pageContext.request.getRemoteUser()==null}">
+                    <c:import url="/WEB-INF/template/loginF.jsp" charEncoding="UTF-8"/>
                 </c:when>
-                    <c:otherwise>
-                        <c:set target='${cookie}' property="login"> ${pageContext.request.getRemoteUser()}</c:set>    
-                        <c:redirect  url="${pageContext.session.getAttribute('lastpage')}"/>
-                    </c:otherwise>
-                </c:choose>
+                <c:otherwise>
+                    ${sessionScope.Attribute.lastpage}
+                    <jsp:forward page="${sessionScope.Attribute.lastpage}"/>
+                    
+                  
+                </c:otherwise>
+            </c:choose>
         </div>
     </body>
 </html>
