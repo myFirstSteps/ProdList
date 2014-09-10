@@ -25,7 +25,7 @@
             <transport-guarantee>CONFIDENTIAL</transport-guarantee>
         </user-data-constraint>
     </security-constraint>
-     <security-constraint>
+    <security-constraint>
         <web-resource-collection>
             <web-resource-name>AdminOnly</web-resource-name>
             <url-pattern>/showUser</url-pattern>
@@ -68,32 +68,35 @@
     <servlet>
         <servlet-name>showUser</servlet-name>
         <servlet-class>com.pankratov.prodlist.web.ShowUserServlet</servlet-class>
-        <init-param> 
+        <init-param>
             <param-name>source</param-name>
-            <param-value>jdbc:mysql://localhost:3306/authent</param-value>
+            <param-value>jdbc:mysql://localhost:3306/tomcatusers</param-value>
         </init-param>
-        <init-param> 
+        <init-param>
             <param-name>table</param-name>
-            <param-value>users</param-value>
+            <param-value>logins</param-value>
         </init-param>
-         <init-param> 
+        <init-param>
             <param-name>col</param-name>
-            <param-value>user_name</param-value>
+            <param-value>login</param-value>
         </init-param>
-        <init-param> 
+        <init-param>
             <param-name>adminLogin</param-name>
-            <param-value>tomcat</param-value>
+            <param-value>tom</param-value>
         </init-param>
-        <init-param> 
+        <init-param>
             <param-name>password</param-name>
-            <param-value>tomcat130985</param-value>
+            <param-value>lazyfatcat</param-value>
         </init-param>
+    </servlet>
+    <servlet>
+        <servlet-name>LogOut</servlet-name>
+        <servlet-class>com.pankratov.prodlist.web.LogOut</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>showUser</servlet-name>
         <url-pattern>/showUser</url-pattern>
     </servlet-mapping>
-        
     <servlet-mapping>
         <servlet-name>IndexServ</servlet-name>
         <url-pattern>/index11.jsp</url-pattern>
@@ -101,6 +104,10 @@
     <servlet-mapping>
         <servlet-name>Registration</servlet-name>
         <url-pattern>/Registration</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>LogOut</servlet-name>
+        <url-pattern>/LogOut</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

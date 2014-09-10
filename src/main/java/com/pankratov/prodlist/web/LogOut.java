@@ -6,14 +6,9 @@
 
 package com.pankratov.prodlist.web;
 
-import com.pankratov.prodlist.model.User;
-import com.pankratov.prodlist.model.UserDAO;
-import com.pankratov.prodlist.model.UserDAOFactory;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebInitParam;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -22,9 +17,7 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author pankratov
  */
-@WebServlet(name = "ShowUserServlet", urlPatterns = {"/ShowUser"}, initParams = {
-    @WebInitParam(name = "source", value = "db")})
-public class ShowUserServlet extends HttpServlet {
+public class LogOut extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -43,10 +36,10 @@ public class ShowUserServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet ShowUserServlet</title>");            
+            out.println("<title>Servlet LogOut</title>");            
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet ShowUserServlet at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet LogOut at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -64,7 +57,9 @@ public class ShowUserServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        request.logout();
+        response.sendRedirect(response.encodeRedirectURL(request.getContextPath()+request.getParameter("path")));
+        
     }
 
     /**
@@ -78,13 +73,7 @@ public class ShowUserServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        System.out.println("THIS IS ISSSSS");
-        
-        try{
-            UserDAO ud=UserDAOFactory.getUserDAOInstence(UserDAOFactory.UserDAOType.JDBCUserDAO, this);
-            User u=ud.readUser(request.getParameter("name"));
-            response.getWriter().println("имя:"+u.getName()+"\n"+u.getPassword());}
-        catch(Exception ex){System.out.println(ex);}
+        processRequest(request, response);
     }
 
     /**
