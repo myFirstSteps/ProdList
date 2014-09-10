@@ -10,9 +10,6 @@ package com.pankratov.prodlist.model;
  *
  * @author pankratov
  */
-public interface UserDAO {
-    public  boolean registerUser(User user);
-    public User readUser(String name)throws Exception;
-    public User deleteUser(User user);
-    public User changeUser(User user);
+public class UserCreationException extends Exception {
+    
 }

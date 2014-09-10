@@ -25,6 +25,21 @@
             <transport-guarantee>CONFIDENTIAL</transport-guarantee>
         </user-data-constraint>
     </security-constraint>
+     <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>AdminOnly</web-resource-name>
+            <url-pattern>/showUser</url-pattern>
+            <url-pattern>/Admin.jsp</url-pattern>
+            <http-method>GET</http-method>
+            <http-method>POST</http-method>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>admin</role-name>
+        </auth-constraint>
+        <user-data-constraint>
+            <transport-guarantee>CONFIDENTIAL</transport-guarantee>
+        </user-data-constraint>
+    </security-constraint>
     <filter>
         <filter-name>SessionInitFilter</filter-name>
         <filter-class>com.pankratov.prodlist.web.filters.SessionInitFilter</filter-class>
@@ -50,6 +65,35 @@
         <servlet-name>Registration</servlet-name>
         <servlet-class>com.pankratov.prodlist.web.Registration</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>showUser</servlet-name>
+        <servlet-class>com.pankratov.prodlist.web.ShowUserServlet</servlet-class>
+        <init-param> 
+            <param-name>source</param-name>
+            <param-value>jdbc:mysql://localhost:3306/authent</param-value>
+        </init-param>
+        <init-param> 
+            <param-name>table</param-name>
+            <param-value>users</param-value>
+        </init-param>
+         <init-param> 
+            <param-name>col</param-name>
+            <param-value>user_name</param-value>
+        </init-param>
+        <init-param> 
+            <param-name>adminLogin</param-name>
+            <param-value>tomcat</param-value>
+        </init-param>
+        <init-param> 
+            <param-name>password</param-name>
+            <param-value>tomcat130985</param-value>
+        </init-param>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>showUser</servlet-name>
+        <url-pattern>/showUser</url-pattern>
+    </servlet-mapping>
+        
     <servlet-mapping>
         <servlet-name>IndexServ</servlet-name>
         <url-pattern>/index11.jsp</url-pattern>
