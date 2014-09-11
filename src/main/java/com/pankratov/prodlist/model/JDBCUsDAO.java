@@ -30,6 +30,7 @@ public class JDBCUsDAO implements UserDAO{
         conn=DriverManager.getConnection(source,login,pwd);
         readUser= conn.prepareStatement("Select * from "+table+" where "+col+"=?" );
         
+        
                 }catch (Exception e){
                     if (readUser!=null)readUser.close();
                     if (conn!=null)conn.close();
@@ -42,6 +43,7 @@ public class JDBCUsDAO implements UserDAO{
         readUser.setString(1, name);
         try(ResultSet rs=readUser.executeQuery();){
            System.out.println("Before query");
+           System.out.println("Select * from "+table+" where "+col+"="+name);
            while (rs.next())
             return new User (rs.getString(1),rs.getString(2));
         

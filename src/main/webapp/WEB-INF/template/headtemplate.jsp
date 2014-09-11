@@ -20,7 +20,7 @@
                 </form> 
             </c:when>
             <c:otherwise>   
-                <span> Выполнен вход под именем:</span><br><span> ${user}</span>
+                <span> Выполнен вход под именем:</span><br><span> ${user}</span><form action="LogOut" method="get"><button name="path" value="${path}">Выход</button></form>
             </c:otherwise>
         </c:choose>
     </div>
