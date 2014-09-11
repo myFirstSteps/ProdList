@@ -4,6 +4,7 @@
 pom.xml
 
 =======
+web.xml
 /target
 pom.xml
 nb-configuration.xml

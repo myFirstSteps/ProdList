@@ -83,6 +83,7 @@ public class ShowUserServlet extends HttpServlet {
         try{
             UserDAO ud=UserDAOFactory.getUserDAOInstence(UserDAOFactory.UserDAOType.JDBCUserDAO, this);
             User u=ud.readUser(request.getParameter("name"));
+            response.setCharacterEncoding("UTF-8");
             response.getWriter().println("имя:"+u.getName()+"\n"+u.getPassword());}
         catch(Exception ex){System.out.println(ex);}
     }
