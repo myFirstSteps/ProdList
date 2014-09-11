@@ -30,7 +30,7 @@
             <web-resource-name>AdminOnly</web-resource-name>
             <url-pattern>/showUser</url-pattern>
             <url-pattern>/Admin.jsp</url-pattern>
-            <http-method>GET</http-method>
+            <http-method>GETi</http-method>
             <http-method>POST</http-method>
         </web-resource-collection>
         <auth-constraint>
