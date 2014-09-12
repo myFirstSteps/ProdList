@@ -15,9 +15,9 @@ public  class UserDAOFactory {
        
     }
     public enum UserDAOType{JDBCUserDAO()}
-    public static UserDAO getUserDAOInstence(UserDAOType type,  javax.servlet.ServletConfig config) throws Exception{   
+    public static UserDAO getUserDAOInstence(UserDAOType type,  javax.servlet.ServletContext context) throws Exception{   
         switch(type){
-            case JDBCUserDAO: return new JDBCUsDAO(config);
+            case JDBCUserDAO: return new JDBCUsDAO(context);
         }
         return null;
     }

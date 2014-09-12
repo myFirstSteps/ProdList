@@ -81,10 +81,10 @@ public class ShowUserServlet extends HttpServlet {
         System.out.println("THIS IS ISSSSS");
         
         try{
-            UserDAO ud=UserDAOFactory.getUserDAOInstence(UserDAOFactory.UserDAOType.JDBCUserDAO, this);
+            UserDAO ud=UserDAOFactory.getUserDAOInstence(UserDAOFactory.UserDAOType.JDBCUserDAO, this.getServletContext());
             User u=ud.readUser(request.getParameter("name"));
             response.setCharacterEncoding("UTF-8");
-            response.getWriter().println("имя:"+u.getName()+"\n"+u.getPassword());}
+            response.getWriter().println(u);}
         catch(Exception ex){System.out.println(ex);}
     }
 
