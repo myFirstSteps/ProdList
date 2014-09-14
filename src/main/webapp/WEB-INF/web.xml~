@@ -25,12 +25,20 @@
             <transport-guarantee>CONFIDENTIAL</transport-guarantee>
         </user-data-constraint>
     </security-constraint>
+<<<<<<< HEAD
     <security-constraint>
+=======
+     <security-constraint>
+>>>>>>> ceeb933cfaf5b4b181a361abc19e6e1fc452d564
         <web-resource-collection>
             <web-resource-name>AdminOnly</web-resource-name>
             <url-pattern>/showUser</url-pattern>
             <url-pattern>/Admin.jsp</url-pattern>
+<<<<<<< HEAD
             <http-method>GET</http-method>
+=======
+            <http-method>GETi</http-method>
+>>>>>>> ceeb933cfaf5b4b181a361abc19e6e1fc452d564
             <http-method>POST</http-method>
         </web-resource-collection>
         <auth-constraint>
@@ -68,6 +76,7 @@
     <servlet>
         <servlet-name>showUser</servlet-name>
         <servlet-class>com.pankratov.prodlist.web.ShowUserServlet</servlet-class>
+<<<<<<< HEAD
 	<save the diferrences>
         <init-param>
             <param-name>source</param-name>
@@ -95,10 +104,37 @@
         <servlet-name>LogOut</servlet-name>
         <servlet-class>com.pankratov.prodlist.web.LogOut</servlet-class>
     </servlet>
+=======
+        <init-param> 
+            <param-name>source</param-name>
+            <param-value>jdbc:mysql://localhost:3306/authent</param-value>
+        </init-param>
+        <init-param> 
+            <param-name>table</param-name>
+            <param-value>users</param-value>
+        </init-param>
+         <init-param> 
+            <param-name>col</param-name>
+            <param-value>user_name</param-value>
+        </init-param>
+        <init-param> 
+            <param-name>adminLogin</param-name>
+            <param-value>tomcat</param-value>
+        </init-param>
+        <init-param> 
+            <param-name>password</param-name>
+            <param-value>tomcat130985</param-value>
+        </init-param>
+    </servlet>
+>>>>>>> ceeb933cfaf5b4b181a361abc19e6e1fc452d564
     <servlet-mapping>
         <servlet-name>showUser</servlet-name>
         <url-pattern>/showUser</url-pattern>
     </servlet-mapping>
+<<<<<<< HEAD
+=======
+        
+>>>>>>> ceeb933cfaf5b4b181a361abc19e6e1fc452d564
     <servlet-mapping>
         <servlet-name>IndexServ</servlet-name>
         <url-pattern>/index11.jsp</url-pattern>
@@ -107,10 +143,13 @@
         <servlet-name>Registration</servlet-name>
         <url-pattern>/Registration</url-pattern>
     </servlet-mapping>
+<<<<<<< HEAD
     <servlet-mapping>
         <servlet-name>LogOut</servlet-name>
         <url-pattern>/LogOut</url-pattern>
     </servlet-mapping>
+=======
+>>>>>>> ceeb933cfaf5b4b181a361abc19e6e1fc452d564
     <session-config>
         <session-timeout>
             30

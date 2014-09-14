@@ -4,6 +4,8 @@
 pom.xml
 
 =======
+web.xml
+.gitignore
 /target
 pom.xml
 nb-configuration.xml

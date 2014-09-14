@@ -30,8 +30,6 @@
             <web-resource-name>AdminOnly</web-resource-name>
             <url-pattern>/showUser</url-pattern>
             <url-pattern>/Admin.jsp</url-pattern>
-            <http-method>GET</http-method>
-            <http-method>POST</http-method>
         </web-resource-collection>
         <auth-constraint>
             <role-name>admin</role-name>
@@ -68,29 +66,7 @@
     <servlet>
         <servlet-name>showUser</servlet-name>
         <servlet-class>com.pankratov.prodlist.web.ShowUserServlet</servlet-class>
-	<save the diferrences>
-        <init-param>
-            <param-name>source</param-name>
-            <param-value>jdbc:mysql://localhost:3306/tomcatusers</param-value>
-        </init-param>
-        <init-param>
-            <param-name>table</param-name>
-            <param-value>logins</param-value>
-        </init-param>
-        <init-param>
-            <param-name>col</param-name>
-            <param-value>login</param-value>
-        </init-param>
-        <init-param>
-            <param-name>adminLogin</param-name>
-            <param-value>tom</param-value>
-        </init-param>
-        <init-param>
-
-            <param-name>password</param-name>
-            <param-value>lazyfatcat</param-value>
-        </init-param>
-    </servlet>
+    </servlet>   
     <servlet>
         <servlet-name>LogOut</servlet-name>
         <servlet-class>com.pankratov.prodlist.web.LogOut</servlet-class>
@@ -111,6 +87,30 @@
         <servlet-name>LogOut</servlet-name>
         <url-pattern>/LogOut</url-pattern>
     </servlet-mapping>
+    <context-param>
+        <param-name>DB_NAME</param-name> 
+        <param-value>jdbc:mysql://localhost:3306/tomcatusers</param-value>
+    </context-param>
+    <context-param>
+        <param-name>DB_LOGIN</param-name> 
+        <param-value>tom</param-value>
+    </context-param>
+    <context-param>
+        <param-name>DB_PASSWORD</param-name> 
+        <param-value>lazyfatcat</param-value>
+    </context-param>
+    <context-param>
+        <param-name>ROLES_TABLE</param-name> 
+        <param-value></param-value>
+    </context-param>
+    <context-param>
+        <param-name>USER_INFO_TABLE</param-name> 
+        <param-value>User_info</param-value>
+    </context-param>
+    <context-param>
+        <param-name>LOGINS_TABLE</param-name> 
+        <param-value>logins</param-value>
+    </context-param>
     <session-config>
         <session-timeout>
             30
