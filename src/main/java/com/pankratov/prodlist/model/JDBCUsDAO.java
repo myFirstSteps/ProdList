@@ -8,7 +8,10 @@ package com.pankratov.prodlist.model;
 import javax.sql.*;
 import java.sql.*;
 import javax.servlet.ServletConfig.*;
+<<<<<<< HEAD
 import javax.sql.rowset.*;
+=======
+>>>>>>> ceeb933cfaf5b4b181a361abc19e6e1fc452d564
 
 /**
  *
@@ -23,7 +26,11 @@ public class JDBCUsDAO implements UserDAO {
     private final String LOGINS_TABLE;
     private final String ROLES_TABLE;
     private final String USER_INFO_TABLE;
+<<<<<<< HEAD
     private CachedRowSet loginCRS;
+=======
+    private final String USER_KEY_COL;
+>>>>>>> ceeb933cfaf5b4b181a361abc19e6e1fc452d564
     private PreparedStatement readUser;
 
     public JDBCUsDAO(javax.servlet.ServletContext context) throws Exception {
@@ -33,6 +40,7 @@ public class JDBCUsDAO implements UserDAO {
         LOGINS_TABLE =context.getInitParameter("LOGINS_TABLE");
         ROLES_TABLE = context.getInitParameter("ROLES_TABLE");
         USER_INFO_TABLE =context.getInitParameter("USER_INFO_TABLE");
+<<<<<<< HEAD
         try (Connection conn=DriverManager.getConnection(DB_NAME,DB_LOGIN,DB_PASSWORD)) {
             ResultSet cmd= conn.getMetaData().getColumns(null, null, null, null);
             String lastTableName="";
@@ -53,6 +61,17 @@ public class JDBCUsDAO implements UserDAO {
                     lcrs.setUsername(DB_LOGIN);
                     lcrs.setUrl(DB_NAME);
                    // lcrs.setCommand("Select * from "+LOGINS_TABLE);
+=======
+        USER_KEY_COL =context.getInitParameter("USER_KEY_COL");
+        try {
+            conn = DriverManager.getConnection(DB_NAME, DB_LOGIN,DB_PASSWORD);
+            readUser = conn.prepareStatement("Select * from " + LOGINS_TABLE+" where " + USER_KEY_COL + "=? UNION "
+                    + "Select * from " +ROLES_TABLE+" where " + USER_KEY_COL + "=? UNION "+"Select * from "+USER_INFO_TABLE+ " where " + 
+                    USER_KEY_COL + "=?"); 
+           javax.sql.rowset.RowSetProvider.newFactory().createCachedRowSet().
+                    javax.sql.rowset.CachedRowSet rs= 
+               javax.sql.CachedRowSet= new CachedRowSetImpl();
+>>>>>>> ceeb933cfaf5b4b181a361abc19e6e1fc452d564
         } catch (Exception e) {
             if (readUser != null) {
                 readUser.close();
