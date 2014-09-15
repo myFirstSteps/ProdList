@@ -78,13 +78,14 @@ public class ShowUserServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        System.out.println("THIS IS ISSSSS");
         
         try{
-            UserDAO ud=UserDAOFactory.getUserDAOInstence(UserDAOFactory.UserDAOType.JDBCUserDAO, this.getServletContext());
+            UserDAO ud=UserDAOFactory.getUserDAOInstance(UserDAOFactory.UserDAOType.JDBCUserDAO, this.getServletContext());
             User u=ud.readUser(request.getParameter("name"));
             response.setCharacterEncoding("UTF-8");
-            response.getWriter().println(u);}
+            if(u!=null)
+            response.getWriter().println(u);else response.getWriter().println("Пользователя с именем: "+request.getParameter("name")+
+                    "не существует");}
         catch(Exception ex){System.out.println(ex);}
     }
 

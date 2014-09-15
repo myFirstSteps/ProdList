@@ -17,10 +17,14 @@ public class User {
     private String firstName;
     private String lastName;
     private String email;
-    public User (String...s)throws UserCreationException{
+    public User (String login, String password, String[] roles, String firstName,String lastname,String email)throws UserCreationException{
         try{
-        login=s[0];
-        password=s[1];
+        this.login=login;
+        this.password=password;
+        this.roles=roles;
+        this.firstName=firstName;
+        this.lastName=lastname;
+        this.email=email;
         }catch (Throwable tr){ 
             UserCreationException e =new UserCreationException();
             e.initCause(tr);
@@ -29,8 +33,9 @@ public class User {
     @Override
     public String toString(){
         String role="";
-        for(String s:roles){role+=s+'n';}
-        return ("login:"+this.login+'\n'+"Фамилия:"+this.lastName+'\n'+"имя:"+this.firstName+'\n'+"e-mail:"+this.email+'\n'+role);
+        for(String s:roles){role+=s+'\n';}
+        return ("login:"+this.login+'\n'+"Фамилия:"+this.lastName+'\n'+"имя:"+this.firstName+'\n'+"e-mail:"+this.email+'\n'+"роли: "+role+
+         '\n'+"пароль: "+this.password);
     }
 
     /**
