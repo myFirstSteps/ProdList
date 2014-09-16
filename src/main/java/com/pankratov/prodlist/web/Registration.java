@@ -57,6 +57,7 @@ public class Registration extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        System.out.println("AJAXXXXXXXXXXXb");
         processRequest(request, response);
     }
 
@@ -71,7 +72,7 @@ public class Registration extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+        System.out.println("bREGISTRATION");
         processRequest(request, response);
     }
 

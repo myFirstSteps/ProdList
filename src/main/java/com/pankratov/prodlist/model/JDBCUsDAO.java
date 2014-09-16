@@ -5,6 +5,7 @@
  */
 package com.pankratov.prodlist.model;
 
+import org.apache.logging.log4j.*;
 import javax.sql.*;
 import java.util.*;
 import java.sql.*;
@@ -17,7 +18,7 @@ import javax.sql.rowset.*;
  * @author pankratov
  */
 public class JDBCUsDAO implements UserDAO {
-
+    private static final Logger log= org.apache.logging.log4j.LogManager.getLogger(JDBCUsDAO.class);
     private java.sql.Connection conn;
     private final String DB_NAME;
     private final String DB_LOGIN;
@@ -29,6 +30,7 @@ public class JDBCUsDAO implements UserDAO {
     private HashMap<String, CachedRowSet> CRS = new HashMap<>();
 
     public JDBCUsDAO(javax.servlet.ServletContext context) throws Exception {
+       
         DB_NAME = context.getInitParameter("DB_NAME");
         DB_LOGIN = context.getInitParameter("DB_LOGIN");
         DB_PASSWORD = context.getInitParameter("DB_PASSWORD");
@@ -54,6 +56,7 @@ public class JDBCUsDAO implements UserDAO {
             }
 
         } catch (Exception e) {
+            log.error("JDBCUsDAO creation error",e);
             throw e;
         }
 
@@ -85,6 +88,7 @@ public class JDBCUsDAO implements UserDAO {
            result= new User(jrs.getString(tablesMetaData.get(LOGINS_TABLE).get(0)),jrs.getString(tablesMetaData.get(LOGINS_TABLE).get(1)),roles.toArray(new String[1]),
               jrs.getString(tablesMetaData.get(USER_INFO_TABLE).get(1)), jrs.getString(tablesMetaData.get(USER_INFO_TABLE).get(2)) ,  jrs.getString(tablesMetaData.get(USER_INFO_TABLE).get(3)));
         } catch (Exception ex) {
+            log.error("'readUser error' wrong db tables", ex);
             Exception e = new Exception("Ошибка чтения пользователя: " + ex);
             e.initCause(ex);
             throw e;
