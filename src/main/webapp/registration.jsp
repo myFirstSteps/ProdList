@@ -11,12 +11,9 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Регистрация</title>
-        <style><%@include file="WEB-INF/CSSdoc/mainCSS.css"%></style>
+        <style><%@include file="/CSSdoc/mainCSS.css"%></style>
     </head>
     <body>
-        <script type="text/javascript">
-            
-            <%@include file="WEB-INF/scripts/ajaxSupport.js"%></script>
         <div id="header">
             <c:import url="/WEB-INF/template/headtemplate.jsp" charEncoding="UTF-8"/>
         </div>
@@ -27,12 +24,9 @@
                 организации самого процесса регистрации, так что смело можете оставить это занятие на потом. Если же вам очень интересно посмотреть работает это, 
                 или нет, заполните необходимые поля и нажмите кнопку зарегистрироваться.
             </p>
-            
+            <script> function myFunc(){alert("Rere");}</script>
             <form method="post" action="Registration">
-                <p>login:<br><input onclick="function(){$.ajax({type:'GET', url:'Registration', success: function (data, textStatus, jqXHR) {
-                        alert('hellowworld');
-                    }}  
-                                    );}"
+                <p>login:<br><input      onkeyup="checkLogin(this.value)"
                                     type="text" title="Login пользователя который вы будете вводить при авторизации" name="login" placeholder="обязательное поле"></p>
                 <p>пароль:<br><input  type="password" title="Пароль" name="password" placeholder="обязательное поле"></p>
                 <p>повторить пароль:<br><input  type="password" title="Пароль" name="password_check" placeholder="обязательное поле"></p>
@@ -40,8 +34,9 @@
                 <p>имя:<br><input  type="text" title="Ваше имя" name="name" placeholder="не обязательное поле"></p>
                 <p>Фамилия:<br><input  type="text" title="Ваша фамилия" name="family" placeholder="не обязательное поле"></p>
                 <input type="submit" value="Зарегистрировать">
-
             </form>
         </div>
+        <script src="scripts/jquery-1.11.1.min.js"> </script>
+        <script src="scripts/ajaxSupport.js"></script>
     </body>
 </html>

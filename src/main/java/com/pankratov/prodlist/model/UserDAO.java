@@ -15,4 +15,5 @@ public interface UserDAO {
     public User readUser(String name)throws Exception;
     public User deleteUser(User user);
     public User changeUser(User user);
+    public boolean isUserExsists(String name);
 }

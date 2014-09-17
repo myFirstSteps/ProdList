@@ -6,6 +6,9 @@
 
 package com.pankratov.prodlist.web;
 
+import com.pankratov.prodlist.model.User;
+import com.pankratov.prodlist.model.UserDAO;
+import com.pankratov.prodlist.model.UserDAOFactory;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;
@@ -57,8 +60,16 @@ public class Registration extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        System.out.println("AJAXXXXXXXXXXXb");
-        processRequest(request, response);
+        String is="free";
+         try{UserDAO ud=UserDAOFactory.getUserDAOInstance(UserDAOFactory.UserDAOType.JDBCUserDAO, this.getServletContext());
+          System.out.print(ud.isUserExsists(request.getParameter("name")));
+           if((ud.isUserExsists(request.getParameter("name")))) is="busy";
+         }
+         catch(Exception e){System.out.print(e);}
+         
+        System.out.println(request.getParameter("name"));
+        response.setContentType("text/plain");
+        response.getWriter().print("login is "+is);
     }
 
     /**

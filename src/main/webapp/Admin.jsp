@@ -11,7 +11,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Администратор</title>
-     <style><%@include file="WEB-INF/CSSdoc/mainCSS.css"%></style>
+     <style><%@include file="/CSSdoc/mainCSS.css"%></style>
     </head>
     <body>
         <c:import url="/WEB-INF/template/headtemplate.jsp" charEncoding="UTF-8"/> 

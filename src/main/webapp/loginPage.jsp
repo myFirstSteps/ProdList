@@ -5,7 +5,7 @@
     <head>
         <title>Авторизация.</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <style><%@include file="WEB-INF/CSSdoc/mainCSS.css"%></style>
+        <style><%@include file="/CSSdoc/mainCSS.css"%></style>
     </head>
     <body>
         <div id="doc">
