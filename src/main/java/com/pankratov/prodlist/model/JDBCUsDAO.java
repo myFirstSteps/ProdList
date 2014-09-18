@@ -28,13 +28,14 @@ public class JDBCUsDAO implements UserDAO {
 
         private Table(String tableName, List<String> colNames) {
             try {
-                CachedRowSet rowset = RowSetProvider.newFactory().createCachedRowSet();
+                rowset = RowSetProvider.newFactory().createCachedRowSet();
                 rowset.setUrl(DB_NAME);
+                System.out.println("ID:++++++"+rowset.getSyncProvider().getProviderID());
+              //  System.out.println(rowset.getSyncProvider().;
                 rowset.setPassword(DB_PASSWORD);
                 rowset.setUsername(DB_LOGIN);
                 this.tableName = tableName;
                 columnNames = colNames;
-                System.out.println("hohoho");
                 log.debug(String.format("created table %s with columns: %s rowset:%s", tableName,columnNames,rowset));
      
             } catch (Exception e) {
@@ -54,7 +55,14 @@ public class JDBCUsDAO implements UserDAO {
             rowset.execute();
             return rowset;
         }
-        private String getColumnName(int numb){return columnNames.get(numb);}
+        private String getColumnName(int numb)throws JDBCUsDAOException{
+            String res=null;
+        
+            try{
+            res= columnNames.get(numb-1);
+            }catch(IndexOutOfBoundsException e){ throw new JDBCUsDAOException(String.format("У таблици %s нет столбца с индексом %d", tableName,numb),e);}
+            return res;
+        }
     }
 
     private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(JDBCUsDAO.class);
@@ -95,7 +103,6 @@ public class JDBCUsDAO implements UserDAO {
             while (colMetaData.next()) {
                 currentTableName = colMetaData.getString(3);
                 columnName = colMetaData.getString(4);
-                if (lastTableName.equals("")) lastTableName=currentTableName;
                 if (!lastTableName.equals(currentTableName)) {
                     m.putIfAbsent(currentTableName, new ArrayList<String>());
                     lastTableName = currentTableName;
@@ -129,16 +136,23 @@ public class JDBCUsDAO implements UserDAO {
             Set<String> roles = new TreeSet<>();
             while (jrs.next()) {
                 roles.add(jrs.getString(ROLES_TABLE.getColumnName(2)));
-            }
+            }  
             if (jrs.first()) {
                 result = new User(jrs.getString(LOGINS_TABLE.getColumnName(1)),
-                        jrs.getString(jrs.getString(LOGINS_TABLE.getColumnName(2))), 
+                        jrs.getString(LOGINS_TABLE.getColumnName(2)), 
                         roles.toArray(new String[1]),
-                        jrs.getString(jrs.getString(LOGINS_TABLE.getColumnName(2))),
-                        jrs.getString(jrs.getString(LOGINS_TABLE.getColumnName(3))), 
-                        jrs.getString(jrs.getString(LOGINS_TABLE.getColumnName(4))));
+                        jrs.getString(USER_INFO_TABLE.getColumnName(2)),
+                        jrs.getString(USER_INFO_TABLE.getColumnName(3)), 
+                        jrs.getString(USER_INFO_TABLE.getColumnName(4)));
             
                     }
+           LOGINS_TABLE.rowset.moveToInsertRow();
+             LOGINS_TABLE.rowset.updateString(1, "fuck");
+             LOGINS_TABLE.rowset.updateString(2, "badpass");
+              LOGINS_TABLE.rowset.insertRow();
+               LOGINS_TABLE.rowset.moveToCurrentRow();
+              LOGINS_TABLE.rowset.acceptChanges();
+           
         } catch (Exception ex) {
             log.error("'readUser error' wrong db tables", ex);
             Exception e = new Exception("Ошибка чтения пользователя: " + ex);
@@ -166,10 +180,8 @@ public class JDBCUsDAO implements UserDAO {
                 CachedRowSet crs=LOGINS_TABLE.getAll();
                 
                 while (crs.next()) {
-                    logins.add(crs.getString(2));
+                    logins.add(crs.getString(1));
                 }
-                System.out.println("here");
-                System.out.println(logins);
             } catch (Exception ex) {
                 log.error("login exsists issue", ex);
             }

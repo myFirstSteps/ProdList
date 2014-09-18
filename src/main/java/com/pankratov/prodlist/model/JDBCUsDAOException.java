@@ -10,6 +10,9 @@ package com.pankratov.prodlist.model;
  *
  * @author pankratov
  */
-public class UserCreationException extends Exception {
+public class JDBCUsDAOException extends Exception {
+     JDBCUsDAOException (String s,Throwable cause){
+         super(s,cause);
+     }
     
 }

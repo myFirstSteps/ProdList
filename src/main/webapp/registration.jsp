@@ -36,7 +36,7 @@
                 <input type="submit" value="Зарегистрировать">
             </form>
         </div>
-        <script src="scripts/jquery-1.11.1.min.js"> </script>
+        <script src="scripts/jquery-1.11.1.min.js"></script>
         <script src="scripts/ajaxSupport.js"></script>
     </body>
 </html>

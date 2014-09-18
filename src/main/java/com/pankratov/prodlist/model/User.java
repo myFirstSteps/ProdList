@@ -17,7 +17,7 @@ public class User {
     private String firstName;
     private String lastName;
     private String email;
-    public User (String login, String password, String[] roles, String firstName,String lastname,String email)throws UserCreationException{
+    public User (String login, String password, String[] roles, String firstName,String lastname,String email)throws JDBCUsDAOException{
         try{
         this.login=login;
         this.password=password;
@@ -25,10 +25,8 @@ public class User {
         this.firstName=firstName;
         this.lastName=lastname;
         this.email=email;
-        }catch (Throwable tr){ 
-            UserCreationException e =new UserCreationException();
-            e.initCause(tr);
-            throw e; }
+        }catch (Exception ex){ 
+            throw new JDBCUsDAOException("Не удалось создать пользователя",ex); }
     }
     @Override
     public String toString(){
