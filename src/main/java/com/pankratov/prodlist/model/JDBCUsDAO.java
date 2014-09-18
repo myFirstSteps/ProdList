@@ -8,6 +8,7 @@ package com.pankratov.prodlist.model;
 import org.apache.logging.log4j.*;
 import javax.sql.*;
 import java.util.*;
+import java.util.concurrent.*;
 import java.sql.*;
 import javax.sql.rowset.RowSetProvider;
 import javax.servlet.ServletConfig.*;
@@ -19,17 +20,52 @@ import javax.sql.rowset.*;
  */
 public class JDBCUsDAO implements UserDAO {
 
+    private class Table {
+
+        private CachedRowSet rowset;
+        private String tableName;
+        private List<String> columnNames;
+
+        private Table(String tableName, List<String> colNames) {
+            try {
+                CachedRowSet rowset = RowSetProvider.newFactory().createCachedRowSet();
+                rowset.setUrl(DB_NAME);
+                rowset.setPassword(DB_PASSWORD);
+                rowset.setUsername(DB_LOGIN);
+                this.tableName = tableName;
+                columnNames = colNames;
+                System.out.println("hohoho");
+                log.debug(String.format("created table %s with columns: %s rowset:%s", tableName,columnNames,rowset));
+     
+            } catch (Exception e) {
+                log.error("Table creation issue (ex): " + e);
+            }
+
+        }
+
+        private CachedRowSet readUser(String name) throws SQLException {
+            rowset.setCommand("select * from " + tableName + " where "
+                    + columnNames.get(0) + "= '" + name + "'");
+            rowset.execute();
+            return rowset;
+        }
+        private CachedRowSet getAll()throws SQLException{
+            rowset.setCommand("select * from " + tableName);
+            rowset.execute();
+            return rowset;
+        }
+        private String getColumnName(int numb){return columnNames.get(numb);}
+    }
+
     private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(JDBCUsDAO.class);
     private static JDBCUsDAO instance;
-    private final String DB_NAME;
+    private static String DB_NAME;
     private final String DB_LOGIN;
     private final String DB_PASSWORD;
-    private final String LOGINS_TABLE;
-    private final String ROLES_TABLE;
-    private final String USER_INFO_TABLE;
-    private TreeSet<String> logins = null;
-    private HashMap<String, List<String>> tablesMetaData = new HashMap<>();
-    private HashMap<String, CachedRowSet> CRS = new HashMap<>();
+    private Table LOGINS_TABLE;
+    private Table ROLES_TABLE;
+    private Table USER_INFO_TABLE;
+    private ConcurrentSkipListSet<String> logins = null;
 
     @Override
     protected void finalize() throws Throwable {
@@ -49,27 +85,27 @@ public class JDBCUsDAO implements UserDAO {
         DB_NAME = context.getInitParameter("DB_NAME");
         DB_LOGIN = context.getInitParameter("DB_LOGIN");
         DB_PASSWORD = context.getInitParameter("DB_PASSWORD");
-        LOGINS_TABLE = context.getInitParameter("LOGINS_TABLE");
-        ROLES_TABLE = context.getInitParameter("ROLES_TABLE");
-        USER_INFO_TABLE = context.getInitParameter("USER_INFO_TABLE");
+        String loginsTableName = context.getInitParameter("LOGINS_TABLE");
+        String rolesTableName = context.getInitParameter("ROLES_TABLE");
+        String userInfoTableName = context.getInitParameter("USER_INFO_TABLE");
         try (Connection conn = DriverManager.getConnection(DB_NAME, DB_LOGIN, DB_PASSWORD)) {
             ResultSet colMetaData = conn.getMetaData().getColumns(null, null, null, null);
-            String lastTableName = "";
+            String lastTableName = "", columnName = "", currentTableName = "";
+            ConcurrentHashMap<String,List<String>> m=new ConcurrentHashMap<>();
             while (colMetaData.next()) {
-                if (!lastTableName.equals(colMetaData.getString(3))) {
-                    lastTableName = colMetaData.getString(3);
-                    tablesMetaData.put(lastTableName, new ArrayList<String>());
+                currentTableName = colMetaData.getString(3);
+                columnName = colMetaData.getString(4);
+                if (lastTableName.equals("")) lastTableName=currentTableName;
+                if (!lastTableName.equals(currentTableName)) {
+                    m.putIfAbsent(currentTableName, new ArrayList<String>());
+                    lastTableName = currentTableName;
                 }
-                tablesMetaData.get(lastTableName).add(colMetaData.getString(4));
+               m.get(currentTableName).add(columnName);
             }
-            for (String tableName : tablesMetaData.keySet()) {
-                CachedRowSet cs = RowSetProvider.newFactory().createCachedRowSet();
-                cs.setPassword(DB_PASSWORD);
-                cs.setUsername(DB_LOGIN);
-                cs.setUrl(DB_NAME);
-                CRS.put(tableName, cs);
-            }
-
+            LOGINS_TABLE= new Table(loginsTableName, m.get(loginsTableName));
+            ROLES_TABLE = new Table(rolesTableName, m.get(rolesTableName));
+            USER_INFO_TABLE =  new Table(userInfoTableName, m.get(userInfoTableName));
+            
         } catch (Exception e) {
             log.error("JDBCUsDAO creation error", e);
             throw e;
@@ -87,22 +123,22 @@ public class JDBCUsDAO implements UserDAO {
         User result = null;
         try {
             JoinRowSet jrs = RowSetProvider.newFactory().createJoinRowSet();
-            for (String tableName : CRS.keySet()) {
-                CachedRowSet cs = CRS.get(tableName);
-                cs.setCommand("Select * from " + tableName + " where " + tablesMetaData.get(tableName).get(0) + " ='" + name + "'");
-                cs.execute();
-                if (cs.next()) {
-                    jrs.addRowSet(cs, 1);
-                }
-            }
+            jrs.addRowSet(LOGINS_TABLE.readUser(name),1);
+            jrs.addRowSet(ROLES_TABLE.readUser(name),1);
+            jrs.addRowSet(USER_INFO_TABLE.readUser(name),1);
             Set<String> roles = new TreeSet<>();
             while (jrs.next()) {
-                roles.add(jrs.getString(tablesMetaData.get(ROLES_TABLE).get(1)));
+                roles.add(jrs.getString(ROLES_TABLE.getColumnName(2)));
             }
             if (jrs.first()) {
-                result = new User(jrs.getString(tablesMetaData.get(LOGINS_TABLE).get(0)), jrs.getString(tablesMetaData.get(LOGINS_TABLE).get(1)), roles.toArray(new String[1]),
-                        jrs.getString(tablesMetaData.get(USER_INFO_TABLE).get(1)), jrs.getString(tablesMetaData.get(USER_INFO_TABLE).get(2)), jrs.getString(tablesMetaData.get(USER_INFO_TABLE).get(3)));
-            }
+                result = new User(jrs.getString(LOGINS_TABLE.getColumnName(1)),
+                        jrs.getString(jrs.getString(LOGINS_TABLE.getColumnName(2))), 
+                        roles.toArray(new String[1]),
+                        jrs.getString(jrs.getString(LOGINS_TABLE.getColumnName(2))),
+                        jrs.getString(jrs.getString(LOGINS_TABLE.getColumnName(3))), 
+                        jrs.getString(jrs.getString(LOGINS_TABLE.getColumnName(4))));
+            
+                    }
         } catch (Exception ex) {
             log.error("'readUser error' wrong db tables", ex);
             Exception e = new Exception("Ошибка чтения пользователя: " + ex);
@@ -125,19 +161,20 @@ public class JDBCUsDAO implements UserDAO {
     @Override
     public boolean isUserExsists(String name) {
         if (logins == null) {
-            System.out.println("here i go");
-            try { 
-                logins=new TreeSet<>();
-                CRS.get(LOGINS_TABLE).setCommand("select ("+tablesMetaData.get(LOGINS_TABLE).get(0)+") from "+LOGINS_TABLE);
-                CRS.get(LOGINS_TABLE).execute();
-                while(CRS.get(LOGINS_TABLE).next()){ logins.add(CRS.get(LOGINS_TABLE).getString(1));}
+            try {
+                logins = new ConcurrentSkipListSet<>();
+                CachedRowSet crs=LOGINS_TABLE.getAll();
+                
+                while (crs.next()) {
+                    logins.add(crs.getString(2));
+                }
                 System.out.println("here");
                 System.out.println(logins);
             } catch (Exception ex) {
-                log.debug("не читает пользователя", ex);
+                log.error("login exsists issue", ex);
             }
-           
+
         }
-         return logins.contains(name);
+        return logins.contains(name);
     }
 }

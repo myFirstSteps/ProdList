@@ -12,16 +12,20 @@ import com.pankratov.prodlist.model.UserDAOFactory;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;
+import javax.servlet.*;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.logging.log4j.*;
+import org.apache.logging.log4j.*;
 
 /**
  *
  * @author pankratov
  */
-public class Registration extends HttpServlet {
 
+public class Registration extends HttpServlet {
+private static final Logger log= LogManager.getLogger(Registration.class);
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -61,13 +65,11 @@ public class Registration extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String is="free";
-         try{UserDAO ud=UserDAOFactory.getUserDAOInstance(UserDAOFactory.UserDAOType.JDBCUserDAO, this.getServletContext());
-          System.out.print(ud.isUserExsists(request.getParameter("name")));
+        ServletContext context=this.getServletContext();
+         try{UserDAO ud=UserDAOFactory.getUserDAOInstance(UserDAOFactory.UserDAOType.JDBCUserDAO,  context);
            if((ud.isUserExsists(request.getParameter("name")))) is="busy";
          }
-         catch(Exception e){System.out.print(e);}
-         
-        System.out.println(request.getParameter("name"));
+         catch(Exception e){log.error("Проверка logina",e);}
         response.setContentType("text/plain");
         response.getWriter().print("login is "+is);
     }
@@ -83,7 +85,6 @@ public class Registration extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        System.out.println("bREGISTRATION");
         processRequest(request, response);
     }
 
