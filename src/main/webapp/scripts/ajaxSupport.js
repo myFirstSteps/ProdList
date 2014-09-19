@@ -4,15 +4,20 @@
  * and open the template in the editor.
  */
 
- function checkLogin (login){  
+ function checkLogin (sender){  
    
      $.ajax({
-        data:{name:login},
+        data:{name:sender.value},
         type: 'GET',
         url: 'Registration',
-        success: function(msg){ 
+        success: function(msg){
             if(msg.toString()=='login is free'){
-            alert("ага");}else {alert(msg.toString());}
+           $(sender).css("color","green"); $("#loginerror").remove()}else {
+           $(sender).css("color","red"); 
+           $(sender).prev().after("<span id='loginerror' class='error'>К сожалению логин уже"+  " занят</span>");
+           
+        }
+          
         }
     });
 }

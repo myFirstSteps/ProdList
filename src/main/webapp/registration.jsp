@@ -17,7 +17,10 @@
         <div id="header">
             <c:import url="/WEB-INF/template/headtemplate.jsp" charEncoding="UTF-8"/>
         </div>
+
         <div class="center_form" id="registration">
+            
+            <span class='error'>${error}</span>
             <h3>Добро пожаловать на страницу регистрации.</h3>
             <p>
                 Регистрация не требуется для большинства функционала сайта и тестового приложения, и добавлена ..., совершенно верно, ради
@@ -26,7 +29,7 @@
             </p>
             <script> function myFunc(){alert("Rere");}</script>
             <form method="post" action="Registration">
-                <p>login:<br><input      onkeyup="checkLogin(this.value)"
+                <p>login:<br><input      onkeyup="checkLogin(this)"
                                     type="text" title="Login пользователя который вы будете вводить при авторизации" name="login" placeholder="обязательное поле"></p>
                 <p>пароль:<br><input  type="password" title="Пароль" name="password" placeholder="обязательное поле"></p>
                 <p>повторить пароль:<br><input  type="password" title="Пароль" name="password_check" placeholder="обязательное поле"></p>

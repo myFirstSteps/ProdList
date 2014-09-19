@@ -13,6 +13,7 @@ import java.sql.*;
 import javax.sql.rowset.RowSetProvider;
 import javax.servlet.ServletConfig.*;
 import javax.sql.rowset.*;
+import com.sun.rowset.CachedRowSetImpl;
 
 /**
  *
@@ -22,24 +23,26 @@ public class JDBCUsDAO implements UserDAO {
 
     private class Table {
 
-        private CachedRowSet rowset;
+        private CachedRowSetImpl rowset;
         private String tableName;
         private List<String> columnNames;
 
-        private Table(String tableName, List<String> colNames) {
+        private Table(String tableName, List<String> colNames) throws JDBCUsDAOException  {
             try {
-                rowset = RowSetProvider.newFactory().createCachedRowSet();
+                rowset = new CachedRowSetImpl();
+       
                 rowset.setUrl(DB_NAME);
-                System.out.println("ID:++++++"+rowset.getSyncProvider().getProviderID());
-              //  System.out.println(rowset.getSyncProvider().;
                 rowset.setPassword(DB_PASSWORD);
                 rowset.setUsername(DB_LOGIN);
                 this.tableName = tableName;
                 columnNames = colNames;
-                log.debug(String.format("created table %s with columns: %s rowset:%s", tableName,columnNames,rowset));
-     
+                rowset.setCommand("Select * from "+tableName+" where "+columnNames.get(0)+"=null");
+                rowset.execute();
+                log.debug(String.format("created table %s with columns: %s rowset:%s", tableName, columnNames, rowset));
+
             } catch (Exception e) {
                 log.error("Table creation issue (ex): " + e);
+                throw new JDBCUsDAOException("Ошибка при создании:"+Table.class+"для: "+tableName,e);
             }
 
         }
@@ -50,17 +53,21 @@ public class JDBCUsDAO implements UserDAO {
             rowset.execute();
             return rowset;
         }
-        private CachedRowSet getAll()throws SQLException{
+
+        private CachedRowSet getAll() throws SQLException {
             rowset.setCommand("select * from " + tableName);
             rowset.execute();
             return rowset;
         }
-        private String getColumnName(int numb)throws JDBCUsDAOException{
-            String res=null;
-        
-            try{
-            res= columnNames.get(numb-1);
-            }catch(IndexOutOfBoundsException e){ throw new JDBCUsDAOException(String.format("У таблици %s нет столбца с индексом %d", tableName,numb),e);}
+
+        private String getColumnName(int numb) throws JDBCUsDAOException {
+            String res = null;
+
+            try {
+                res = columnNames.get(numb - 1);
+            } catch (IndexOutOfBoundsException e) {
+                throw new JDBCUsDAOException(String.format("У таблици %s нет столбца с индексом %d", tableName, numb), e);
+            }
             return res;
         }
     }
@@ -82,13 +89,15 @@ public class JDBCUsDAO implements UserDAO {
     }
 
     static JDBCUsDAO getInstance(javax.servlet.ServletContext context) throws Exception {
-        instance = new JDBCUsDAO(context);
+        try{instance = new JDBCUsDAO(context);
         log.debug("i am created" + instance);
         context.setAttribute("JDBCUserDAO", instance);
-        return instance;
+        return instance;}catch(Exception e){
+            context.setAttribute("JDBCUserDAO",null);
+            throw new JDBCUsDAOException("Exception when getting  JDBCUsDAO instance",e);}
     }
 
-    private JDBCUsDAO(javax.servlet.ServletContext context) throws Exception {
+    private JDBCUsDAO(javax.servlet.ServletContext context) throws  JDBCUsDAOException {
 
         DB_NAME = context.getInitParameter("DB_NAME");
         DB_LOGIN = context.getInitParameter("DB_LOGIN");
@@ -99,7 +108,7 @@ public class JDBCUsDAO implements UserDAO {
         try (Connection conn = DriverManager.getConnection(DB_NAME, DB_LOGIN, DB_PASSWORD)) {
             ResultSet colMetaData = conn.getMetaData().getColumns(null, null, null, null);
             String lastTableName = "", columnName = "", currentTableName = "";
-            ConcurrentHashMap<String,List<String>> m=new ConcurrentHashMap<>();
+            ConcurrentHashMap<String, List<String>> m = new ConcurrentHashMap<>();
             while (colMetaData.next()) {
                 currentTableName = colMetaData.getString(3);
                 columnName = colMetaData.getString(4);
@@ -107,15 +116,15 @@ public class JDBCUsDAO implements UserDAO {
                     m.putIfAbsent(currentTableName, new ArrayList<String>());
                     lastTableName = currentTableName;
                 }
-               m.get(currentTableName).add(columnName);
+                m.get(currentTableName).add(columnName);
             }
-            LOGINS_TABLE= new Table(loginsTableName, m.get(loginsTableName));
+            LOGINS_TABLE = new Table(loginsTableName, m.get(loginsTableName));
             ROLES_TABLE = new Table(rolesTableName, m.get(rolesTableName));
-            USER_INFO_TABLE =  new Table(userInfoTableName, m.get(userInfoTableName));
-            
+            USER_INFO_TABLE = new Table(userInfoTableName, m.get(userInfoTableName));
+
         } catch (Exception e) {
             log.error("JDBCUsDAO creation error", e);
-            throw e;
+            throw new JDBCUsDAOException ("JDBCUsDAO creation error: ",e);
         }
 
     }
@@ -130,34 +139,26 @@ public class JDBCUsDAO implements UserDAO {
         User result = null;
         try {
             JoinRowSet jrs = RowSetProvider.newFactory().createJoinRowSet();
-            jrs.addRowSet(LOGINS_TABLE.readUser(name),1);
-            jrs.addRowSet(ROLES_TABLE.readUser(name),1);
-            jrs.addRowSet(USER_INFO_TABLE.readUser(name),1);
+            jrs.addRowSet(LOGINS_TABLE.readUser(name), 1);
+            jrs.addRowSet(ROLES_TABLE.readUser(name), 1);
+            jrs.addRowSet(USER_INFO_TABLE.readUser(name), 1);
             Set<String> roles = new TreeSet<>();
             while (jrs.next()) {
                 roles.add(jrs.getString(ROLES_TABLE.getColumnName(2)));
-            }  
+            }
             if (jrs.first()) {
                 result = new User(jrs.getString(LOGINS_TABLE.getColumnName(1)),
-                        jrs.getString(LOGINS_TABLE.getColumnName(2)), 
+                        jrs.getString(LOGINS_TABLE.getColumnName(2)),
                         roles.toArray(new String[1]),
                         jrs.getString(USER_INFO_TABLE.getColumnName(2)),
-                        jrs.getString(USER_INFO_TABLE.getColumnName(3)), 
+                        jrs.getString(USER_INFO_TABLE.getColumnName(3)),
                         jrs.getString(USER_INFO_TABLE.getColumnName(4)));
-            
-                    }
-           LOGINS_TABLE.rowset.moveToInsertRow();
-             LOGINS_TABLE.rowset.updateString(1, "fuck");
-             LOGINS_TABLE.rowset.updateString(2, "badpass");
-              LOGINS_TABLE.rowset.insertRow();
-               LOGINS_TABLE.rowset.moveToCurrentRow();
-              LOGINS_TABLE.rowset.acceptChanges();
-           
+
+            }
         } catch (Exception ex) {
             log.error("'readUser error' wrong db tables", ex);
-            Exception e = new Exception("Ошибка чтения пользователя: " + ex);
-            e.initCause(ex);
-            throw e;
+           
+            throw new JDBCUsDAOException("Reading user Exception: ",ex);
         };
         return result;
     }
@@ -177,8 +178,8 @@ public class JDBCUsDAO implements UserDAO {
         if (logins == null) {
             try {
                 logins = new ConcurrentSkipListSet<>();
-                CachedRowSet crs=LOGINS_TABLE.getAll();
-                
+                CachedRowSet crs = LOGINS_TABLE.getAll();
+
                 while (crs.next()) {
                     logins.add(crs.getString(1));
                 }

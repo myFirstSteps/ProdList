@@ -85,8 +85,20 @@ private static final Logger log= LogManager.getLogger(Registration.class);
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
-    }
+        String login=request.getParameter("login");
+        String name=request.getParameter("name");
+        String password=request.getParameter("password");
+        String lastName=request.getParameter("family");
+        String email=request.getParameter("e-mail");
+        request.getSession().setAttribute("regData", new String[]{login,name,lastName,email});
+        if(login.equals("") || password.equals("")) {
+            request.getAttributeNames().nextElement();
+            request.setAttribute("error", "Значение поля "+((login.equals(""))?"login":"пароль")+" не может быть пустым.");
+            request.getRequestDispatcher("registration.jsp").forward(request, response);
+            
+        }
+        request.getRequestDispatcher("registration.jsp").forward(request, response);
+        }
 
     /**
      * Returns a short description of the servlet.
