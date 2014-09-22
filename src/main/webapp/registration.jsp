@@ -27,14 +27,14 @@
                 организации самого процесса регистрации, так что смело можете оставить это занятие на потом. Если же вам очень интересно посмотреть работает это, 
                 или нет, заполните необходимые поля и нажмите кнопку зарегистрироваться.
             </p>
-            <form id="registration" method="post" action="Registration" >
-                <p>login:<br><input  class="mandatory"     onkeyup="checkLogin(this)"
+            <form id="registration" method="post" action="<c:url value='Registration'/>" >
+                <p>login:<br><input  class="mandatory"     onkeyup="checkLogin(this)" value="${regData['0']}"
                                     type="text" title="Login пользователя который вы будете вводить при авторизации" name="login" placeholder="обязательное поле"></p>
                 <p>пароль:<br><input onblur=""  class="mandatory confirm" type="password" title="Пароль" name="password" placeholder="обязательное поле"></p>
                 <p>подтвердить пароль:<br><input class="mandatory confirm"   type="password" title="Пароль" placeholder="обязательное поле"></p>
-                <p>e-mail:<br><input  type="text" title="e-mail" name="e-mail" placeholder="очень желательное поле"></p>
-                <p>имя:<br><input  type="text" title="Ваше имя" name="name" placeholder="не обязательное поле"></p>
-                <p>Фамилия:<br><input  type="text" title="Ваша фамилия" name="family" placeholder="не обязательное поле"></p>
+                <p>e-mail:<br><input  type="text" title="e-mail" name="e-mail" value="${regData['3']}" placeholder="очень желательное поле"></p>
+                <p>имя:<br><input  type="text" title="Ваше имя" name="name" value="${regData['1']}" placeholder="не обязательное поле"></p>
+                <p>Фамилия:<br><input  type="text" title="Ваша фамилия" value="${regData['2']}" name="family" placeholder="не обязательное поле"></p>
                 <input type="button" onclick="validate(this.form)" value="Зарегистрировать">
             </form>
         </div>
@@ -42,5 +42,6 @@
         <script src="scripts/ajaxSupport.js"></script>
         <script src="scripts/formValidation.js"></script>
         <script>$("input.mandatory").blur(function(){emptyTest(this);});</script>
+        <script>$("input[name='login']").bind('blur',function(){checkLogin(this);});</script>
     </body>
 </html>

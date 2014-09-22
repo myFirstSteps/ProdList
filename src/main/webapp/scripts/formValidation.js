@@ -9,8 +9,6 @@ function validate(senderForm) {
     var empty = false;
     switch (senderForm.id) {
         case "registration":
-            alert($(".error p").size());
-            // if($(".gogo").e)
             $mandFields = $("#" + senderForm.id + " input.mandatory");
             for (i = 0; i < $mandFields.length; i++) {
                 if (emptyTest($mandFields[i]))
@@ -29,10 +27,6 @@ function validate(senderForm) {
                 alert($(".error p").size());
                 $(senderForm).submit();
             }
-            alert("wof");
-
-
-
     }
 }
 //Проверка, что поле обязательное для заполнения не пусто
@@ -46,13 +40,11 @@ function emptyTest(field) {
 }
 //Проверка, что значения полей которые должны иметь одинаковые значения действительно одинаковы.
 function confirmationCheck(values) {
-    for (i = 0; values.length; i++) {
+    for (i = 0; i<values.length; i++) {
         if (i > 0 && values[i].value != values[i - 1].value) {
             $(values[i]).css("color", "red");
             $(values[i - 1]).css("color", "red");
             return "error";
         }
     }
-    return "no error";
-
 }
