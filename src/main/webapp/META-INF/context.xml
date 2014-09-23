@@ -1,2 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Context antiJARLocking="true" path="/ProdList"/>
+<Context antiJARLocking="true" path="/ProdList">
+
+<Valve className="org.apache.catalina.authenticator.FormAuthenticator"
+         characterEncoding="UTF-8"/>
+</Context>

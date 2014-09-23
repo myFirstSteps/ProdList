@@ -28,22 +28,22 @@ public class JDBCUsDAO implements UserDAO {
         private String tableName;
         private List<String> columnNames;
 
-        private Table(String tableName, List<String> colNames) throws JDBCUsDAOException  {
+        private Table(String tableName, List<String> colNames) throws JDBCUsDAOException {
             try {
                 rowset = new CachedRowSetImpl();
-       
+
                 rowset.setUrl(DB_NAME);
                 rowset.setPassword(DB_PASSWORD);
                 rowset.setUsername(DB_LOGIN);
                 this.tableName = tableName;
                 columnNames = colNames;
-                rowset.setCommand("Select * from "+tableName+" where "+columnNames.get(0)+"=null");
+                rowset.setCommand("Select * from " + tableName + " where " + columnNames.get(0) + "=null");
                 rowset.execute();
                 log.debug(String.format("created table %s with columns: %s rowset:%s", tableName, columnNames, rowset));
 
             } catch (Exception e) {
                 log.error("Table creation issue (ex): " + e);
-                throw new JDBCUsDAOException("Ошибка при создании:"+Table.class+"для: "+tableName,e);
+                throw new JDBCUsDAOException("Ошибка при создании:" + Table.class + "для: " + tableName, e);
             }
 
         }
@@ -54,21 +54,22 @@ public class JDBCUsDAO implements UserDAO {
             rowset.execute();
             return rowset;
         }
-        private boolean registerUser(Connection con,String...s) throws Exception{ 
-            int i=1;
-            String params="";
-            for(int j=0;j<s.length;j++){params+=", ?";}
-            params=params.replaceAll("^, ", "");
-            String command=String.format("Insert into %s values(%s)",tableName,params);
-            rowset.setCommand(command);
-            for(String st:s){
-               //  ByteArrayOutputStream os=new ByteArrayOutputStream();
-                // java.io.DataOutputStream ds= new DataOutputStream(os);
-               // ds.writeUTF(st);
-              //  ds.flush();
-                rowset.setString(i++, st);
+
+        private boolean registerUser(Connection con, String... s) throws Exception {
+            int i = 1;
+            String params = "";
+            for (int j = 0; j < s.length; j++) {
+                params += ", ?";
             }
-            rowset.execute(con);
+            params = params.replaceAll("^, ", "");
+            PreparedStatement stat = con.prepareStatement(String.format("Insert into %s values(%s)", tableName, params));
+            for (String st : s) {
+                stat.setString(i++, st);
+
+            }
+
+            stat.execute();
+
             return true;
         }
 
@@ -107,20 +108,22 @@ public class JDBCUsDAO implements UserDAO {
     }
 
     static JDBCUsDAO getInstance(javax.servlet.ServletContext context) throws Exception {
-        try{instance = new JDBCUsDAO(context);
-        log.debug("i am created" + instance);
-        context.setAttribute("JDBCUserDAO", instance);
-        return instance;}catch(Exception e){
-            context.setAttribute("JDBCUserDAO",null);
-            throw new JDBCUsDAOException("Exception when getting  JDBCUsDAO instance",e);}
+        try {
+            instance = new JDBCUsDAO(context);
+            log.debug("i am created" + instance);
+            context.setAttribute("JDBCUserDAO", instance);
+            return instance;
+        } catch (Exception e) {
+            context.setAttribute("JDBCUserDAO", null);
+            throw new JDBCUsDAOException("Exception when getting  JDBCUsDAO instance", e);
+        }
     }
 
-    private JDBCUsDAO(javax.servlet.ServletContext context) throws  JDBCUsDAOException {
-
-        DB_NAME = context.getInitParameter("DB_NAME")+"?useUnicode=true&characterEncoding=UTF-8";
+    private JDBCUsDAO(javax.servlet.ServletContext context) throws JDBCUsDAOException {
+        DB_NAME = context.getInitParameter("DB_NAME");
         DB_LOGIN = context.getInitParameter("DB_LOGIN");
         DB_PASSWORD = context.getInitParameter("DB_PASSWORD");
-        String loginsTableName =context.getInitParameter("LOGINS_TABLE");
+        String loginsTableName = context.getInitParameter("LOGINS_TABLE");
         String rolesTableName = context.getInitParameter("ROLES_TABLE");
         String userInfoTableName = context.getInitParameter("USER_INFO_TABLE");
         try (Connection conn = DriverManager.getConnection(DB_NAME, DB_LOGIN, DB_PASSWORD)) {
@@ -142,24 +145,34 @@ public class JDBCUsDAO implements UserDAO {
 
         } catch (Exception e) {
             log.error("JDBCUsDAO creation error", e);
-            throw new JDBCUsDAOException ("JDBCUsDAO creation error: ",e);
+            throw new JDBCUsDAOException("JDBCUsDAO creation error: ", e);
         }
 
     }
 
     @Override
-    public boolean registerUser(User user) throws JDBCUsDAOException{
-     
-        if(logins.contains(user.getLogin())) throw new JDBCUsDAOException("Ошибка регистрации пользователя. Пользователь"
-                + " с логином: '"+user.getLogin()+"' уже существует.");
-        try(Connection con=DriverManager.getConnection(DB_NAME, DB_LOGIN,DB_PASSWORD)){
-        con.setAutoCommit(false);
-        LOGINS_TABLE.registerUser(con,user.getLogin(),user.getPassword());
-        ROLES_TABLE.registerUser(con,user.getLogin(),user.getRoles()[0]);
-        USER_INFO_TABLE.registerUser(con,user.getLogin(),user.getFirstName(),user.getLastName(),user.getEmail());
-        con.commit();
-        }catch(Exception e){ throw new JDBCUsDAOException("Ошибка регистрации пользователя.",e);}
-        return false;
+    public User registerUser(User user) throws JDBCUsDAOException {
+
+        if (logins.contains(user.getLogin())) {
+            throw new JDBCUsDAOException("Ошибка регистрации пользователя. Пользователь"
+                    + " с логином: '" + user.getLogin() + "' уже существует.");
+        }
+        try (Connection con = DriverManager.getConnection(DB_NAME, DB_LOGIN, DB_PASSWORD)) {
+            con.setAutoCommit(false);
+            LOGINS_TABLE.registerUser(con, user.getLogin(), user.getPassword());
+
+            ROLES_TABLE.registerUser(con, user.getLogin(), user.getRoles()[0]);
+            USER_INFO_TABLE.registerUser(con, user.getLogin(), user.getFirstName(), user.getLastName(), user.getEmail());
+            con.commit();
+
+        } catch (Exception e) {
+            if (e.toString().matches(".*Duplicate entry.*for key 'PRIMARY'.*")) {
+                throw new JDBCUsDAOException(String.format("Пользователь с loginom: %s уже сушествует.", user.getLogin()));
+            } else {
+                throw new JDBCUsDAOException("Ошибка регистрации пользователя.", e);
+            }
+        }
+        return user;
     }
 
     @Override
@@ -185,8 +198,8 @@ public class JDBCUsDAO implements UserDAO {
             }
         } catch (Exception ex) {
             log.error("'readUser error' wrong db tables", ex);
-           
-            throw new JDBCUsDAOException("Reading user Exception: ",ex);
+
+            throw new JDBCUsDAOException("Reading user Exception: ", ex);
         };
         return result;
     }

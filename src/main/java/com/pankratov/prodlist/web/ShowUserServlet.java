@@ -81,12 +81,14 @@ public class ShowUserServlet extends HttpServlet {
         
         try{
             UserDAO ud=UserDAOFactory.getUserDAOInstance(UserDAOFactory.UserDAOType.JDBCUserDAO, this.getServletContext());
-            User u=ud.readUser(request.getParameter("name"));
+            request.setCharacterEncoding("UTF-8");
             response.setCharacterEncoding("UTF-8");
+            User u=ud.readUser(request.getParameter("name"));
+           
             if(u!=null)
             response.getWriter().println(u);else response.getWriter().println("Пользователя с именем: "+request.getParameter("name")+
                     "не существует");}
-        catch(Exception ex){System.out.println(ex);}
+        catch(Exception ex){throw new ServletException(ex);}
     }
 
     /**

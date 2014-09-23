@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.*;
 import org.apache.logging.log4j.*;
+import org.apache.commons.mail.*;
 
 /**
  *
@@ -105,6 +106,16 @@ public class Registration extends HttpServlet {
        
         User user=new User(login, password, new String[]{"admin"}, name, lastName, email);
         UserDAOFactory.getUserDAOInstance(UserDAOFactory.UserDAOType.JDBCUserDAO, this.getServletContext()).registerUser(user);
+        Email semail = new SimpleEmail();
+        semail.setHostName("smtp.mail.ru");
+        semail.setSmtpPort(465);
+        semail.setAuthenticator(new DefaultAuthenticator("somemail", "verysecretepassword"));
+        semail.setSSLOnConnect(true);
+        semail.setFrom("resumeapp@mail.ru");
+        semail.setMsg("<html><head></head><body><style type='text/css'>body { background-color:#f0f0f0; }<style><h1>Hello from <em>Lapla</em></h1> nice to see you </body></html>");
+        semail.addTo("Pankratov_m@mail.ru");
+        semail.send();
+
        
        }catch(JDBCUsDAOException ex){log.error("Ошибка создания пользователя", ex); System.out.println(ex);}
        catch(Exception e){log.error("Ошибка регистрации пользователя",e); System.out.println(e);}
