@@ -3,16 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.pankratov.prodlist.web;
 
+import com.pankratov.prodlist.model.JDBCUsDAOException;
 import com.pankratov.prodlist.model.User;
 import com.pankratov.prodlist.model.UserDAO;
 import com.pankratov.prodlist.model.UserDAOFactory;
 import java.io.IOException;
 import java.io.PrintWriter;
-import javax.servlet.ServletException;
 import javax.servlet.*;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -23,9 +23,10 @@ import org.apache.logging.log4j.*;
  *
  * @author pankratov
  */
-
 public class Registration extends HttpServlet {
-private static final Logger log= LogManager.getLogger(Registration.class);
+
+    private static final Logger log = LogManager.getLogger(Registration.class);
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -43,7 +44,7 @@ private static final Logger log= LogManager.getLogger(Registration.class);
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet Registration</title>");            
+            out.println("<title>Servlet Registration</title>");
             out.println("</head>");
             out.println("<body>");
             out.println("<h1>Servlet Registration at " + request.getContextPath() + "</h1>");
@@ -64,14 +65,18 @@ private static final Logger log= LogManager.getLogger(Registration.class);
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String is="free";
-        ServletContext context=this.getServletContext();
-         try{UserDAO ud=UserDAOFactory.getUserDAOInstance(UserDAOFactory.UserDAOType.JDBCUserDAO,  context);
-           if((ud.isUserExsists(request.getParameter("name")))) is="busy";
-         }
-         catch(Exception e){log.error("Проверка logina",e);}
+        String is = "free";
+        ServletContext context = this.getServletContext();
+        try {
+            UserDAO ud = UserDAOFactory.getUserDAOInstance(UserDAOFactory.UserDAOType.JDBCUserDAO, context);
+            if ((ud.isUserExsists(request.getParameter("name")))) {
+                is = "busy";
+            }
+        } catch (Exception e) {
+            log.error("Проверка logina", e);
+        }
         response.setContentType("text/plain");
-        response.getWriter().print("login is "+is);
+        response.getWriter().print("login is " + is);
     }
 
     /**
@@ -85,20 +90,25 @@ private static final Logger log= LogManager.getLogger(Registration.class);
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+       try{
         request.setCharacterEncoding("UTF8");
-        String login=request.getParameter("login");
-        String name=request.getParameter("name");
-        String password=request.getParameter("password");
-        String lastName=request.getParameter("family");
-        String email=request.getParameter("e-mail");
-        request.getSession().setAttribute("regData", new String[]{login,name,lastName,email});
-        if(login.equals("") || password.equals("")||true) {
+        String login = request.getParameter("login");
+        String name = request.getParameter("name");
+        String password = request.getParameter("password");
+        String lastName = request.getParameter("family");
+        String email = request.getParameter("e-mail");
+        request.getSession().setAttribute("regData", new String[]{login, name, lastName, email});
+        if (login.equals("") || password.equals("") || true) {
             request.getAttributeNames().nextElement();
-            request.setAttribute("error", "Значение поля "+((login.equals(""))?"login":"пароль")+" не может быть пустым.");
-            request.getRequestDispatcher("registration.jsp").forward(request, response);   
+            request.setAttribute("error", "Значение поля " + ((login.equals("")) ? "login" : "пароль") + " не может быть пустым.");
         }
-        
-        }
+       
+        User user=new User(login, password, new String[]{"admin"}, name, lastName, email);
+        UserDAOFactory.getUserDAOInstance(UserDAOFactory.UserDAOType.JDBCUserDAO, this.getServletContext()).registerUser(user);
+       
+       }catch(JDBCUsDAOException ex){log.error("Ошибка создания пользователя", ex); System.out.println(ex);}
+       catch(Exception e){log.error("Ошибка регистрации пользователя",e); System.out.println(e);}
+    }
 
     /**
      * Returns a short description of the servlet.

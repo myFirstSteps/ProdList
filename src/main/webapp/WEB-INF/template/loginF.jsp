@@ -4,7 +4,7 @@
     Author     : pankratov
 --%>
 
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page  contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
         <div class="center_form" ID="AuthForm">
             <h4 align="center">Для входа в систему введите<br> имя пользователя и пароль.</h4>

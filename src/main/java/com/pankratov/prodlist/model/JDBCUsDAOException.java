@@ -14,5 +14,8 @@ public class JDBCUsDAOException extends Exception {
      JDBCUsDAOException (String s,Throwable cause){
          super(s,cause);
      }
+     JDBCUsDAOException (String s){
+         super(s);
+     }
     
 }

@@ -22,9 +22,7 @@ function validate(senderForm) {
                 $(".error").append("<p>\n\
                 Значения полей 'пароль' и 'подтвердить пароль' не совпадают.</p>");
             }
-            alert($(".error p").size());
             if ($(".error p").size() == 0) {
-                alert($(".error p").size());
                 $(senderForm).submit();
             }
     }
