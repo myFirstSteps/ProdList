@@ -11,7 +11,7 @@ function checkLogin(sender) {
         type: 'GET',
         url: 'Registration',
         success: function(msg) {
-            if ((msg.toString() == 'login is free')&&) {
+            if ((msg.toString() == 'login is free')) {
                 $(sender).css("color", "green");
                 $("#loginerror").remove();
             } else {
