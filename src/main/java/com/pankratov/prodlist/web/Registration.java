@@ -5,10 +5,10 @@
  */
 package com.pankratov.prodlist.web;
 
-import com.pankratov.prodlist.model.JDBCUsDAOException;
-import com.pankratov.prodlist.model.User;
-import com.pankratov.prodlist.model.UserDAO;
-import com.pankratov.prodlist.model.UserDAOFactory;
+import com.pankratov.prodlist.model.users.JDBCUserDAOException;
+import com.pankratov.prodlist.model.users.User;
+import com.pankratov.prodlist.model.users.UserDAO;
+import com.pankratov.prodlist.model.users.UserDAOFactory;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.*;
@@ -106,18 +106,8 @@ public class Registration extends HttpServlet {
        
         User user=new User(login, password, new String[]{"admin"}, name, lastName, email);
         UserDAOFactory.getUserDAOInstance(UserDAOFactory.UserDAOType.JDBCUserDAO, this.getServletContext()).registerUser(user);
-        Email semail = new SimpleEmail();
-        semail.setHostName("smtp.mail.ru");
-        semail.setSmtpPort(465);
-        semail.setAuthenticator(new DefaultAuthenticator("somemail", "verysecretepassword"));
-        semail.setSSLOnConnect(true);
-        semail.setFrom("resumeapp@mail.ru");
-        semail.setMsg("<html><head></head><body><style type='text/css'>body { background-color:#f0f0f0; }<style><h1>Hello from <em>Lapla</em></h1> nice to see you </body></html>");
-        semail.addTo("Pankratov_m@mail.ru");
-        semail.send();
-
-       
-       }catch(JDBCUsDAOException ex){log.error("Ошибка создания пользователя", ex); System.out.println(ex);}
+               
+       }catch(JDBCUserDAOException ex){log.error("Ошибка создания пользователя", ex); System.out.println(ex);}
        catch(Exception e){log.error("Ошибка регистрации пользователя",e); System.out.println(e);}
     }
 

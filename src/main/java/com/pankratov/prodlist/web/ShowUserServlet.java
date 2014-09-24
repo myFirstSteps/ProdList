@@ -6,11 +6,12 @@
 
 package com.pankratov.prodlist.web;
 
-import com.pankratov.prodlist.model.User;
-import com.pankratov.prodlist.model.UserDAO;
-import com.pankratov.prodlist.model.UserDAOFactory;
+import com.pankratov.prodlist.model.users.User;
+import com.pankratov.prodlist.model.users.UserDAO;
+import com.pankratov.prodlist.model.users.UserDAOFactory;
 import java.io.IOException;
 import java.io.PrintWriter;
+import com.pankratov.prodlist.model.mail.*;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebInitParam;
 import javax.servlet.annotation.WebServlet;
@@ -80,13 +81,15 @@ public class ShowUserServlet extends HttpServlet {
             throws ServletException, IOException {
         
         try{
+            new MailAgent(this.getServletContext());
             UserDAO ud=UserDAOFactory.getUserDAOInstance(UserDAOFactory.UserDAOType.JDBCUserDAO, this.getServletContext());
             request.setCharacterEncoding("UTF-8");
-            response.setCharacterEncoding("UTF-8");
+            response.setCharacterEncoding("UTF-16");
+            
             User u=ud.readUser(request.getParameter("name"));
            
-            if(u!=null)
-            response.getWriter().println(u);else response.getWriter().println("Пользователя с именем: "+request.getParameter("name")+
+            if(u!=null){
+            response.getWriter().println(u);}else response.getWriter().println("Пользователя с именем: "+request.getParameter("name")+
                     "не существует");}
         catch(Exception ex){throw new ServletException(ex);}
     }

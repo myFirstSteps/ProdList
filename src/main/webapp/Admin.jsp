@@ -16,7 +16,7 @@
     <body>
         <c:import url="/WEB-INF/template/headtemplate.jsp" charEncoding="UTF-8"/> 
         <div>
-            <form method="POST" action="showUser">
+            <form method="POST" action="<c:url value='showUser'/>">
                 <input type="text" title="имя пользователя" name="name"> 
                 <input type="submit" title="запросить">
             </form>

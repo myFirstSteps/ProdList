@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.pankratov.prodlist.model;
+package com.pankratov.prodlist.model.users;
 
 import org.apache.logging.log4j.*;
 import javax.sql.*;
@@ -20,7 +20,7 @@ import java.io.*;
  *
  * @author pankratov
  */
-public class JDBCUsDAO implements UserDAO {
+public class JDBCUserDAO implements UserDAO {
 
     private class Table {
 
@@ -28,7 +28,7 @@ public class JDBCUsDAO implements UserDAO {
         private String tableName;
         private List<String> columnNames;
 
-        private Table(String tableName, List<String> colNames) throws JDBCUsDAOException {
+        private Table(String tableName, List<String> colNames) throws JDBCUserDAOException {
             try {
                 rowset = new CachedRowSetImpl();
 
@@ -43,7 +43,7 @@ public class JDBCUsDAO implements UserDAO {
 
             } catch (Exception e) {
                 log.error("Table creation issue (ex): " + e);
-                throw new JDBCUsDAOException("Ошибка при создании:" + Table.class + "для: " + tableName, e);
+                throw new JDBCUserDAOException("Ошибка при создании:" + Table.class + "для: " + tableName, e);
             }
 
         }
@@ -79,20 +79,20 @@ public class JDBCUsDAO implements UserDAO {
             return rowset;
         }
 
-        private String getColumnName(int numb) throws JDBCUsDAOException {
+        private String getColumnName(int numb) throws JDBCUserDAOException {
             String res = null;
 
             try {
                 res = columnNames.get(numb - 1);
             } catch (IndexOutOfBoundsException e) {
-                throw new JDBCUsDAOException(String.format("У таблици %s нет столбца с индексом %d", tableName, numb), e);
+                throw new JDBCUserDAOException(String.format("У таблици %s нет столбца с индексом %d", tableName, numb), e);
             }
             return res;
         }
     }
 
-    private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(JDBCUsDAO.class);
-    private static JDBCUsDAO instance;
+    private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(JDBCUserDAO.class);
+    private static JDBCUserDAO instance;
     private final String DB_NAME;
     private final String DB_LOGIN;
     private final String DB_PASSWORD;
@@ -107,19 +107,19 @@ public class JDBCUsDAO implements UserDAO {
         log.debug("Ripped" + this);
     }
 
-    static JDBCUsDAO getInstance(javax.servlet.ServletContext context) throws Exception {
+    static JDBCUserDAO getInstance(javax.servlet.ServletContext context) throws Exception {
         try {
-            instance = new JDBCUsDAO(context);
+            instance = new JDBCUserDAO(context);
             log.debug("i am created" + instance);
             context.setAttribute("JDBCUserDAO", instance);
             return instance;
         } catch (Exception e) {
             context.setAttribute("JDBCUserDAO", null);
-            throw new JDBCUsDAOException("Exception when getting  JDBCUsDAO instance", e);
+            throw new JDBCUserDAOException("Exception when getting  JDBCUsDAO instance", e);
         }
     }
 
-    private JDBCUsDAO(javax.servlet.ServletContext context) throws JDBCUsDAOException {
+    private JDBCUserDAO(javax.servlet.ServletContext context) throws JDBCUserDAOException {
         DB_NAME = context.getInitParameter("DB_NAME");
         DB_LOGIN = context.getInitParameter("DB_LOGIN");
         DB_PASSWORD = context.getInitParameter("DB_PASSWORD");
@@ -145,16 +145,16 @@ public class JDBCUsDAO implements UserDAO {
 
         } catch (Exception e) {
             log.error("JDBCUsDAO creation error", e);
-            throw new JDBCUsDAOException("JDBCUsDAO creation error: ", e);
+            throw new JDBCUserDAOException("JDBCUsDAO creation error: ", e);
         }
 
     }
 
     @Override
-    public User registerUser(User user) throws JDBCUsDAOException {
+    public User registerUser(User user) throws JDBCUserDAOException {
 
         if (logins.contains(user.getLogin())) {
-            throw new JDBCUsDAOException("Ошибка регистрации пользователя. Пользователь"
+            throw new JDBCUserDAOException("Ошибка регистрации пользователя. Пользователь"
                     + " с логином: '" + user.getLogin() + "' уже существует.");
         }
         try (Connection con = DriverManager.getConnection(DB_NAME, DB_LOGIN, DB_PASSWORD)) {
@@ -164,12 +164,13 @@ public class JDBCUsDAO implements UserDAO {
             ROLES_TABLE.registerUser(con, user.getLogin(), user.getRoles()[0]);
             USER_INFO_TABLE.registerUser(con, user.getLogin(), user.getFirstName(), user.getLastName(), user.getEmail());
             con.commit();
+            logins.add(user.getLogin());
 
         } catch (Exception e) {
             if (e.toString().matches(".*Duplicate entry.*for key 'PRIMARY'.*")) {
-                throw new JDBCUsDAOException(String.format("Пользователь с loginom: %s уже сушествует.", user.getLogin()));
+                throw new JDBCUserDAOException(String.format("Пользователь с loginom: %s уже сушествует.", user.getLogin()));
             } else {
-                throw new JDBCUsDAOException("Ошибка регистрации пользователя.", e);
+                throw new JDBCUserDAOException("Ошибка регистрации пользователя.", e);
             }
         }
         return user;
@@ -180,7 +181,9 @@ public class JDBCUsDAO implements UserDAO {
         User result = null;
         try {
             JoinRowSet jrs = RowSetProvider.newFactory().createJoinRowSet();
-            jrs.addRowSet(LOGINS_TABLE.readUser(name), 1);
+            CachedRowSet t=LOGINS_TABLE.readUser(name);
+            if (!t.next())return null;
+            jrs.addRowSet(t, 1);
             jrs.addRowSet(ROLES_TABLE.readUser(name), 1);
             jrs.addRowSet(USER_INFO_TABLE.readUser(name), 1);
             Set<String> roles = new TreeSet<>();
@@ -199,7 +202,7 @@ public class JDBCUsDAO implements UserDAO {
         } catch (Exception ex) {
             log.error("'readUser error' wrong db tables", ex);
 
-            throw new JDBCUsDAOException("Reading user Exception: ", ex);
+            throw new JDBCUserDAOException("Reading user Exception: ", ex);
         };
         return result;
     }

@@ -4,14 +4,14 @@
  * and open the template in the editor.
  */
 
-package com.pankratov.prodlist.model;
+package com.pankratov.prodlist.model.users;
 
 /**
  *
  * @author pankratov
  */
 public interface UserDAO {
-    public  User registerUser(User user) throws JDBCUsDAOException;
+    public  User registerUser(User user) throws JDBCUserDAOException;
     public User readUser(String name)throws Exception;
     public User deleteUser(User user);
     public User changeUser(User user);
