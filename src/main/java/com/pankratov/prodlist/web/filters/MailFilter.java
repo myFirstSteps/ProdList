@@ -5,10 +5,14 @@
  */
 package com.pankratov.prodlist.web.filters;
 
+import com.pankratov.prodlist.model.mail.MailAgent;
+import com.pankratov.prodlist.model.users.User;
+import java.io.*;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.*;
 import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -18,9 +22,6 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.*;
-import java.io.*;
-import java.util.*;
-import com.pankratov.prodlist.model.users.User;
 
 class MailHttpServletResponse extends HttpServletResponseWrapper {
 
@@ -79,6 +80,7 @@ public class MailFilter implements Filter {
                         case "registration":
                             request.getRequestDispatcher("/WEB-INF/template/registrationMail.jsp").include(request, resp);
                             System.out.println(resp.getBuff());
+                            new MailAgent(request.getServletContext()).sendMail(resp.getBuff().toString(), mailType);
                             request.getRequestDispatcher("/WEB-INF/template/registrationMail.jsp").forward(request, response);
                         case "passrestore":;
                     }

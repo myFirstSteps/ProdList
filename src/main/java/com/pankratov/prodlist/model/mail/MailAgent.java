@@ -26,8 +26,8 @@ public class MailAgent {
     final String pwd;
     public MailAgent(ServletContext context) throws Exception{
         try{ 
-          HostName=(String)context.getAttribute("appmailHost");
-          HostPort=Integer.parseInt((String)context.getAttribute("appmailPort"));
+          HostName=(String)context.getAttribute("DB_NAME");
+          HostPort=465;//Integer.parseInt((String)context.getAttribute("appmailPort"));
           address=(String)context.getAttribute("appmailAddres");
           pwd=(String)context.getAttribute("appmail pwd");
         }catch(Exception e){ log.error("Ошибка при создании MailAgent",e);throw e;};
