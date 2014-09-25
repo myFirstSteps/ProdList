@@ -160,7 +160,6 @@ public class JDBCUserDAO implements UserDAO {
         try (Connection con = DriverManager.getConnection(DB_NAME, DB_LOGIN, DB_PASSWORD)) {
             con.setAutoCommit(false);
             LOGINS_TABLE.registerUser(con, user.getLogin(), user.getPassword());
-
             ROLES_TABLE.registerUser(con, user.getLogin(), user.getRoles()[0]);
             USER_INFO_TABLE.registerUser(con, user.getLogin(), user.getFirstName(), user.getLastName(), user.getEmail());
             con.commit();

@@ -93,7 +93,7 @@ public class Registration extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-     //  try{
+       try{
         request.setCharacterEncoding("UTF8");
         String login = request.getParameter("login");
         String name = request.getParameter("name");
@@ -106,18 +106,15 @@ public class Registration extends HttpServlet {
             request.setAttribute("error", "Значение поля " + ((login.equals("")) ? "login" : "пароль") + " не может быть пустым.");
         }
        
-      //  User user=new User(login, password, new String[]{"admin"}, name, lastName, email);
-     //   UserDAOFactory.getUserDAOInstance(UserDAOFactory.UserDAOType.JDBCUserDAO, this.getServletContext()).registerUser(user);
+        User user=new User(login, password, new String[]{"level1"}, name, lastName, email);
+        user=UserDAOFactory.getUserDAOInstance(UserDAOFactory.UserDAOType.JDBCUserDAO, this.getServletContext()).registerUser(user);
+        if (user!=null){
+            request.setAttribute("user", user);
+            request.setAttribute("mailType","registration");
+        }
         response.setCharacterEncoding("UTF-8");
-        request.getRequestDispatcher("/WEB-INF/template/headtemplate.jsp").include(request, response);
-         response.getWriter().flush();
-         new HttpServletResponseWrapper(response){yu
-            public java.io.ByteArrayOutputStream ba= new java.io.ByteArrayOutputStream();
-            
-        };
-        // MailAgent.sendRegistrationMail();
-     //  }catch(JDBCUserDAOException ex){log.error("Ошибка создания пользователя", ex); System.out.println(ex);}
-    //   catch(Exception e){log.error("Ошибка регистрации пользователя",e); System.out.println(e);}
+      }catch(JDBCUserDAOException ex){log.error("Ошибка создания пользователя", ex); System.out.println(ex);}
+      catch(Exception e){log.error("Ошибка регистрации пользователя",e); System.out.println(e);}
     }
 
     /**

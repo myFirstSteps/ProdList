@@ -9,8 +9,10 @@ import org.apache.commons.mail.*;
 import javax.servlet.*;
 import org.apache.logging.log4j.*;
 import java.io.*;
-import java.net.*;
+import java.net.URL;
+//import java.net.*;
 import java.util.*;
+import org.apache.commons.mail.resolver.DataSourceUrlResolver;
 
 /**
  *
@@ -18,31 +20,33 @@ import java.util.*;
  */
 public class MailAgent {
     final static Logger log=org.apache.logging.log4j.LogManager.getLogger(MailAgent.class);
-    final String HostName=null;
-    final int HostPort=0;
-    final String address=null;
-    final String pwd=null;
+    final String HostName;
+    final int HostPort;
+    final String address;
+    final String pwd;
     public MailAgent(ServletContext context) throws Exception{
         try{ 
-         
-       // HostName=(String)context.getAttribute("appmailHost");
-       // HostPort=(int)context.getAttribute("appmailPort");
-       // address=(String)context.getAttribute("appmailAddres");
-      //  pwd=(String)context.getAttribute("appmail pwd");
+          HostName=(String)context.getAttribute("appmailHost");
+          HostPort=Integer.parseInt((String)context.getAttribute("appmailPort"));
+          address=(String)context.getAttribute("appmailAddres");
+          pwd=(String)context.getAttribute("appmail pwd");
         }catch(Exception e){ log.error("Ошибка при создании MailAgent",e);throw e;};
     }
-    public static boolean sendRegistrationMail(){
+    public  boolean sendMail(String hmsg,String msg){
         try{
-        HtmlEmail semail = new HtmlEmail();
-        semail.setHostName("smtp.mail.ru");
-        semail.setSmtpPort(465);
-        semail.setAuthenticator(new DefaultAuthenticator("resumeapp@mail.ru", "somepass"));
-        semail.setSSLOnConnect(true);
-        semail.setFrom("resumeapp@mail.ru");
-        semail.setHtmlMsg("<html><div style='background-color:#f0f0f0;'> <h1>Hello <center>from</center> <em>Lapla</em></h1> nice to see y </div></html>");
-        semail.setTextMsg("Hello from Lapla ");
-        semail.addTo("Pankratov_m@mail.ru");
-        semail.send();
+        ImageHtmlEmail email = new ImageHtmlEmail();
+        email.setHostName(HostName);
+        email.setSmtpPort(465);
+        email.setAuthenticator(new DefaultAuthenticator("address", "pwd"));
+        email.setSSLOnConnect(true);
+        email.setFrom("address");
+      
+        URL url= new URL("127.0.0.1");
+        email.setDataSourceResolver(new DataSourceUrlResolver( url) );
+        email.setHtmlMsg(hmsg);
+        email.setTextMsg("Hello from Lapla ");
+        email.addTo("Pankratov_m@mail.ru");
+        email.send();
         }catch(Exception e){}
     return false;
     }
