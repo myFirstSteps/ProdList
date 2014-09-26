@@ -20,34 +20,37 @@ import org.apache.commons.mail.resolver.DataSourceUrlResolver;
  */
 public class MailAgent {
     final static Logger log=org.apache.logging.log4j.LogManager.getLogger(MailAgent.class);
-    final String HostName;
-    final int HostPort;
-    final String address;
-    final String pwd;
+    final String HOST_NAME;
+    final int HOST_PORT;
+    final String ADDRESS;
+    final String PWD;
     public MailAgent(ServletContext context) throws Exception{
         try{ 
-          HostName=(String)context.getAttribute("DB_NAME");
-          HostPort=465;//Integer.parseInt((String)context.getAttribute("appmailPort"));
-          address=(String)context.getAttribute("appmailAddres");
-          pwd=(String)context.getAttribute("appmail pwd");
+        //toString() может показаться неуместным, но он нужен для проверки на null.  
+          HOST_NAME=context.getInitParameter("APPMAIL_HOST").toString(); 
+          HOST_PORT=Integer.parseInt(context.getInitParameter("APPMAIL_PORT").toString());
+          ADDRESS=context.getInitParameter("APPMAIL_ADDRESS").toString();
+          PWD=context.getInitParameter("APPMAIL_PWD").toString();
         }catch(Exception e){ log.error("Ошибка при создании MailAgent",e);throw e;};
+       
     }
-    public  boolean sendMail(String hmsg,String msg){
+    public  boolean sendSingleMail(String htmlmsg,String altmsg,String subj,String to){
         try{
         ImageHtmlEmail email = new ImageHtmlEmail();
-        email.setHostName(HostName);
-        email.setSmtpPort(465);
-        email.setAuthenticator(new DefaultAuthenticator("address", "pwd"));
+        email.setHostName( HOST_NAME);
+        email.setSmtpPort(HOST_PORT);
+        email.setAuthenticator(new DefaultAuthenticator( ADDRESS, PWD));
         email.setSSLOnConnect(true);
-        email.setFrom("address");
-      
-        URL url= new URL("127.0.0.1");
+        email.setFrom(ADDRESS);
+        email.setSubject(subj);
+        System.out.println(altmsg);
+        URL url= new URL("http://127.0.0.1/");
         email.setDataSourceResolver(new DataSourceUrlResolver( url) );
-        email.setHtmlMsg(hmsg);
-        email.setTextMsg("Hello from Lapla ");
-        email.addTo("Pankratov_m@mail.ru");
+        email.setHtmlMsg(htmlmsg);
+        email.setTextMsg(altmsg);
+        email.addTo(to);
         email.send();
-        }catch(Exception e){}
+        }catch(Exception e){System.out.println(e);}
     return false;
     }
     

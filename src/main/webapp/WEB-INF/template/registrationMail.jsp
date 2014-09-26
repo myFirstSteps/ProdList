@@ -11,8 +11,8 @@
             <tr>
                 <td>
                     <div style=" margin: auto; background-color:#e6f7f4; border-radius: 8px; padding: 4px; width:70%; height:auto;">
-                        <h2>Добро пожаловать, <em><c:choose> <c:when test="${user.firstName!=''}">${user.firstName}n</c:when>
-                                    <c:otherwise>${user.login}l</c:otherwise></c:choose>!</em></h2>
+                        <h2>Добро пожаловать, <em><c:choose> <c:when test="${user.firstName!=''}">${user.firstName}</c:when>
+                                    <c:otherwise>${user.login}</c:otherwise></c:choose>!</em></h2>
                             <p>Поздравляем Вас, с успешной регистрацие на нашем <a href="${portal}">портале</a>.
                                 </p><p>Ваши данные для авторизации:<br>
                                     <b>логин: <em>${user.login}</em></b><br>

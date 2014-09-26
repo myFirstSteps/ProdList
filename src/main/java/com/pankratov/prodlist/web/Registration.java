@@ -106,8 +106,9 @@ public class Registration extends HttpServlet {
             request.setAttribute("error", "Значение поля " + ((login.equals("")) ? "login" : "пароль") + " не может быть пустым.");
         }
        
-        User user=new User(login, password, new String[]{"level1"}, name, lastName, email);
+       User user=new User(login, password, new String[]{"level1"}, name, lastName, email);
         user=UserDAOFactory.getUserDAOInstance(UserDAOFactory.UserDAOType.JDBCUserDAO, this.getServletContext()).registerUser(user);
+        
         if (user!=null){
             request.setAttribute("user", user);
             request.setAttribute("mailType","registration");
