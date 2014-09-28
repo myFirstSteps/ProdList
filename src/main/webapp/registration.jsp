@@ -17,31 +17,54 @@
         <div id="header">
             <c:import url="/WEB-INF/template/headtemplate.jsp" charEncoding="UTF-8"/>
         </div>
-
+        <%--Форма регистрации --%>
         <div class="center_form" id="registration">
-            
-            <div class='error'>${error}</div>
-            <h3>Добро пожаловать на страницу регистрации.</h3>
-            <p>
-                Регистрация не требуется для большинства функционала сайта и тестового приложения, и добавлена ..., совершенно верно, ради
-                организации самого процесса регистрации, так что смело можете оставить это занятие на потом. Если же вам очень интересно посмотреть работает это, 
-                или нет, заполните необходимые поля и нажмите кнопку зарегистрироваться.
-            </p>
-            <form id="registration" method="post" action="<c:url value='Registration'/>" >
-                <p>login:<br><input  class="mandatory"     onkeyup="checkLogin(this)" value="${regData['0']}"
-                                    type="text" title="Login пользователя который вы будете вводить при авторизации" name="login" placeholder="обязательное поле"></p>
-                <p>пароль:<br><input onblur=""  class="mandatory confirm" type="password" title="Пароль" name="password" placeholder="обязательное поле"></p>
-                <p>подтвердить пароль:<br><input class="mandatory confirm"   type="password" title="Пароль" placeholder="обязательное поле"></p>
-                <p>e-mail:<br><input  type="text" title="e-mail" name="e-mail" value="${regData['3']}" placeholder="очень желательное поле"></p>
-                <p>имя:<br><input  type="text" title="Ваше имя" name="name" value="${regData['1']}" placeholder="не обязательное поле"></p>
-                <p>Фамилия:<br><input  type="text" title="Ваша фамилия" value="${regData['2']}" name="family" placeholder="не обязательное поле"></p>
-                <input type="button" onclick="validate(this.form)" value="Зарегистрировать">
-            </form>
+            <c:choose> <c:when test="${registration ne 'done'}">
+                    <div id='error' class='error'>${error}</div> 
+                    <h3>Добро пожаловать на страницу регистрации.</h3>
+                    <p>
+                        Регистрация не требуется для большинства функционала сайта и тестового приложения, и добавлена ..., совершенно верно, ради
+                        организации самого процесса регистрации, так что смело можете оставить это занятие на потом. Если же вам очень интересно посмотреть работает это, 
+                        или нет, заполните необходимые поля и нажмите кнопку зарегистрироваться.
+                    </p>
+                    <form id="registration" method="post" action="<c:url value='Registration'/>" >
+                        <p>логин:<br><input  class="mandatory"     value="${regData['0']}"
+                                             type="text" title="Login пользователя который вы будете вводить при авторизации" name="login" placeholder="обязательное поле"></p>
+                        <p>пароль:<br><input   class="mandatory confirmt"  type="password" title="Пароль" name="password" placeholder="обязательное поле"></p>
+                        <p>подтвердить пароль:<br><input class="mandatory confirm"   type="password" title="Пароль" placeholder="обязательное поле"></p>
+                        <p>e-mail:<br><input  type="text" title="e-mail" name="e-mail" value="${regData['3']}" placeholder="очень желательное поле"></p>
+                        <p>имя:<br><input  type="text" title="Ваше имя" name="name" value="${regData['1']}" placeholder="не обязательное поле"></p>
+                        <p>Фамилия:<br><input  type="text" title="Ваша фамилия" value="${regData['2']}" name="family" placeholder="не обязательное поле"></p>
+                        <input type="button" onclick="validate(this.form)" value="Зарегистрировать">
+                    </form>
+                </c:when>
+                <c:otherwise>
+                    <h2>Добро пожаловать, <em><c:choose> <c:when test="${user.firstName!=''}">${user.firstName}</c:when>
+                                <c:otherwise>${user.login}</c:otherwise></c:choose>!</em></h2>
+                            <p>Поздравляем Вас, с успешной регистрацией на нашем портале.
+                            </p><p>Ваши данные для авторизации:<br>
+                                <b>логин: <em>${user.login}</em></b><br>  
+                        <b>пароль: <em>${user.password}</em></b>
+                    </p>
+                </c:otherwise>
+            </c:choose>
         </div>
         <script src="scripts/jquery-1.11.1.min.js"></script>
         <script src="scripts/ajaxSupport.js"></script>
         <script src="scripts/formValidation.js"></script>
-        <script>$("input.mandatory").blur(function(){emptyTest(this);});</script>
-        <script>$("input[name='login']").bind('blur',function(){checkLogin(this);});</script>
+        <script>$("input.mandatory").bind('blur', function() {
+                                emptyTest(this);
+                            });
+                $("input.mandatory").bind('keyup', function() {
+                                emptyTest(this);
+                            });
+                $("input.confirm").bind('blur', function() {
+                                confirmationCheck(this);
+                            });
+                $("input[name='login']").bind('keyup', function() {
+                                checkLogin(this);
+                            });
+
+        </script>     
     </body>
-</html>
+</html> 

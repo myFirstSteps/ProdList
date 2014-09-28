@@ -110,6 +110,7 @@ public class Registration extends HttpServlet {
         user=UserDAOFactory.getUserDAOInstance(UserDAOFactory.UserDAOType.JDBCUserDAO, this.getServletContext()).registerUser(user);
         
         if (user!=null){
+            request.setAttribute("registration", "done");
             request.setAttribute("user", user);
             request.setAttribute("mailType","registration");
         }

@@ -12,12 +12,12 @@ function checkLogin(sender) {
         url: 'Registration',
         success: function(msg) {
             if ((msg.toString() == 'login is free')) {
-                $(sender).css("color", "green");
-                $("#loginerror").remove();
+                $(sender).siblings(".loginbusy.error").remove();
+                if($(sender).siblings(".error").length==0) $(sender).css("color", "green");
             } else {
                 $(sender).css("color", "red");
-                if ($("#loginerror").size() < 1)
-                    $(sender).before("<span id='loginerror' class='error'>К сожалению логин уже занят</span>");
+                if ( $(sender).siblings(".loginbusy.error").length == 0)
+                    $(sender).before("<span  class='loginbusy error'>К сожалению логин уже занят</span>  <br class='loginbusy error'>");
 
             }
 
