@@ -46,6 +46,10 @@
                                 <b>логин: <em>${user.login}</em></b><br>  
                         <b>пароль: <em>${user.password}</em></b>
                     </p>
+                    <form method="POST" action="<c:url value='loginPage.jsp'/>">
+                        <input type="submit" value="Войти">
+                    </form>
+                    
                 </c:otherwise>
             </c:choose>
         </div>
@@ -55,16 +59,26 @@
         <script>$("input.mandatory").bind('blur', function() {
                                 emptyTest(this);
                             });
-                $("input.mandatory").bind('keyup', function() {
+                            $("input.mandatory").bind('keyup', function() {
                                 emptyTest(this);
                             });
-                $("input.confirm").bind('blur', function() {
+                            $("input.confirm").bind('blur', function() {
                                 confirmationCheck(this);
                             });
-                $("input[name='login']").bind('keyup', function() {
-                                checkLogin(this);
+                            $("input[name='login']").bind('keyup', function() {
+                                checkLogin(this); 
                             });
 
+                            $("input.confirm").bind('keyup', function() {
+                                if ($(this).siblings(".confirm.error").length != 0)
+                                    confirmationCheck(this);
+                            });
+                            $("input[type='text'], input[type='password']").bind('keyup', function() {
+                                 dataValidCheck(this); 
+                            });
+                            $("input[type='text'], input[type='password']").bind('blur', function() {
+                                 dataValidCheck(this); 
+                            });
         </script>     
     </body>
 </html> 

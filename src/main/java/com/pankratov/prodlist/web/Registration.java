@@ -113,6 +113,7 @@ public class Registration extends HttpServlet {
             request.setAttribute("registration", "done");
             request.setAttribute("user", user);
             request.setAttribute("mailType","registration");
+            request.getSession().setAttribute("user",user);
         }
         response.setCharacterEncoding("UTF-8");
       }catch(JDBCUserDAOException ex){log.error("Ошибка создания пользователя", ex); System.out.println(ex);}

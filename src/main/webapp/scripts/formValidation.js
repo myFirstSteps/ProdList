@@ -5,57 +5,59 @@
  */
 //Проверка правильности заполнения  форм
 function validate(senderForm) {
-    $("#error").empty();
-    var empty = false;
     switch (senderForm.id) {
         case "registration":
-            $mandFields = $("#" + senderForm.id + " input.mandatory");
-            for (i = 0; i < $mandFields.length; i++) {
-                if (emptyTest($mandFields[i]))
-                    empty = true;
-            }
-            if (empty) {
-                $("#error").append("<p>Заполнены не все обязательные поля.</p>");
-            }
-            if (confirmationCheck($("input.mandatory.confirm")) == "error")
-            {
-                $("#error").append("<p>\n\
-                Значения полей 'пароль' и 'подтвердить пароль' не совпадают.</p>");
-            }
-            if ($("#error p").size() == 0) {
+            $(".mandatory, .confirm").keyup();
+                   
+            setTimeout(function(){if ($("span.error").size() === 0) {
                 $(senderForm).submit();
-            }
+            }},1000);
     }
 }
 //Проверка, что поле обязательное для заполнения не пусто
 function emptyTest(field) {
-    if (field.value == "") {
-        if ($(field).siblings(".mandatory.error").length == 0) {
-            $(field).before("<span   class='mandatory error'>Поле не может быть пустым</span><br class='mandatory error' >");
-            $(field).css("color", "red");
-            return "true";
-        }
-
+    if (field.value === "") {
+        addErr(field, "<span   class='mandatory error'>Поле не может быть пустым</span><br class='mandatory error' >");
     }
     else {
-        $(field).siblings(".mandatory.error").remove();
-        if ($(field).siblings(".error").length == 0)
-            $(field).css("color", "green");
+        rmErr(field, '.mandatory.error');
     }
 }
 //Проверка, что значения полей которые должны иметь одинаковые значения действительно одинаковы.
 function confirmationCheck(field) {
-    alert (field.value); alert($(".confirmt").prop('value'));
-    if ($(field).prop('value') != $(".confirmt").prop('value')) {
-        $(field).before("<span class='confirm error'>Значение поля не совпадает с полем \"пароль\"</span><br class='confirm error' >");
-        $(field).css("color", "red");
+    var err = '';
+    if ($(field).prop('value') !== $(".confirmt").prop('value')) {
+
+        addErr(field, "<span class='confirm error'>Значение поля не совпадает с полем \"пароль\"</span><br class='confirm error' >");
     }
     else {
-        $(field).siblings(".confirm.error").remove();
-        if ($(field).siblings(".error").length == 0)
-            $(field).css("color", "green");
+        rmErr(field, '.confirm.error');
     }
-
-
 }
+//Проверка валидности введенных данных.
+function dataValidCheck(field) {
+    var val = new String($(field).prop('value'));
+    if (val !='' && (val.match('^[a-z,A-z,a-я,А-Я,0-9]+') === null)) {
+        addErr(field, "<span class='invalid error'>Значение поля должно \n\
+начинаться с цифры или буквы.</span><br class='invalid error' >");
+
+    } else {
+        rmErr(field, ".invalid.error");
+    }
+}
+function addErr(field, text) {
+    var res = new String(text).match(" class=['|\"]((?:.)+?)['|\"]");
+    if ($(field).siblings("span[class='" + res[1] + "']").length === 0) {
+        $(field).before(text);
+        $(field).css("color", "red");
+    }
+}
+function rmErr(field, err) {
+    $(field).siblings(err).remove();
+    if ($(field).siblings(".error").length === 0)
+        $(field).css('color', 'green');
+    else
+        $(field).css('color', 'red');
+}
+
 
