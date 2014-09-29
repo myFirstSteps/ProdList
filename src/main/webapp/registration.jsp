@@ -54,19 +54,18 @@
             </c:choose>
         </div>
         <script src="scripts/jquery-1.11.1.min.js"></script>
-        <script src="scripts/ajaxSupport.js"></script>
         <script src="scripts/formValidation.js"></script>
         <script>$("input.mandatory").bind('blur', function() {
-                                emptyTest(this);
+                                emptyCheck(this,"<span class='mandatory error'>Поле не может быть пустым</span><br class='mandatory error'>");
                             });
                             $("input.mandatory").bind('keyup', function() {
-                                emptyTest(this);
+                                emptyCheck(this,"<span class='mandatory error'>Поле не может быть пустым</span><br class='mandatory error'>");
                             });
                             $("input.confirm").bind('blur', function() {
-                                confirmationCheck(this);
+                                confirmationCheck(this,$("input.confirmt"),"<span class='confirm error'>Значение поля не совпадает с полем</span><br class='confirm error'>");
                             });
                             $("input[name='login']").bind('keyup', function() {
-                                checkLogin(this); 
+                                uniqueCheck(this,{name: this.value},"GET","Registration"); 
                             });
 
                             $("input.confirm").bind('keyup', function() {
@@ -74,10 +73,12 @@
                                     confirmationCheck(this);
                             });
                             $("input[type='text'], input[type='password']").bind('keyup', function() {
-                                 dataValidCheck(this); 
+                                 dataValidCheck(this,'^[a-z,A-z,a-я,А-Я,0-9]+',"<span class='invalid error'>Значение поля должно начинаться с цифры или буквы.\n\
+                         </span><br class='invalid error'>"); 
                             });
                             $("input[type='text'], input[type='password']").bind('blur', function() {
-                                 dataValidCheck(this); 
+                                dataValidCheck(this,'^[a-z,A-z,a-я,А-Я,0-9]+',"<span class='invalid error'>Значение поля должно начинаться с цифры или буквы.\n\
+                         </span><br class='invalid error'>"); 
                             });
         </script>     
     </body>

@@ -1,9 +1,11 @@
 /* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * JavaScript и jQuery я никогда не изучал. И на момент начала работы с ним прочитал не более половины книги. 
+ * Тем не менее он показался довольно интуитивным и понятным, так что решил написать простенькую валидацию данных формы.
+ * К тому же обязательно нужно было попробовать ajax,без него как я понимаю сейчас ничего не сделаешь. Понимаю, что написаный код СИЛЬНО далек
+ * от качественного и для решаемых задач наверняка есть готовые библиотеки, но в рамках этой задачи удалось давольно неплохо покапаться в API на jQuery.com
+ * и в волю походить по граблям.
  */
-//Проверка правильности заполнения  форм
+//Проверка правильности заполнения  формы перед отправкой запроса.
 function validate(senderForm) {
     switch (senderForm.id) {
         case "registration":
@@ -15,44 +17,67 @@ function validate(senderForm) {
     }
 }
 //Проверка, что поле обязательное для заполнения не пусто
-function emptyTest(field) {
+function emptyCheck(field,errText) {
     if (field.value === "") {
-        addErr(field, "<span   class='mandatory error'>Поле не может быть пустым</span><br class='mandatory error' >");
+       var sel=getClassSelector(errText);
+       alert(sel);
+        addErr(field, sel,errText);
     }
     else {
-        rmErr(field, '.mandatory.error');
+        rmErr(field, sel);
     }
 }
 //Проверка, что значения полей которые должны иметь одинаковые значения действительно одинаковы.
-function confirmationCheck(field) {
-    var err = '';
-    if ($(field).prop('value') !== $(".confirmt").prop('value')) {
+function confirmationCheck(field,target,errText) {
+    var sel=getClassSelector(errText);
+    if ($(field).prop('value') !== $(target).prop('value')) {
 
-        addErr(field, "<span class='confirm error'>Значение поля не совпадает с полем \"пароль\"</span><br class='confirm error' >");
+        addErr(field,sel,errText+$(target).prop('title') );
     }
     else {
-        rmErr(field, '.confirm.error');
+        rmErr(field, sel);
     }
 }
 //Проверка валидности введенных данных.
-function dataValidCheck(field) {
+function dataValidCheck(field,pattern,errText) {
     var val = new String($(field).prop('value'));
-    if (val !='' && (val.match('^[a-z,A-z,a-я,А-Я,0-9]+') === null)) {
-        addErr(field, "<span class='invalid error'>Значение поля должно \n\
-начинаться с цифры или буквы.</span><br class='invalid error' >");
-
+    var sel=getClassSelector(errText);
+    if (val !='' && (val.match(pattern) === null)) {
+        
+        addErr(field,sel,errText);
     } else {
-        rmErr(field, ".invalid.error");
+        rmErr(field, sel);
     }
 }
-function addErr(field, text) {
-    var res = new String(text).match(" class=['|\"]((?:.)+?)['|\"]");
-    if ($(field).siblings("span[class='" + res[1] + "']").length === 0) {
-        $(field).before(text);
+//Проверка уникальности вводимых данных (отсутствие в DB).
+function uniqueCheck(field,data,method,url,errText){
+     $.ajax({
+        data: data,
+        type: method,
+        url: url,
+        success: function(msg) {
+            var sel=getClassSelector(errText);
+            if(msg.toString() != 'login is free'){
+                addErr(field,sel, errText);
+            }else
+            {
+                rmErr(field,sel);
+            }
+        }});
+}
+function getClassSelector(text){
+     var init = new String(text).match(" class=['|\"]((?:.)+?)['|\"]");
+      return  "*[class='" + new String(init[1]) + "']"; //'.'+new String(init[1]).replace(' ','.');
+}
+function addErr(field, selector, errText) {
+    if ($(field).siblings(selector).length === 0) {
+        $(field).before(errText);
         $(field).css("color", "red");
     }
 }
 function rmErr(field, err) {
+    alert(err);
+    $(field).siblings(err).length;
     $(field).siblings(err).remove();
     if ($(field).siblings(".error").length === 0)
         $(field).css('color', 'green');
