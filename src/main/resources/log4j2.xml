@@ -9,7 +9,7 @@
         </File>
     </Appenders>
     <Loggers>
-        <Logger name="com.pankratov.prodlist.model.JDBCUserDAO" level="DEBUG"/>
+        <Logger name="com.pankratov.prodlist.model.users.JDBCUserDAO" level="DEBUG"/>
         <Root level="error">
             <AppenderRef ref="Console"/>
             <AppenderRef ref="File"/>

@@ -5,6 +5,7 @@
  */
 
 package com.pankratov.prodlist.model.users;
+import java.util.concurrent.*;
 
 /**
  *
@@ -15,5 +16,5 @@ public interface UserDAO extends AutoCloseable {
     public User readUser(String name)throws Exception;
     public User deleteUser(User user);
     public User changeUser(User user);
-    public boolean isUserExsists(String name);
+    public ConcurrentSkipListSet<String> readUsersNames();
 }

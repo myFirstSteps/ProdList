@@ -95,34 +95,40 @@ public class JDBCUserDAO implements UserDAO, AutoCloseable {
     private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(JDBCUserDAO.class);
     private static int maxCount;
     private static long timeOut;
-    private static JDBCUserDAO instance;
-    private static LinkedBlockingDeque<JDBCUserDAO> DAOsPool;
+    private static ConcurrentLinkedQueue<JDBCUserDAO> DAOsPool;
     private static AtomicInteger DAOsCount = new AtomicInteger(0);
-    private static ConcurrentSkipListSet<String> logins = null;
     private final String DB_NAME;
     private final String DB_LOGIN;
     private final String DB_PASSWORD;
     private Table LOGINS_TABLE;
     private Table ROLES_TABLE;
     private Table USER_INFO_TABLE;
+    private Connection connection;
 
     @Override
     protected void finalize() throws Throwable {
         super.finalize();
-        log.debug("Ripped" + this);
+        try {
+            connection.close();
+        } finally {
+            log.debug("Ripped" + this);
+        }
     }
 
     @Override
-    public void close() throws SQLException {
-        
+    public void close() throws SQLException, InterruptedException {
+        System.out.println("in close");
         LOGINS_TABLE.rowset.release();
         ROLES_TABLE.rowset.release();
         USER_INFO_TABLE.rowset.release();
-        DAOsPool.offer(this);
+        System.out.println("Returning to pool" + DAOsPool);
+        JDBCUserDAO.DAOsPool.offer(this);
+        System.out.println("Pool Size:" + DAOsPool.size());
     }
 
     static JDBCUserDAO getInstance(javax.servlet.ServletContext context) throws Exception {
         try {
+            JDBCUserDAO instance = null;
             if (DAOsPool == null) {
                 synchronized (JDBCUserDAO.class) {
                     if (DAOsPool == null) {
@@ -138,29 +144,38 @@ public class JDBCUserDAO implements UserDAO, AutoCloseable {
                             timeOut = 1000;
                             log.info("В дескрипторе не задано время ожидания перед расширением пула");
                         }
-                        DAOsPool = new LinkedBlockingDeque(maxCount);
+                        DAOsPool = new ConcurrentLinkedQueue<JDBCUserDAO>();
                         DAOsPool.offer(new JDBCUserDAO(context));
                         DAOsCount.incrementAndGet();
                         instance = DAOsPool.poll();
                     }
                 }
             } else {
-                instance = DAOsPool.pollFirst(timeOut, TimeUnit.MILLISECONDS);
+                instance = DAOsPool.poll();
                 if (instance == null && DAOsCount.get() < maxCount) {
-                    synchronized (DAOsCount) {
-                        if (DAOsCount.get() < maxCount) {
-                            instance = new JDBCUserDAO(context);
-                            DAOsCount.incrementAndGet();
-                        }
+                    Thread.sleep(timeOut);
+                    instance = DAOsPool.poll();
+                    if (instance == null) {
+                        synchronized (DAOsCount) {
+                            if (DAOsCount.get() < maxCount) {
+                                instance = new JDBCUserDAO(context);
+                                DAOsCount.incrementAndGet();
+                            }
 
+                        }
                     }
+                    System.out.println("pool count is: " + DAOsCount.get());
+                    System.out.println("Now in pool: " + DAOsPool.size());
                     return instance;
-                }else instance= DAOsPool.take();
+                } else {
+                    while(instance ==null){
+                        DAOsPool.poll();
+                    }
+                }
                 log.debug("i am created" + instance);
             }
             return instance;
         } catch (Exception e) {
-            context.setAttribute("JDBCUserDAO", null);
             throw new JDBCUserDAOException("Exception when getting  JDBCUsDAO instance", e);
         }
     }
@@ -172,23 +187,24 @@ public class JDBCUserDAO implements UserDAO, AutoCloseable {
         String loginsTableName = context.getInitParameter("LOGINS_TABLE");
         String rolesTableName = context.getInitParameter("ROLES_TABLE");
         String userInfoTableName = context.getInitParameter("USER_INFO_TABLE");
-        try (Connection conn = DriverManager.getConnection(DB_NAME, DB_LOGIN, DB_PASSWORD)) {
-            ResultSet colMetaData = conn.getMetaData().getColumns(null, null, null, null);
-            String lastTableName = "", columnName = "", currentTableName = "";
-            ConcurrentHashMap<String, List<String>> m = new ConcurrentHashMap<>();
-            while (colMetaData.next()) {
-                currentTableName = colMetaData.getString(3);
-                columnName = colMetaData.getString(4);
-                if (!lastTableName.equals(currentTableName)) {
-                    m.putIfAbsent(currentTableName, new ArrayList<String>());
-                    lastTableName = currentTableName;
+        try {
+            connection = DriverManager.getConnection(DB_NAME, DB_LOGIN, DB_PASSWORD);
+            try (ResultSet colMetaData = connection.getMetaData().getColumns(null, null, null, null);) {
+                String lastTableName = "", columnName = "", currentTableName = "";
+                ConcurrentHashMap<String, List<String>> m = new ConcurrentHashMap<>();
+                while (colMetaData.next()) {
+                    currentTableName = colMetaData.getString(3);
+                    columnName = colMetaData.getString(4);
+                    if (!lastTableName.equals(currentTableName)) {
+                        m.putIfAbsent(currentTableName, new ArrayList<String>());
+                        lastTableName = currentTableName;
+                    }
+                    m.get(currentTableName).add(columnName);
                 }
-                m.get(currentTableName).add(columnName);
+                LOGINS_TABLE = new Table(loginsTableName, m.get(loginsTableName));
+                ROLES_TABLE = new Table(rolesTableName, m.get(rolesTableName));
+                USER_INFO_TABLE = new Table(userInfoTableName, m.get(userInfoTableName));
             }
-            LOGINS_TABLE = new Table(loginsTableName, m.get(loginsTableName));
-            ROLES_TABLE = new Table(rolesTableName, m.get(rolesTableName));
-            USER_INFO_TABLE = new Table(userInfoTableName, m.get(userInfoTableName));
-            isUserExsists("initial");
             log.debug("UserDAO created");
         } catch (Exception e) {
             log.error("JDBCUsDAO creation error", e);
@@ -200,17 +216,17 @@ public class JDBCUserDAO implements UserDAO, AutoCloseable {
     @Override
     public User registerUser(User user) throws JDBCUserDAOException {
 
-        if (logins.contains(user.getLogin())) {
-            throw new JDBCUserDAOException("Ошибка регистрации пользователя. Пользователь"
-                    + " с логином: '" + user.getLogin() + "' уже существует.");
-        }
+//        if (logins.contains(user.getLogin())) {
+        //       throw new JDBCUserDAOException("Ошибка регистрации пользователя. Пользователь"
+        //                  + " с логином: '" + user.getLogin() + "' уже существует.");
+        //       }
         try (Connection con = DriverManager.getConnection(DB_NAME, DB_LOGIN, DB_PASSWORD)) {
             con.setAutoCommit(false);
             LOGINS_TABLE.registerUser(con, user.getLogin(), user.getPassword());
             ROLES_TABLE.registerUser(con, user.getLogin(), user.getRoles()[0]);
             USER_INFO_TABLE.registerUser(con, user.getLogin(), user.getFirstName(), user.getLastName(), user.getEmail());
             con.commit();
-            logins.add(user.getLogin());
+            //  logins.add(user.getLogin());
 
         } catch (Exception e) {
             if (e.toString().matches(".*Duplicate entry.*for key 'PRIMARY'.*")) {
@@ -266,20 +282,20 @@ public class JDBCUserDAO implements UserDAO, AutoCloseable {
     }
 
     @Override
-    public boolean isUserExsists(String name) {
-        if (logins == null) {
-            try {
-                logins = new ConcurrentSkipListSet<>();
-                CachedRowSet crs = LOGINS_TABLE.getAll();
-
-                while (crs.next()) {
-                    logins.add(crs.getString(1));
-                }
-            } catch (Exception ex) {
-                log.error("login exsists issue", ex);
+    public ConcurrentSkipListSet<String> readUsersNames() {
+        ConcurrentSkipListSet<String> result = new ConcurrentSkipListSet<String>();
+        try (Statement st = connection.createStatement();) {
+            try{Thread.sleep(1000);
+            
+            }catch(Exception e){};
+            ResultSet res = st.executeQuery(String.format("select %s from %s", LOGINS_TABLE.columnNames.get(0), LOGINS_TABLE.tableName));
+            while (res.next()) {
+                result.add(res.getString(1));
             }
-
+        } catch (SQLException ex) {
+            log.error("readUserNamesError", ex);
         }
-        return logins.contains(name);
+        return result;
     }
+
 }

@@ -15,7 +15,7 @@ public  class UserDAOFactory {
        
     }
     public enum UserDAOType{JDBCUserDAO()}
-    public static synchronized UserDAO getUserDAOInstance(UserDAOType type,  javax.servlet.ServletContext context) throws Exception{   
+    public static  UserDAO getUserDAOInstance(UserDAOType type,  javax.servlet.ServletContext context) throws Exception{   
         switch(type){
             case JDBCUserDAO: 
                 return JDBCUserDAO.getInstance(context);
