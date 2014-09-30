@@ -18,10 +18,9 @@ function validate(senderForm) {
 }
 //Проверка, что поле обязательное для заполнения не пусто
 function emptyCheck(field,errText) {
-    if (field.value === "") {
-       var sel=getClassSelector(errText);
-       alert(sel);
-        addErr(field, sel,errText);
+    var sel=getClassSelector(errText);
+    if (field.value === "") {    
+              addErr(field, sel,errText);
     }
     else {
         rmErr(field, sel);
@@ -31,8 +30,9 @@ function emptyCheck(field,errText) {
 function confirmationCheck(field,target,errText) {
     var sel=getClassSelector(errText);
     if ($(field).prop('value') !== $(target).prop('value')) {
-
-        addErr(field,sel,errText+$(target).prop('title') );
+       text= new String (errText);
+      text=text.substring(0,text.indexOf("</"))+" "+$(target).prop('title').toLowerCase()+ text.substring(text.indexOf("</"),text.length);
+                addErr(field,sel,text ); 
     }
     else {
         rmErr(field, sel);
@@ -57,7 +57,7 @@ function uniqueCheck(field,data,method,url,errText){
         url: url,
         success: function(msg) {
             var sel=getClassSelector(errText);
-            if(msg.toString() != 'login is free'){
+            if(msg.toString() !== 'login is free'){
                 addErr(field,sel, errText);
             }else
             {
@@ -76,7 +76,6 @@ function addErr(field, selector, errText) {
     }
 }
 function rmErr(field, err) {
-    alert(err);
     $(field).siblings(err).length;
     $(field).siblings(err).remove();
     if ($(field).siblings(".error").length === 0)

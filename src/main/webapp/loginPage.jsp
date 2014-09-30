@@ -17,8 +17,8 @@
                     <c:import url="/WEB-INF/template/loginF.jsp" charEncoding="UTF-8"/>
                 </c:when>
                 <c:otherwise>
-                    ${sessionScope.Attribute.lastpage}
-                    <jsp:forward page="${sessionScope.Attribute.lastpage}"/>
+                    <c:if test="${!empty sessionScope.Attribute.lastpage}"> <jsp:forward page="index.jsp"/></c:if>
+                    <jsp:forward page="index.jsp"/>
                     
                   
                 </c:otherwise>

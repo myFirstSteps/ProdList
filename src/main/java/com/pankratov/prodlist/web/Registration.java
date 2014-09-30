@@ -70,8 +70,7 @@ public class Registration extends HttpServlet {
             throws ServletException, IOException {
         String is = "free";
         ServletContext context = this.getServletContext();
-        try {
-            UserDAO ud = UserDAOFactory.getUserDAOInstance(UserDAOFactory.UserDAOType.JDBCUserDAO, context);
+        try(UserDAO ud=UserDAOFactory.getUserDAOInstance(UserDAOFactory.UserDAOType.JDBCUserDAO, context);) {
             if ((ud.isUserExsists(request.getParameter("name")))) {
                 is = "busy";
             }
@@ -93,31 +92,37 @@ public class Registration extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-       try{
-        request.setCharacterEncoding("UTF8");
-        String login = request.getParameter("login");
-        String name = request.getParameter("name");
-        String password = request.getParameter("password");
-        String lastName = request.getParameter("family");
-        String email = request.getParameter("e-mail");
-        request.getSession().setAttribute("regData", new String[]{login, name, lastName, email});
-        if (login.equals("") || password.equals("") || true) {
-            request.getAttributeNames().nextElement();
-            request.setAttribute("error", "Значение поля " + ((login.equals("")) ? "login" : "пароль") + " не может быть пустым.");
+        try {
+            request.setCharacterEncoding("UTF8");
+            String login = request.getParameter("login");
+            String name = request.getParameter("name");
+            String password = request.getParameter("password");
+            String lastName = request.getParameter("family");
+            String email = request.getParameter("e-mail");
+            request.getSession().setAttribute("regData", new String[]{login, name, lastName, email});
+            if (login.equals("") || password.equals("") || true) {
+                request.getAttributeNames().nextElement();
+                request.setAttribute("error", "Значение поля " + ((login.equals("")) ? "login" : "пароль") + " не может быть пустым.");
+            }
+
+            User user = new User(login, password, new String[]{"level1"}, name, lastName, email);
+            try (UserDAO dao = UserDAOFactory.getUserDAOInstance(UserDAOFactory.UserDAOType.JDBCUserDAO, this.getServletContext());) {
+                user = dao.registerUser(user);
+                if (user != null) {
+                    request.setAttribute("registration", "done");
+                    request.setAttribute("user", user);
+                    request.setAttribute("mailType", "registration");
+                    request.getSession().setAttribute("user", user);
+                }
+            }
+            response.setCharacterEncoding("UTF-8");
+        } catch (JDBCUserDAOException ex) {
+            log.error("Ошибка создания пользователя", ex);
+            System.out.println(ex);
+        } catch (Exception e) {
+            log.error("Ошибка регистрации пользователя", e);
+            System.out.println(e);
         }
-       
-       User user=new User(login, password, new String[]{"level1"}, name, lastName, email);
-        user=UserDAOFactory.getUserDAOInstance(UserDAOFactory.UserDAOType.JDBCUserDAO, this.getServletContext()).registerUser(user);
-        
-        if (user!=null){
-            request.setAttribute("registration", "done");
-            request.setAttribute("user", user);
-            request.setAttribute("mailType","registration");
-            request.getSession().setAttribute("user",user);
-        }
-        response.setCharacterEncoding("UTF-8");
-      }catch(JDBCUserDAOException ex){log.error("Ошибка создания пользователя", ex); System.out.println(ex);}
-      catch(Exception e){log.error("Ошибка регистрации пользователя",e); System.out.println(e);}
     }
 
     /**

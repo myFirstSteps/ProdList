@@ -9,6 +9,7 @@ import org.apache.logging.log4j.*;
 import javax.sql.*;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
 import java.sql.*;
 import javax.sql.rowset.RowSetProvider;
 import javax.servlet.ServletConfig.*;
@@ -20,7 +21,7 @@ import java.io.*;
  *
  * @author pankratov
  */
-public class JDBCUserDAO implements UserDAO {
+public class JDBCUserDAO implements UserDAO, AutoCloseable {
 
     private class Table {
 
@@ -92,14 +93,18 @@ public class JDBCUserDAO implements UserDAO {
     }
 
     private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(JDBCUserDAO.class);
+    private static int maxCount;
+    private static long timeOut;
     private static JDBCUserDAO instance;
+    private static LinkedBlockingDeque<JDBCUserDAO> DAOsPool;
+    private static AtomicInteger DAOsCount = new AtomicInteger(0);
+    private static ConcurrentSkipListSet<String> logins = null;
     private final String DB_NAME;
     private final String DB_LOGIN;
     private final String DB_PASSWORD;
     private Table LOGINS_TABLE;
     private Table ROLES_TABLE;
     private Table USER_INFO_TABLE;
-    private ConcurrentSkipListSet<String> logins = null;
 
     @Override
     protected void finalize() throws Throwable {
@@ -107,11 +112,52 @@ public class JDBCUserDAO implements UserDAO {
         log.debug("Ripped" + this);
     }
 
+    @Override
+    public void close() throws SQLException {
+        
+        LOGINS_TABLE.rowset.release();
+        ROLES_TABLE.rowset.release();
+        USER_INFO_TABLE.rowset.release();
+        DAOsPool.offer(this);
+    }
+
     static JDBCUserDAO getInstance(javax.servlet.ServletContext context) throws Exception {
         try {
-            instance = new JDBCUserDAO(context);
-            log.debug("i am created" + instance);
-            context.setAttribute("JDBCUserDAO", instance);
+            if (DAOsPool == null) {
+                synchronized (JDBCUserDAO.class) {
+                    if (DAOsPool == null) {
+                        if (context.getInitParameter("USER_POOL_SIZE") != null) {
+                            maxCount = Integer.parseInt(context.getInitParameter("USER_POOL_SIZE"));
+                        } else {
+                            maxCount = 10;
+                            log.info("В дескрипторе не задан размер пула для JDBCUserDAO");
+                        }
+                        if (context.getInitParameter("USER_POOL_TMEOUT") != null) {
+                            timeOut = Long.parseLong(context.getInitParameter("USER_POOL_TMEOUT"));
+                        } else {
+                            timeOut = 1000;
+                            log.info("В дескрипторе не задано время ожидания перед расширением пула");
+                        }
+                        DAOsPool = new LinkedBlockingDeque(maxCount);
+                        DAOsPool.offer(new JDBCUserDAO(context));
+                        DAOsCount.incrementAndGet();
+                        instance = DAOsPool.poll();
+                    }
+                }
+            } else {
+                instance = DAOsPool.pollFirst(timeOut, TimeUnit.MILLISECONDS);
+                if (instance == null && DAOsCount.get() < maxCount) {
+                    synchronized (DAOsCount) {
+                        if (DAOsCount.get() < maxCount) {
+                            instance = new JDBCUserDAO(context);
+                            DAOsCount.incrementAndGet();
+                        }
+
+                    }
+                    return instance;
+                }else instance= DAOsPool.take();
+                log.debug("i am created" + instance);
+            }
             return instance;
         } catch (Exception e) {
             context.setAttribute("JDBCUserDAO", null);
@@ -142,7 +188,8 @@ public class JDBCUserDAO implements UserDAO {
             LOGINS_TABLE = new Table(loginsTableName, m.get(loginsTableName));
             ROLES_TABLE = new Table(rolesTableName, m.get(rolesTableName));
             USER_INFO_TABLE = new Table(userInfoTableName, m.get(userInfoTableName));
-
+            isUserExsists("initial");
+            log.debug("UserDAO created");
         } catch (Exception e) {
             log.error("JDBCUsDAO creation error", e);
             throw new JDBCUserDAOException("JDBCUsDAO creation error: ", e);
@@ -180,8 +227,10 @@ public class JDBCUserDAO implements UserDAO {
         User result = null;
         try {
             JoinRowSet jrs = RowSetProvider.newFactory().createJoinRowSet();
-            CachedRowSet t=LOGINS_TABLE.readUser(name);
-            if (!t.next())return null;
+            CachedRowSet t = LOGINS_TABLE.readUser(name);
+            if (!t.next()) {
+                return null;
+            }
             jrs.addRowSet(t, 1);
             jrs.addRowSet(ROLES_TABLE.readUser(name), 1);
             jrs.addRowSet(USER_INFO_TABLE.readUser(name), 1);

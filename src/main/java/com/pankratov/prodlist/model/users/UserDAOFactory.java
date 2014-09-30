@@ -18,7 +18,7 @@ public  class UserDAOFactory {
     public static synchronized UserDAO getUserDAOInstance(UserDAOType type,  javax.servlet.ServletContext context) throws Exception{   
         switch(type){
             case JDBCUserDAO: 
-                return (context.getAttribute("JDBCUserDAO")==null)? JDBCUserDAO.getInstance(context): (JDBCUserDAO) context.getAttribute("JDBCUserDAO");
+                return JDBCUserDAO.getInstance(context);
         }
         return null;
     }

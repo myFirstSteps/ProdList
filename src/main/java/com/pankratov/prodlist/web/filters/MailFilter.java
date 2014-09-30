@@ -78,13 +78,14 @@ public class MailFilter implements Filter {
                     MailHttpServletResponse resp = new MailHttpServletResponse((HttpServletResponse) response);
                     switch (mailType) {
                         case "registration":  
-  
+                            ;
                             request.getRequestDispatcher("/WEB-INF/template/registrationMail.jsp").include(request, resp);
                             //System.out.println(resp.getBuff());
                             String alterMsg=String.format("Добро пожаловать %1$s!\nПоздравляем с успешной регистрацией.\n"
                                     + "Ваш логи:%s\nВаш пароль:%s",user.getLogin(),user.getPassword());
                             new MailAgent(getFilterConfig().getServletContext()).sendSingleMail(resp.getBuff().toString(),alterMsg,"registration",user.getEmail());
-                            request.getRequestDispatcher("/registration.jsp").forward(request, response);
+                            
+                            request.getRequestDispatcher(resp.encodeURL("/registration.jsp")).forward(request, response);
                         case "passrestore":;
                     }
                 }

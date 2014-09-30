@@ -65,7 +65,7 @@
                                 confirmationCheck(this,$("input.confirmt"),"<span class='confirm error'>Значение поля не совпадает с полем</span><br class='confirm error'>");
                             });
                             $("input[name='login']").bind('keyup', function() {
-                                uniqueCheck(this,{name: this.value},"GET","Registration"); 
+                                uniqueCheck(this,{name: this.value},"GET","Registration","<span class='unique error'>К сожалению логин уже занят</span><br class='unique error'>"); 
                             });
 
                             $("input.confirm").bind('keyup', function() {

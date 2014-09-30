@@ -10,7 +10,7 @@ package com.pankratov.prodlist.model.users;
  *
  * @author pankratov
  */
-public interface UserDAO {
+public interface UserDAO extends AutoCloseable {
     public  User registerUser(User user) throws JDBCUserDAOException;
     public User readUser(String name)throws Exception;
     public User deleteUser(User user);
