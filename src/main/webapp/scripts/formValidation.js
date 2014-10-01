@@ -50,14 +50,15 @@ function dataValidCheck(field,pattern,errText) {
     }
 }
 //Проверка уникальности вводимых данных (отсутствие в DB).
-function uniqueCheck(field,data,method,url,errText){
+function uniqueCheck(field,data,method,url,errText){ 
      $.ajax({
         data: data,
         type: method,
         url: url,
         success: function(msg) {
             var sel=getClassSelector(errText);
-            if(msg.toString() !== 'login is free'){
+            if(msg.toString() == field.value){
+             
                 addErr(field,sel, errText);
             }else
             {

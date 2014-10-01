@@ -24,6 +24,7 @@ import org.apache.logging.log4j.*;
 import org.apache.commons.mail.*;
 import java.util.concurrent.*;
 
+
 /**
  *
  * @author pankratov
@@ -31,6 +32,7 @@ import java.util.concurrent.*;
 public class Registration extends HttpServlet {
 
     private static final Logger log = LogManager.getLogger(Registration.class);
+    private static ConcurrentSkipListSet<String> logins;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -70,23 +72,22 @@ public class Registration extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String is = "free";
+        String result = "";
         ServletContext context = this.getServletContext();
-        ConcurrentSkipListSet lnm=null; //= (ConcurrentSkipListSet) context.getAttribute("UsersLogins");
-        if (lnm == null) {
+        if (logins == null) {
             try (UserDAO ud = UserDAOFactory.getUserDAOInstance(UserDAOType.JDBCUserDAO, context);) {
-                lnm = ud.readUsersNames();
-                context.setAttribute("UsersLogins", lnm);
+                logins = ud.readUsersNames();
             } catch (Exception e) {
                 log.error("Проверка logina", e);
             }
         }
-        if (lnm.contains(request.getParameter("name"))) {
-            is = "busy";
+        if (logins.contains(request.getParameter("name"))) {
+            result = request.getParameter("name");
         }
 
         response.setContentType("text/plain");
-        response.getWriter().print("login is " + is);
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().print(result);
     }
 
     /**
@@ -101,7 +102,7 @@ public class Registration extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
-            request.setCharacterEncoding("UTF8");
+            request.setCharacterEncoding("UTF-8");
             String login = request.getParameter("login");
             String name = request.getParameter("name");
             String password = request.getParameter("password");
@@ -123,7 +124,6 @@ public class Registration extends HttpServlet {
                     request.getSession().setAttribute("user", user);
                 }
             }
-            response.setCharacterEncoding("UTF-8");
         } catch (JDBCUserDAOException ex) {
             log.error("Ошибка создания пользователя", ex);
             System.out.println(ex);
