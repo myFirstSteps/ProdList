@@ -3,22 +3,25 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.pankratov.prodlist.model.users;
+package com.pankratov.prodlist.model.dao.jdbc;
 
-import org.apache.logging.log4j.*;
+import com.pankratov.prodlist.model.dao.UserDAO;
+import com.pankratov.prodlist.model.users.User;
+import com.sun.rowset.CachedRowSetImpl;
+import java.sql.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
-import java.sql.*;
-import javax.sql.rowset.RowSetProvider;
+import javax.servlet.ServletContext;
 import javax.sql.rowset.*;
-import com.sun.rowset.CachedRowSetImpl;
+import javax.sql.rowset.RowSetProvider;
+import org.apache.logging.log4j.*;
 
 /**
  *
  * @author pankratov
  */
-public class JDBCUserDAO implements UserDAO, AutoCloseable {
+public class JDBCUserDAO extends JDBCDAOObject implements UserDAO, AutoCloseable  {
 
     private class Table {
 
@@ -94,7 +97,7 @@ public class JDBCUserDAO implements UserDAO, AutoCloseable {
     private static int minCount;
     private static long idleTime;
     private static long timeOut;
-    private static ConcurrentLinkedQueue<JDBCUserDAO> DAOsPool;
+    private static JDBCDAOPool<JDBCUserDAO> pool;
     private static final AtomicInteger DAOsCount = new AtomicInteger(0);
     private final String DB_NAME;
     private final String DB_LOGIN;
@@ -105,6 +108,7 @@ public class JDBCUserDAO implements UserDAO, AutoCloseable {
     private Connection connection;
     private long offerTime = System.currentTimeMillis();
     private boolean pensioner = false;
+    private static ServletContext context;
 
     @Override
     protected void finalize() throws Throwable {
@@ -136,46 +140,24 @@ public class JDBCUserDAO implements UserDAO, AutoCloseable {
 
         System.out.println("Pool Size:" + DAOsPool.size());
     }
+    @Override
+    protected JDBCUserDAO newInstance(){
+        return new JDBCUserDAO();
+    }
 
-    static JDBCUserDAO getInstance(javax.servlet.ServletContext context) throws Exception {
+    static public JDBCUserDAO getInstance(javax.servlet.ServletContext context) throws Exception {
         try {
             System.out.println("Come to get instance");
             JDBCUserDAO instance = null;
-            if (DAOsPool == null) {
+            if (pool == null) {
                 synchronized (JDBCUserDAO.class) {
-                    if (DAOsPool == null) {
-                        if (context.getInitParameter("USER_POOL_SIZE") != null) {
-                            maxCount = Integer.parseInt(context.getInitParameter("USER_POOL_SIZE"));
-                        } else {
-                            maxCount = 5;
-                            log.info("В дескрипторе не задан размер пула для JDBCUserDAO");
-                        }
-                        if (context.getInitParameter("USER_POOL_TMEOUT") != null) {
-                            timeOut = Long.parseLong(context.getInitParameter("USER_POOL_TMEOUT"));
-                        } else {
-                            timeOut = 100;
-                            log.info("В дескрипторе не задано время ожидания перед расширением пула");
-                        }
-                        if (context.getInitParameter("USER_MIN_POOL_SIZE") != null) {
-                            minCount = Integer.parseInt(context.getInitParameter("USER_MIN_POOL_SIZE"));
-                        } else {
-                            minCount = 2;
-                            log.info("В дескрипторе не задан минимальный размер пула для JDBCUserDAO");
-                        }
-                        if (context.getInitParameter("USER_IDLE_TIME") != null) {
-                            idleTime = Integer.parseInt(context.getInitParameter("USER_IDLE_TIME"));
-                        } else {
-                            idleTime = 6000;
-                            log.info("В дескрипторе не задано время бездействия JDBCUserDAO перед удалением из пула");
-                        }
-                        DAOsPool = new ConcurrentLinkedQueue<JDBCUserDAO>();
-                        DAOsPool.offer(new JDBCUserDAO(context));
+                    if (pool == null) {
+                        pool = new JDBCDAOPool<JDBCUserDAO>("USER", context,new JDBCUserDAO());
                         DAOsCount.incrementAndGet();
-                        instance = DAOsPool.poll();
                     }
                 }
-            } else {
-                instance = DAOsPool.poll();
+            }
+                instance = pool.get();
                 if (instance == null && (DAOsCount.get() < maxCount)) {
                     Thread.sleep(timeOut);
                     instance = DAOsPool.poll();
@@ -214,7 +196,7 @@ public class JDBCUserDAO implements UserDAO, AutoCloseable {
         }
     }
 
-    private JDBCUserDAO(javax.servlet.ServletContext context) throws JDBCUserDAOException {
+    private JDBCUserDAO() throws JDBCUserDAOException {
         DB_NAME = context.getInitParameter("DB_NAME");
         DB_LOGIN = context.getInitParameter("DB_LOGIN");
         DB_PASSWORD = context.getInitParameter("DB_PASSWORD");
@@ -252,10 +234,10 @@ public class JDBCUserDAO implements UserDAO, AutoCloseable {
     @SuppressWarnings("empty-statement")
     public User registerUser(User user) throws JDBCUserDAOException {
         try {
-            
-            LOGINS_TABLE.addUser( user.getLogin(), user.getPassword());
-            ROLES_TABLE.addUser( user.getLogin(), user.getRoles()[0]);
-            USER_INFO_TABLE.addUser( user.getLogin(), user.getFirstName(), user.getLastName(), user.getEmail());
+
+            LOGINS_TABLE.addUser(user.getLogin(), user.getPassword());
+            ROLES_TABLE.addUser(user.getLogin(), user.getRoles()[0]);
+            USER_INFO_TABLE.addUser(user.getLogin(), user.getFirstName(), user.getLastName(), user.getEmail());
             connection.commit();
 
         } catch (Exception e) {
@@ -322,7 +304,7 @@ public class JDBCUserDAO implements UserDAO, AutoCloseable {
             }
         } catch (SQLException ex) {
             log.error("readUserNamesError", ex);
-            
+
         }
         return result;
     }

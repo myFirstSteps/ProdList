@@ -4,7 +4,9 @@
  * and open the template in the editor.
  */
 
-package com.pankratov.prodlist.model.users;
+package com.pankratov.prodlist.model.dao;
+import com.pankratov.prodlist.model.dao.jdbc.JDBCUserDAOException;
+import com.pankratov.prodlist.model.users.User;
 import java.util.concurrent.*;
 
 /**

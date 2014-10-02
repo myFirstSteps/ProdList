@@ -6,9 +6,9 @@
 
 package com.pankratov.prodlist.web;
 
+import com.pankratov.prodlist.model.dao.DAOFactory;
 import com.pankratov.prodlist.model.users.User;
-import com.pankratov.prodlist.model.users.UserDAO;
-import com.pankratov.prodlist.model.users.UserDAOFactory;
+import com.pankratov.prodlist.model.dao.UserDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import com.pankratov.prodlist.model.mail.*;
@@ -82,7 +82,7 @@ public class ShowUserServlet extends HttpServlet {
         
         try{
             new MailAgent(this.getServletContext());
-            UserDAO ud=UserDAOFactory.getUserDAOInstance(UserDAOFactory.UserDAOType.JDBCUserDAO, this.getServletContext());
+            UserDAO ud=DAOFactory.getUserDAOInstance(DAOFactory.DAOSource.JDBC, this.getServletContext());
             request.setCharacterEncoding("UTF-8");
             response.setCharacterEncoding("UTF-16");
             

@@ -4,17 +4,17 @@
  * and open the template in the editor.
  */
 
-package com.pankratov.prodlist.model.users;
+package com.pankratov.prodlist.model.dao.jdbc;
 
 /**
  *
  * @author pankratov
  */
 public class JDBCUserDAOException extends Exception {
-     JDBCUserDAOException (String s,Throwable cause){
+     public JDBCUserDAOException (String s,Throwable cause){
          super(s,cause);
      }
-     JDBCUserDAOException (String s){
+     public JDBCUserDAOException (String s){
          super(s);
      }
      

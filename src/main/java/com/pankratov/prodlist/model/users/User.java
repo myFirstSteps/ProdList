@@ -6,6 +6,8 @@
 
 package com.pankratov.prodlist.model.users;
 
+import com.pankratov.prodlist.model.dao.jdbc.JDBCUserDAOException;
+
 /**
  *
  * @author pankratov

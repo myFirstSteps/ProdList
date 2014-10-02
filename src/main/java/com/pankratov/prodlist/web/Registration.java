@@ -5,24 +5,23 @@
  */
 package com.pankratov.prodlist.web;
 
-import com.pankratov.prodlist.model.users.JDBCUserDAOException;
-import com.pankratov.prodlist.model.users.User;
-import com.pankratov.prodlist.model.users.UserDAO;
-import com.pankratov.prodlist.model.users.UserDAOFactory;
-import com.pankratov.prodlist.model.users.UserDAOFactory.*;
+import com.pankratov.prodlist.model.dao.DAOFactory;
+import com.pankratov.prodlist.model.dao.DAOFactory.DAOSource;
 import com.pankratov.prodlist.model.mail.MailAgent;
+import com.pankratov.prodlist.model.dao.jdbc.JDBCUserDAOException;
+import com.pankratov.prodlist.model.users.User;
+import com.pankratov.prodlist.model.dao.UserDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.concurrent.*;
 import javax.servlet.*;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
-import org.apache.logging.log4j.*;
-import org.apache.logging.log4j.*;
 import org.apache.commons.mail.*;
-import java.util.concurrent.*;
+import org.apache.logging.log4j.*;
 
 
 /**
@@ -75,7 +74,7 @@ public class Registration extends HttpServlet {
         String result = "";
         ServletContext context = this.getServletContext();
         if (logins == null) {
-            try (UserDAO ud = UserDAOFactory.getUserDAOInstance(UserDAOType.JDBCUserDAO, context);) {
+            try (UserDAO ud = DAOFactory.getUserDAOInstance(DAOSource.JDBC, context);) {
                 logins = ud.readUsersNames();
             } catch (Exception e) {
                 log.error("Проверка logina", e);
@@ -115,7 +114,7 @@ public class Registration extends HttpServlet {
             }
 
             User user = new User(login, password, new String[]{"level1"}, name, lastName, email);
-            try (UserDAO dao = UserDAOFactory.getUserDAOInstance(UserDAOType.JDBCUserDAO, this.getServletContext());) {
+            try (UserDAO dao = DAOFactory.getUserDAOInstance(DAOSource.JDBC, this.getServletContext());) {
                 user = dao.registerUser(user);
                 if (user != null) {
                     request.setAttribute("registration", "done");
