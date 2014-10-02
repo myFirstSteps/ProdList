@@ -21,7 +21,7 @@ import org.apache.logging.log4j.*;
  *
  * @author pankratov
  */
-public class JDBCUserDAO extends JDBCDAOObject implements UserDAO, AutoCloseable  {
+public class JDBCUserDAO extends JDBCDAOObject implements UserDAO, AutoCloseable {
 
     private class Table {
 
@@ -93,12 +93,7 @@ public class JDBCUserDAO extends JDBCDAOObject implements UserDAO, AutoCloseable
     }
 
     private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(JDBCUserDAO.class);
-    private static int maxCount;
-    private static int minCount;
-    private static long idleTime;
-    private static long timeOut;
     private static JDBCDAOPool<JDBCUserDAO> pool;
-    private static final AtomicInteger DAOsCount = new AtomicInteger(0);
     private final String DB_NAME;
     private final String DB_LOGIN;
     private final String DB_PASSWORD;
@@ -106,8 +101,6 @@ public class JDBCUserDAO extends JDBCDAOObject implements UserDAO, AutoCloseable
     private Table ROLES_TABLE;
     private Table USER_INFO_TABLE;
     private Connection connection;
-    private long offerTime = System.currentTimeMillis();
-    private boolean pensioner = false;
     private static ServletContext context;
 
     @Override
@@ -121,82 +114,46 @@ public class JDBCUserDAO extends JDBCDAOObject implements UserDAO, AutoCloseable
     }
 
     @Override
+    Connection getConnection() {
+        return connection;
+    }
+
+    @Override
     public void close() throws SQLException, InterruptedException {
         System.out.println("in close");
         LOGINS_TABLE.rowset.release();
         ROLES_TABLE.rowset.release();
         USER_INFO_TABLE.rowset.release();
-        if (pensioner && DAOsCount.get() > minCount) {
-            synchronized (DAOsCount) {
-                if (DAOsCount.get() > minCount) {
-                    connection.close();
-                    DAOsCount.decrementAndGet();
-                }
-                return;
-            }
-        }
-        offerTime = System.currentTimeMillis();
-        JDBCUserDAO.DAOsPool.offer(this);
-
-        System.out.println("Pool Size:" + DAOsPool.size());
+        pool.put(this);
     }
+
     @Override
-    protected JDBCUserDAO newInstance(){
-        return new JDBCUserDAO();
+    protected JDBCUserDAO newInstance() throws JDBCUserDAOException {
+        return new JDBCUserDAO(context);
     }
 
     static public JDBCUserDAO getInstance(javax.servlet.ServletContext context) throws Exception {
         try {
             System.out.println("Come to get instance");
             JDBCUserDAO instance = null;
+            JDBCUserDAO.context = context;
             if (pool == null) {
                 synchronized (JDBCUserDAO.class) {
                     if (pool == null) {
-                        pool = new JDBCDAOPool<JDBCUserDAO>("USER", context,new JDBCUserDAO());
-                        DAOsCount.incrementAndGet();
+                        pool = new JDBCDAOPool<>(new JDBCUserDAO(context));
                     }
                 }
             }
-                instance = pool.get();
-                if (instance == null && (DAOsCount.get() < maxCount)) {
-                    Thread.sleep(timeOut);
-                    instance = DAOsPool.poll();
-                    if (instance == null) {
-                        synchronized (DAOsCount) {
-                            if (DAOsCount.get() < maxCount) {
-                                System.out.println("DAOCount is:" + DAOsCount.get() + "<" + maxCount);
-                                instance = new JDBCUserDAO(context);
-                                System.out.println("so i creating");
-                                DAOsCount.incrementAndGet();
-                            }
-
-                        }
-                    }
-                    System.out.println("pool count is: " + DAOsCount.get());
-                    System.out.println("Now in pool: " + DAOsPool.size());
-
-                } else {
-                    System.out.println("Waiting for jdbc" + Thread.currentThread());
-                    while (instance == null) {
-                        /*Здесь хорошо бы усыплять поток до освобождения ресурса. Нужно продумать
-                         вариант с очередью (что бы обеспечить правильную очередность выдачи ресурсов).
-                         */
-                        instance = DAOsPool.poll();
-                    }
-                    System.out.println("Oh, I get it!!" + Thread.currentThread());
-                }
-                log.debug("i am created" + instance);
-            }
-            if ((System.currentTimeMillis() - instance.offerTime) > idleTime) {
-                instance.pensioner = true;
-            }
+            instance = pool.get();
             return instance;
         } catch (Exception e) {
             throw new JDBCUserDAOException("Exception when getting  JDBCUsDAO instance", e);
         }
+
     }
 
-    private JDBCUserDAO() throws JDBCUserDAOException {
+    private JDBCUserDAO(ServletContext context) throws JDBCUserDAOException {
+        super("USER");
         DB_NAME = context.getInitParameter("DB_NAME");
         DB_LOGIN = context.getInitParameter("DB_LOGIN");
         DB_PASSWORD = context.getInitParameter("DB_PASSWORD");
@@ -228,6 +185,11 @@ public class JDBCUserDAO extends JDBCDAOObject implements UserDAO, AutoCloseable
             throw new JDBCUserDAOException("JDBCUsDAO creation error: ", e);
         }
 
+    }
+
+    @Override
+    ServletContext getContext() {
+        return context;
     }
 
     @Override

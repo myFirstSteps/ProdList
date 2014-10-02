@@ -5,6 +5,7 @@
  */
 package com.pankratov.prodlist.model.dao.jdbc;
 
+import java.sql.SQLException;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.servlet.ServletContext;
@@ -25,10 +26,11 @@ public class JDBCDAOPool<T extends JDBCDAOObject> {
     private long timeOut;
     private ConcurrentLinkedQueue<T> DAOsPool;
     private final AtomicInteger DAOsCount = new AtomicInteger(0);
-    private long offerTime = System.currentTimeMillis();
-    private boolean pensioner = false;
 
-    public JDBCDAOPool(String contentName, ServletContext context, T adam) {
+    public JDBCDAOPool(T adam) {
+        this.adam = adam;
+        ServletContext context = adam.getContext();
+        String contentName = adam.getDAOName();
         System.out.println(String.format("Getting %s pool", contentName));
         if (DAOsPool == null) {
             synchronized (JDBCUserDAO.class) {
@@ -57,7 +59,9 @@ public class JDBCDAOPool<T extends JDBCDAOObject> {
                         idleTime = 6000;
                         log.info(String.format("В дескрипторе не задано время бездействия JDBC%sDAO перед удалением из пула", contentName));
                     }
-                    if (minCount<1)minCount=1;
+                    if (minCount < 1) {
+                        minCount = 1;
+                    }
                     DAOsPool = new ConcurrentLinkedQueue<>();
                     DAOsPool.offer(adam);
                 }
@@ -67,45 +71,66 @@ public class JDBCDAOPool<T extends JDBCDAOObject> {
         }
     }
 
-    public T get() {
-        T instance = DAOsPool.poll();
-        if (instance == null && (DAOsCount.get() < maxCount)) {
-            Thread.sleep(timeOut);
-            instance = DAOsPool.poll();
-            if (instance == null) {
-                synchronized (DAOsCount) {
-                    if (DAOsCount.get() < maxCount) {
-                        System.out.println("DAOCount is:" + DAOsCount.get() + "<" + maxCount);
-                        instance = (T)DAOsPool.poll().newInstance();
-                        System.out.println("so i creating");
-                        DAOsCount.incrementAndGet();
-                    }
-
-                }
-            }
-            System.out.println("pool count is: " + DAOsCount.get());
-            System.out.println("Now in pool: " + DAOsPool.size());
-
-        } else {
-            System.out.println("Waiting for jdbc" + Thread.currentThread());
-            while (instance == null) {
-                /*Здесь хорошо бы усыплять поток до освобождения ресурса. Нужно продумать
-                 вариант с очередью (что бы обеспечить правильную очередность выдачи ресурсов).
-                 */
+    T get() {
+        try {
+            T instance = DAOsPool.poll();
+            if (instance == null && (DAOsCount.get() < maxCount)) {
+                Thread.sleep(timeOut);
                 instance = DAOsPool.poll();
+                if (instance == null) {
+                    synchronized (DAOsCount) {
+                        if (DAOsCount.get() < maxCount) {
+                            System.out.println("DAOCount is:" + DAOsCount.get() + "<" + maxCount);
+                            instance = (T) adam.newInstance();
+                            System.out.println("so i creating");
+                            DAOsCount.incrementAndGet();
+                        }
+
+                    }
+                }
+                System.out.println("pool count is: " + DAOsCount.get());
+                System.out.println("Now in pool: " + DAOsPool.size());
+
+            } else {
+                System.out.println("Waiting for jdbc" + Thread.currentThread());
+                while (instance == null) {
+                    /*Здесь хорошо бы усыплять поток до освобождения ресурса. Нужно продумать
+                     вариант с очередью (что бы обеспечить правильную очередность выдачи ресурсов).
+                     */
+                    instance = DAOsPool.poll();
+                }
+                System.out.println("Oh, I get it!!" + Thread.currentThread());
             }
-            System.out.println("Oh, I get it!!" + Thread.currentThread());
+            log.debug("i am created" + instance);
+
+            if ((System.currentTimeMillis()
+                    - instance.getOfferTime()) > idleTime) {
+                instance.setPensioner(true);
+            }
+        } catch (Exception e) {
+            log.error(String.format("Ошибка получения %s из пула :", adam), e);
         }
-        log.debug("i am created" + instance);
+        return null;
+
     }
 
-    if ((System.currentTimeMillis () 
-        - instance.offerTime) > idleTime) {
-                instance.pensioner = true;
+    void put(T instance) throws SQLException {
+        if (instance.isPensioner()) {
+            synchronized (DAOsCount) {
+                if (DAOsCount.get() > minCount) {
+                    DAOsCount.decrementAndGet();
+                    instance.getConnection().close();
+                }
+                return;
+            }
+        }
+        instance.setOfferTime(System.currentTimeMillis());
+        System.out.println("Pool Size:" + DAOsPool.size());
+        DAOsPool.offer(instance);
     }
-    return instance ;
 
-return null;
+    int size() {
+        return DAOsCount.get();
     }
-    
+
 }

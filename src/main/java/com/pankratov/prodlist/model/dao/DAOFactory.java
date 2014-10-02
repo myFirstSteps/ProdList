@@ -27,7 +27,7 @@ public class DAOFactory {
     public static ProductDAO getProductDAOInstance(DAOSource source, ServletContext context) throws Exception{
          switch(source){
             case JDBC: 
-                return JDBCProductDAO.getInstance(context);
+                return null;//JDBCProductDAO.getInstance(context);
         }
         return null;
     }
