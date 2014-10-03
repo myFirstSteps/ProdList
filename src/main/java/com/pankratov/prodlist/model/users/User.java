@@ -6,7 +6,7 @@
 
 package com.pankratov.prodlist.model.users;
 
-import com.pankratov.prodlist.model.dao.jdbc.JDBCUserDAOException;
+import com.pankratov.prodlist.model.dao.jdbc.JDBCDAOException;
 
 /**
  *
@@ -19,7 +19,7 @@ public class User {
     private String firstName;
     private String lastName;
     private String email;
-    public User (String login, String password, String[] roles, String firstName,String lastname,String email)throws JDBCUserDAOException{
+    public User (String login, String password, String[] roles, String firstName,String lastname,String email)throws JDBCDAOException{
         try{
         this.login=login;
         this.password=password;
@@ -28,7 +28,7 @@ public class User {
         this.lastName=lastname;
         this.email=email;
         }catch (Exception ex){ 
-            throw new JDBCUserDAOException("Не удалось создать пользователя",ex); }
+            throw new JDBCDAOException("Не удалось создать пользователя",ex); }
     }
     @Override
     public String toString(){

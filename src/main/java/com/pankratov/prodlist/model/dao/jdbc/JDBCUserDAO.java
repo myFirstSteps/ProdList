@@ -7,7 +7,6 @@ package com.pankratov.prodlist.model.dao.jdbc;
 
 import com.pankratov.prodlist.model.dao.UserDAO;
 import com.pankratov.prodlist.model.users.User;
-import com.sun.rowset.CachedRowSetImpl;
 import java.sql.*;
 import java.util.*;
 import java.util.concurrent.*;
@@ -21,86 +20,38 @@ import org.apache.logging.log4j.*;
  *
  * @author pankratov
  */
-public class JDBCUserDAO extends JDBCDAOObject implements UserDAO, AutoCloseable {
+public class JDBCUserDAO extends JDBCDAOObject implements UserDAO{
 
-    private class Table {
+    private class UserTable extends Table {
 
-        private CachedRowSetImpl rowset;
-        private String tableName;
-        private List<String> columnNames;
-
-        private Table(String tableName, List<String> colNames) throws JDBCUserDAOException {
-            try {
-                rowset = new CachedRowSetImpl();
-
-                rowset.setUrl(DB_NAME);
-                rowset.setPassword(DB_PASSWORD);
-                rowset.setUsername(DB_LOGIN);
-                this.tableName = tableName;
-                columnNames = colNames;
-                rowset.setCommand("Select * from " + tableName + " where " + columnNames.get(0) + "=null");
-                rowset.execute();
-                //  log.debug(String.format("created table %s with columns: %s rowset:%s", tableName, columnNames, rowset));
-
-            } catch (Exception e) {
-                log.error("Table creation issue (ex): " + e);
-                throw new JDBCUserDAOException("Ошибка при создании:" + Table.class + "для: " + tableName, e);
-            }
-
+        protected UserTable(String tableName,Connection con, List<String> colNames) throws JDBCDAOException {
+            super(tableName,con, colNames);
         }
 
-        private CachedRowSet readUser(String name) throws SQLException {
-            rowset.setCommand("select * from " + tableName + " where "
-                    + columnNames.get(0) + "= '" + name + "'");
-            rowset.execute();
-            return rowset;
+        private CachedRowSet readUser(String name) throws SQLException, JDBCDAOException {
+            CachedRowSet crs = getRowSet();
+            crs.setCommand("select * from " + getTableName() + " where "
+                    + getColumnName(1) + "= '" + name + "'");
+            getRowSet().execute(getConnection());
+            return getRowSet();
         }
 
         private boolean addUser(String... s) throws Exception {
-            int i = 1;
-            String params = "";
-            for (int j = 0; j < s.length; j++) {
-                params += ", ?";
-            }
-            params = params.replaceAll("^, ", "");
-            PreparedStatement stat = connection.prepareStatement(String.format("Insert into %s values(%s)", tableName, params));
-            for (String st : s) {
-                stat.setString(i++, st);
-
-            }
-
-            stat.execute();
-
+            addRecord(s);
             return true;
-        }
-
-        private CachedRowSet getAll() throws SQLException {
-            rowset.setCommand("select * from " + tableName);
-            rowset.execute();
-            return rowset;
-        }
-
-        private String getColumnName(int numb) throws JDBCUserDAOException {
-            String res = null;
-
-            try {
-                res = columnNames.get(numb - 1);
-            } catch (IndexOutOfBoundsException e) {
-                throw new JDBCUserDAOException(String.format("У таблици %s нет столбца с индексом %d", tableName, numb), e);
-            }
-            return res;
         }
     }
 
     private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(JDBCUserDAO.class);
     private static JDBCDAOPool<JDBCUserDAO> pool;
+    private static final String DAO_NAME = "USER";
     private final String DB_NAME;
     private final String DB_LOGIN;
     private final String DB_PASSWORD;
-    private Table LOGINS_TABLE;
-    private Table ROLES_TABLE;
-    private Table USER_INFO_TABLE;
-    private Connection connection;
+    private final UserTable LOGINS_TABLE;
+    private final UserTable ROLES_TABLE;
+    private final UserTable USER_INFO_TABLE;
+    private final Connection connection;
     private static ServletContext context;
 
     @Override
@@ -108,6 +59,7 @@ public class JDBCUserDAO extends JDBCDAOObject implements UserDAO, AutoCloseable
         super.finalize();
         try {
             connection.close();
+            log.debug(String.format("Connection of %s normally closed", this));
         } finally {
             log.debug("Ripped" + this);
         }
@@ -119,22 +71,20 @@ public class JDBCUserDAO extends JDBCDAOObject implements UserDAO, AutoCloseable
     }
 
     @Override
-    public void close() throws SQLException, InterruptedException {
-        System.out.println("in close");
-        LOGINS_TABLE.rowset.release();
-        ROLES_TABLE.rowset.release();
-        USER_INFO_TABLE.rowset.release();
+    public void close() throws SQLException {
+        LOGINS_TABLE.getRowSet().release();
+        ROLES_TABLE.getRowSet().release();
+        USER_INFO_TABLE.getRowSet().release();
         pool.put(this);
     }
 
     @Override
-    protected JDBCUserDAO newInstance() throws JDBCUserDAOException {
+    protected JDBCUserDAO newInstance() throws JDBCDAOException {
         return new JDBCUserDAO(context);
     }
 
     static public JDBCUserDAO getInstance(javax.servlet.ServletContext context) throws Exception {
         try {
-            System.out.println("Come to get instance");
             JDBCUserDAO instance = null;
             JDBCUserDAO.context = context;
             if (pool == null) {
@@ -147,13 +97,12 @@ public class JDBCUserDAO extends JDBCDAOObject implements UserDAO, AutoCloseable
             instance = pool.get();
             return instance;
         } catch (Exception e) {
-            throw new JDBCUserDAOException("Exception when getting  JDBCUsDAO instance", e);
+            throw new JDBCDAOException("Exception when getting  JDBCUsDAO instance", e);
         }
 
     }
 
-    private JDBCUserDAO(ServletContext context) throws JDBCUserDAOException {
-        super("USER");
+    private JDBCUserDAO(ServletContext context) throws JDBCDAOException {
         DB_NAME = context.getInitParameter("DB_NAME");
         DB_LOGIN = context.getInitParameter("DB_LOGIN");
         DB_PASSWORD = context.getInitParameter("DB_PASSWORD");
@@ -175,14 +124,14 @@ public class JDBCUserDAO extends JDBCDAOObject implements UserDAO, AutoCloseable
                     }
                     m.get(currentTableName).add(columnName);
                 }
-                LOGINS_TABLE = new Table(loginsTableName, m.get(loginsTableName));
-                ROLES_TABLE = new Table(rolesTableName, m.get(rolesTableName));
-                USER_INFO_TABLE = new Table(userInfoTableName, m.get(userInfoTableName));
+                LOGINS_TABLE = new UserTable(loginsTableName, connection,m.get(loginsTableName));
+                ROLES_TABLE = new UserTable(rolesTableName, connection, m.get(rolesTableName));
+                USER_INFO_TABLE = new UserTable(userInfoTableName, connection, m.get(userInfoTableName));
             }
             log.debug("UserDAO created");
         } catch (Exception e) {
             log.error("JDBCUsDAO creation error", e);
-            throw new JDBCUserDAOException("JDBCUsDAO creation error: ", e);
+            throw new JDBCDAOException("JDBCUsDAO creation error: ", e);
         }
 
     }
@@ -193,27 +142,25 @@ public class JDBCUserDAO extends JDBCDAOObject implements UserDAO, AutoCloseable
     }
 
     @Override
-    @SuppressWarnings("empty-statement")
-    public User registerUser(User user) throws JDBCUserDAOException {
+    public User registerUser(User user) throws JDBCDAOException {
         try {
 
-            LOGINS_TABLE.addUser(user.getLogin(), user.getPassword());
-            ROLES_TABLE.addUser(user.getLogin(), user.getRoles()[0]);
-            USER_INFO_TABLE.addUser(user.getLogin(), user.getFirstName(), user.getLastName(), user.getEmail());
+            LOGINS_TABLE.addRecord(user.getLogin(), user.getPassword());
+            ROLES_TABLE.addRecord(user.getLogin(), user.getRoles()[0]);
+            USER_INFO_TABLE.addRecord(user.getLogin(), user.getFirstName(), user.getLastName(), user.getEmail());
             connection.commit();
 
         } catch (Exception e) {
             if (e.toString().matches(".*Duplicate entry.*for key 'PRIMARY'.*")) {
-                throw new JDBCUserDAOException(String.format("Пользователь с loginom: %s уже сушествует.", user.getLogin()));
+                throw new JDBCDAOException(String.format("Пользователь с loginom: %s уже сушествует.", user.getLogin()));
             } else {
-                throw new JDBCUserDAOException("Ошибка регистрации пользователя.", e);
+                throw new JDBCDAOException("Ошибка регистрации пользователя.", e);
             }
         }
         return user;
     }
 
     @Override
-    @SuppressWarnings("empty-statement")
     public User readUser(String name) throws Exception {
         User result = null;
         try {
@@ -241,7 +188,7 @@ public class JDBCUserDAO extends JDBCDAOObject implements UserDAO, AutoCloseable
         } catch (Exception ex) {
             log.error("'readUser error' wrong db tables", ex);
 
-            throw new JDBCUserDAOException("Reading user Exception: ", ex);
+            throw new JDBCDAOException("Reading user Exception: ", ex);
         };
         return result;
     }
@@ -257,18 +204,13 @@ public class JDBCUserDAO extends JDBCDAOObject implements UserDAO, AutoCloseable
     }
 
     @Override
-    public ConcurrentSkipListSet<String> readUsersNames() {
-        ConcurrentSkipListSet<String> result = new ConcurrentSkipListSet<>();
-        try (Statement st = connection.createStatement();) {
-            ResultSet res = st.executeQuery(String.format("select %s from %s", LOGINS_TABLE.columnNames.get(0), LOGINS_TABLE.tableName));
-            while (res.next()) {
-                result.add(res.getString(1));
-            }
-        } catch (SQLException ex) {
-            log.error("readUserNamesError", ex);
+    public String getDAOName() {
+        return DAO_NAME;
+    }
 
-        }
-        return result;
+    @Override
+    public ConcurrentSkipListSet<String> readUsersNames() throws JDBCDAOException {
+       return LOGINS_TABLE.readColumn(1);
     }
 
 }

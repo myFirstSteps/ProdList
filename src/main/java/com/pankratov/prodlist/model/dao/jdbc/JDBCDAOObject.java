@@ -14,16 +14,16 @@ import javax.servlet.ServletContext;
  * @author pankratov
  */
 //Интерфейс маркер
-public abstract class JDBCDAOObject {
+public abstract class JDBCDAOObject implements AutoCloseable {
     abstract protected JDBCDAOObject newInstance()throws Exception; 
      private long offerTime = System.currentTimeMillis();
-     protected final String dAOName;
+     private static final String dAOName="JDBCDAOObject";
      private boolean pensioner = false;
     /**
      * @return the offerTime
      */
-    protected JDBCDAOObject(String dAOName) {
-        this.dAOName=dAOName;
+    protected  JDBCDAOObject() {
+      
     } 
     public long getOfferTime() {
         return offerTime;
@@ -51,7 +51,5 @@ public abstract class JDBCDAOObject {
     public void setPensioner(boolean pensioner) {
         this.pensioner = pensioner;
     }
-    public String getDAOName(){
-        return dAOName;
-    } 
+    abstract public String getDAOName();
 }

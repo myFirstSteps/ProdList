@@ -8,7 +8,7 @@ package com.pankratov.prodlist.web;
 import com.pankratov.prodlist.model.dao.DAOFactory;
 import com.pankratov.prodlist.model.dao.DAOFactory.DAOSource;
 import com.pankratov.prodlist.model.mail.MailAgent;
-import com.pankratov.prodlist.model.dao.jdbc.JDBCUserDAOException;
+import com.pankratov.prodlist.model.dao.jdbc.JDBCDAOException;
 import com.pankratov.prodlist.model.users.User;
 import com.pankratov.prodlist.model.dao.UserDAO;
 import java.io.IOException;
@@ -121,9 +121,10 @@ public class Registration extends HttpServlet {
                     request.setAttribute("user", user);
                     request.setAttribute("mailType", "registration");
                     request.getSession().setAttribute("user", user);
+                    logins= dao.readUsersNames();
                 }
             }
-        } catch (JDBCUserDAOException ex) {
+        } catch (JDBCDAOException ex) {
             log.error("Ошибка создания пользователя", ex);
             System.out.println(ex);
         } catch (Exception e) {

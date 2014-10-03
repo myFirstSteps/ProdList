@@ -10,11 +10,11 @@ package com.pankratov.prodlist.model.dao.jdbc;
  *
  * @author pankratov
  */
-public class JDBCUserDAOException extends Exception {
-     public JDBCUserDAOException (String s,Throwable cause){
+public class JDBCDAOException extends Exception {
+     public JDBCDAOException (String s,Throwable cause){
          super(s,cause);
      }
-     public JDBCUserDAOException (String s){
+     public JDBCDAOException (String s){
          super(s);
      }
      
