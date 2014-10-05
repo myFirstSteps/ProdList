@@ -1,15 +1,17 @@
 html{height: 100%;}
-body{ font-family:serif;  font-size:small; margin:0; height: 100%; padding: 0; }
-table{text-align:center; padding: 4px  }
+body{ font-family: serif, Arial ;  font-size:small; margin:0; height: 100%;  padding: 0; }
 em{font-size: 120%}
-#HeadT{ background-color:#303030; padding:4px; color:white }
-#HeadT td{padding: 0px 5px 0px 5px}
-#HeadT img{border-radius: 4px}
-#HeadT span{font-size:120%}
-#RC{float:right;}
-#LoginF{position:relative; top:20px;}
-.error{color:red;}
-#doc{ 
-      height:100%;
- }
- .center_form{ background-color:#f0f0f0; border-radius:8px;   width:400px;  margin-bottom:auto; margin-top: 5%; margin-left:auto; margin-right: auto; text-align: center; vertical-align: middle; padding: 10px;}
+#HeadTemplate{ background-color:#303030; padding:0px; margin: 0px; width: 100%;  color:white; }
+
+#HeadTemplate img{border-radius: 4px; }
+#HeadTemplate span{font-size:120%}
+div.HeadTemplate { margin: 10px;  vertical-align: middle; display: inline-block; }
+#right{text-align: center;  float: right; display: inline-block; vertical-align: bottom; }
+#UserForm{ margin: 10px; padding: 5px;}
+#UserForm span text button{margin: 5px;}
+#UserName em{color: #dea000;}
+ .error{color:red;}
+ div.center_form{height: 100%; }
+ form.center_form{ background-color:#f0f0f0; border-radius:8px; max-width: 400px;
+margin-bottom:auto; margin-top:10px; margin-left:auto; margin-right: auto; text-align: center; vertical-align: middle; padding: 10px;}
+

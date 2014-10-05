@@ -20,6 +20,7 @@
         <%--Форма регистрации --%>
         <div class="center_form" id="registration">
             <c:choose> <c:when test="${registration ne 'done'}">
+                    <form id="registration" class="center_form" method="post" action="<c:url value='Registration'/>" >
                     <div id='error' class='error'>${error}</div> 
                     <h3>Добро пожаловать на страницу регистрации.</h3>
                     <p>
@@ -27,7 +28,7 @@
                         организации самого процесса регистрации, так что смело можете оставить это занятие на потом. Если же вам очень интересно посмотреть работает это, 
                         или нет, заполните необходимые поля и нажмите кнопку зарегистрироваться.
                     </p>
-                    <form id="registration" method="post" action="<c:url value='Registration'/>" >
+                    
                         <p>логин:<br><input  class="mandatory"     value="${regData['0']}"
                                              type="text" title="Login пользователя который вы будете вводить при авторизации" name="login" placeholder="обязательное поле"></p>
                         <p>пароль:<br><input   class="mandatory confirmt"  type="password" title="Пароль" name="password" placeholder="обязательное поле"></p>

@@ -80,9 +80,8 @@ public class ShowUserServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
-        try{
-            new MailAgent(this.getServletContext());
-            UserDAO ud=DAOFactory.getUserDAOInstance(DAOFactory.DAOSource.JDBC, this.getServletContext());
+        try(UserDAO ud=DAOFactory.getUserDAOInstance(DAOFactory.DAOSource.JDBC, this.getServletContext());){
+                      
             request.setCharacterEncoding("UTF-8");
             response.setCharacterEncoding("UTF-16");
             
