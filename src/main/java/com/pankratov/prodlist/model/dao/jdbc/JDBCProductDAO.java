@@ -11,10 +11,13 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.servlet.ServletContext;
 import javax.sql.rowset.CachedRowSet;
 import org.apache.logging.log4j.Logger;
@@ -32,8 +35,8 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
     private final String DB_NAME;
     private final String DB_LOGIN;
     private final String DB_PASSWORD;
-    private final Table PRODUCTS_TABLE;
-    private final Table IMAGES_TABLE;
+    private final ProductTable PRODUCTS_TABLE;
+    private final ProductTable IMAGES_TABLE;
     private final Connection connection;
 
     private class ProductTable extends Table {
@@ -53,6 +56,34 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
         private boolean addProduct(String... s) throws Exception {
             addRecord(s);
             return true;
+        }
+
+        protected ArrayList getEnumValues(int col) {
+            ArrayList<String> result = new ArrayList<>();
+
+            try (Statement st = connection.createStatement();) {
+                ResultSet res = st.executeQuery(String.format("Describe %s %s", this.getTableName(), this.getColumnName(col)));
+                Pattern p = Pattern.compile("(?:(?:enum[(]\')|(?:,\'))(.+?)(?:(?:\',)|(?:\'[)]))");
+                while (res.next()) {
+                     Matcher m = p.matcher(res.getString(2));
+                     int start=0;
+                    while (start>=0&&m.find(start)) {
+                                     System.out.println("matcher "+m.group(1)) ;  
+                          result.add(m.group(1));
+                          
+                          start=m.end(1);
+                    }
+                  
+                }
+                res.close();
+
+            } catch (SQLException | JDBCDAOException ex) {
+
+                new JDBCDAOException("Ошибка чтения имен пользователя", ex);
+
+            }
+            return result;
+
         }
     }
 
@@ -109,9 +140,9 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
     }
 
     private JDBCProductDAO(ServletContext context) throws JDBCDAOException {
-        DB_NAME = context.getInitParameter("DB_NAME");
-        DB_LOGIN = context.getInitParameter("DB_LOGIN");
-        DB_PASSWORD = context.getInitParameter("DB_PASSWORD");
+        DB_NAME = context.getInitParameter("DB_PROD_NAME");
+        DB_LOGIN = context.getInitParameter("DB_PROD_LOGIN");
+        DB_PASSWORD = context.getInitParameter("DB_PROD_PASSWORD");
         String productsTableName = context.getInitParameter("PRODUCTS_TABLE");
         String imagesTableName = context.getInitParameter("IMAGES_TABLE");
         try {
@@ -162,12 +193,16 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
 
     @Override
     public ConcurrentSkipListSet<String> readProductNames() throws Exception {
-        return null;
+        PRODUCTS_TABLE.getEnumValues(7);
+        return PRODUCTS_TABLE.readColumn(2);
     }
 
     @Override
     public ConcurrentSkipListSet<String> readProductSubNames() throws Exception {
         return null;
+    }
+    public ArrayList readProductGroups(){
+        return PRODUCTS_TABLE.getEnumValues(7);
     }
 
 }

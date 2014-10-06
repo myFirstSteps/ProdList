@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
  *
  * @author pankratov
  */
-public interface ProductDAO {
+public interface ProductDAO extends AutoCloseable {
     public Product readProduct(Product what) throws Exception;
     public Product addProduct(Product what) throws Exception;
     public Product deleteProduct(Product what) throws Exception;

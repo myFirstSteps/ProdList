@@ -11,7 +11,7 @@
 
 
     <div id ="author" class="HeadTemplate"><span>Интерактивное резюме на<br>позицию Java Junior Developer.<br><em>Панкратов Михаил</em></span></div>
-    <div  id='logo' class="HeadTemplate" ><img src="<c:url value="/resources/OCP_JavaSE7Programmer.gif"/>" allign="top" width="140" height="71" alt="OCP_JavaSE7Programmer.gif"></div>
+    <div  id='logo' class="HeadTemplate" ><img src="<c:url value="/resources/OCP_JavaSE7Programmer.gif"/>"  width="140" height="71" alt="OCP_JavaSE7Programmer.gif"></div>
     <div id="right" class='HeadTemplate'>
         <c:choose>
             <c:when test="${username==null}">

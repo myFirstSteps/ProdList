@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<taglib xmlns="http://java.sun.com/xml/ns/j2ee"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd"
+  version="2.0">
+<description>define</description>
+  <display-name>define functions</display-name>
+  <tlib-version>1.1</tlib-version>
+  <short-name>fndef</short-name>
+  <uri>ProductsEL</uri>
+
+  <function>
+    <description>
+      define
+    </description>
+    <name>getCategories</name>
+    <function-class>com.pankratov.prodlist.web.el.ProductEL</function-class>
+    <function-signature>java.util.ArrayList getCategories(javax.servlet.ServletContext) throws Exception</function-signature>
+    <example>
+      &lt;${fn:addString(str)}
+    </example>
+  </function>
+</taglib>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
