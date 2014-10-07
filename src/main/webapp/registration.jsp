@@ -21,14 +21,14 @@
         <div class="center_form" id="registration">
             <c:choose> <c:when test="${registration ne 'done'}">
                     <form id="registration" class="center_form" method="post" action="<c:url value='Registration'/>" >
-                    <div id='error' class='error'>${error}</div> 
-                    <h3>Добро пожаловать на страницу регистрации.</h3>
-                    <p>
-                        Регистрация не требуется для большинства функционала сайта и тестового приложения, и добавлена ..., совершенно верно, ради
-                        организации самого процесса регистрации, так что смело можете оставить это занятие на потом. Если же вам очень интересно посмотреть работает это, 
-                        или нет, заполните необходимые поля и нажмите кнопку зарегистрироваться.
-                    </p>
-                    
+                        <div id='error' class='error'>${error}</div> 
+                        <h3>Добро пожаловать на страницу регистрации.</h3>
+                        <p>
+                            Регистрация не требуется для большинства функционала сайта и тестового приложения, и добавлена ..., совершенно верно, ради
+                            организации самого процесса регистрации, так что смело можете оставить это занятие на потом. Если же вам очень интересно посмотреть работает это, 
+                            или нет, заполните необходимые поля и нажмите кнопку зарегистрироваться.
+                        </p>
+
                         <p>логин:<br><input  class="mandatory"     value="${regData['0']}"
                                              type="text" title="Login пользователя который вы будете вводить при авторизации" name="login" placeholder="обязательное поле"></p>
                         <p>пароль:<br><input   class="mandatory confirmt"  type="password" title="Пароль" name="password" placeholder="обязательное поле"></p>
@@ -50,40 +50,41 @@
                     <form method="POST" action="<c:url value='loginPage.jsp'/>">
                         <input type="submit" value="Войти">
                     </form>
-                    
+
                 </c:otherwise>
             </c:choose>
         </div>
         <script src="scripts/jquery-1.11.1.min.js"></script>
         <script src="scripts/formValidation.js"></script>
         <script>$("input.mandatory").bind('blur', function() {
-                                emptyCheck(this,"<span class='mandatory error'>Поле не может быть пустым</span><br class='mandatory error'>");
-                            });
-                            $("input.mandatory").bind('keyup', function() {
-                                emptyCheck(this,"<span class='mandatory error'>Поле не может быть пустым</span><br class='mandatory error'>");
-                            });
-                            $("input.confirm").bind('blur', function() {
-                                confirmationCheck(this,$("input.confirmt"),"<span class='confirm error'>Значение поля не совпадает с полем</span><br class='confirm error'>");
-                            });
-                            $("input.confirm").bind('keyup', function() {
-                                if($(this).siblings(".confirm.error").length!==0) confirmationCheck(this,$("input.confirmt"),"<span class='confirm error'>Значение поля не совпадает с полем</span><br class='confirm error'>");
-                            });
-                            $("input[name='login']").bind('keyup', function() {
-                                uniqueCheck(this,{name: this.value},"GET","Registration","<span class='unique error'>К сожалению логин уже занят</span><br class='unique error'>"); 
-                            });
+                        emptyCheck(this, "<span class='mandatory error'>Поле не может быть пустым</span><br class='mandatory error'>");
+                    });
+                    $("input.mandatory").bind('keyup', function() {
+                        emptyCheck(this, "<span class='mandatory error'>Поле не может быть пустым</span><br class='mandatory error'>");
+                    });
+                    $("input.confirm").bind('blur', function() {
+                        confirmationCheck(this, $("input.confirmt"), "<span class='confirm error'>Значение поля не совпадает с полем</span><br class='confirm error'>");
+                    });
+                    $("input.confirm").bind('keyup', function() {
+                        if ($(this).siblings(".confirm.error").length !== 0)
+                            confirmationCheck(this, $("input.confirmt"), "<span class='confirm error'>Значение поля не совпадает с полем</span><br class='confirm error'>");
+                    });
+                    $("input[name='login']").bind('keyup', function() {
+                        uniqueCheck(this, {name: this.value}, "GET", "Registration", "<span class='unique error'>К сожалению логин уже занят</span><br class='unique error'>");
+                    });
 
-                            $("input.confirm").bind('keyup', function() {
-                                if ($(this).siblings(".confirm.error").length != 0)
-                                    confirmationCheck(this);
-                            });
-                            $("input[type='text'], input[type='password']").bind('keyup', function() {
-                                 dataValidCheck(this,'^[a-z,A-z,a-я,А-Я,0-9]+',"<span class='invalid error'>Значение поля должно начинаться с цифры или буквы.\n\
-                         </span><br class='invalid error'>"); 
-                            });
-                            $("input[type='text'], input[type='password']").bind('blur', function() {
-                                dataValidCheck(this,'^[a-z,A-z,a-я,А-Я,0-9]+',"<span class='invalid error'>Значение поля должно начинаться с цифры или буквы.\n\
-                         </span><br class='invalid error'>"); 
-                            });
+                    $("input.confirm").bind('keyup', function() {
+                        if ($(this).siblings(".confirm.error").length != 0)
+                            confirmationCheck(this);
+                    });
+                    $("input[type='text'], input[type='password']").bind('keyup', function() {
+                        dataValidCheck(this, '^[a-z,A-z,a-я,А-Я,0-9]+', "<span class='invalid error'>Значение поля должно начинаться с цифры или буквы.\n\
+                 </span><br class='invalid error'>");
+                    });
+                    $("input[type='text'], input[type='password']").bind('blur', function() {
+                        dataValidCheck(this, '^[a-z,A-z,a-я,А-Я,0-9]+', "<span class='invalid error'>Значение поля должно начинаться с цифры или буквы.\n\
+                 </span><br class='invalid error'>");
+                    });
         </script>     
     </body>
 </html> 

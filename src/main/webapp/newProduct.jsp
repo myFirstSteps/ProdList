@@ -24,18 +24,18 @@
         <c:set var="imgDir" value="${pageContext.servletContext.getRealPath(imgRoot)}"/>
 
         <div class='TabletHolder'>
-        <c:forEach  items="${product:getCategories(pageContext.servletContext)}" varStatus="step" var="category">
-            <div class='CategoryTablet'>
-                <c:set var="imgPath" value="${imgDir}/${step.count}.png"></c:set>
-                    <img src="
-                    <c:choose> 
-                        <c:when test='${product:isImageExist(imgPath)}'> <c:url value="${imgRoot}${step.count}.png"/></c:when>
-                        <c:otherwise> <c:url value="${imgRoot}0.png"/></c:otherwise> 
-                    </c:choose>
-                    " alt="Картинка группы"><br>
-               <span>${category}</span>
-            </div>
-        </c:forEach>
+            <c:forEach  items="${product:getCategories(pageContext.servletContext)}" varStatus="step" var="category">
+                <div class='CategoryTablet'>
+                    <c:set var="imgPath" value="${imgDir}/${step.count}.png"></c:set>
+                        <img src="
+                        <c:choose> 
+                            <c:when test='${product:isImageExist(imgPath)}'> <c:url value="${imgRoot}${step.count}.png"/></c:when>
+                            <c:otherwise> <c:url value="${imgRoot}0.png"/></c:otherwise> 
+                        </c:choose>
+                        " alt="Картинка группы"><br>
+                    <span>${category}</span>
+                </div>
+            </c:forEach>
         </div>
 
 
@@ -48,5 +48,24 @@
 
             </select>
         </form>
+        <script src="scripts/jquery-1.11.1.min.js"></script>
+        <script src="scripts/jquery-ui.min.js"></script>
+        <script>
+            $(document).ready(function() {
+                var maxDim = 0;
+                
+                $("div.CategoryTablet").each(function() {
+                    maxDim = $(this).width() > maxDim ? $(this).width() : maxDim > $(this).height() ? maxDim : $(this).height();
+                   $(this).mouseover(function(){$(this).addClass("SelectedTablet"); });  
+                   $(this).mouseout(function(){$(this).removeClass("SelectedTablet");});
+               });
+                  $("div.CategoryTablet").width(maxDim); $("div.CategoryTablet").height(maxDim); 
+              
+                 $(".TabletHolder").css("visibility","visible");
+             
+             
+            });
+            ;
+        </script>
     </body>
 </html>

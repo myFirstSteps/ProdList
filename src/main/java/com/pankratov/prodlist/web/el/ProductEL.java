@@ -29,9 +29,7 @@ public class ProductEL {
     }
 
     public static boolean isImageExist(String path) {
-
         Path p = java.nio.file.Paths.get(path);
-        System.out.println(p);
-        return Files.exists(p);
+            return Files.exists(p);
     }
 }
