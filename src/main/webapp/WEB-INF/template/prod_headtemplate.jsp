@@ -12,7 +12,7 @@
 
 
     <div id ="author" class="ProdHeadTemplate"><span>Демонстрационное приложение<br><em>"Products List"</em></span></div>
-    <div  id='logo' class="ProdHeadTemplate" ><img src="<c:url value="/resources/OCP_JavaSE7Programmer.gif"/>" allign="top" width="140" height="71" alt="OCP_JavaSE7Programmer.gif"></div>
+    <div  id='logo' class="ProdHeadTemplate" ><img src="<c:url value="/resources/OCP_JavaSE7Programmer.gif"/>" width="140" height="71" alt="OCP_JavaSE7Programmer.gif"></div>
     <div id="right" class='ProdHeadTemplate'>
         <c:choose>
             <c:when test="${username==null}">
