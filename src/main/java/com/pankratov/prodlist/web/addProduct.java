@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.pankratov.prodlist.web;
 
 import com.pankratov.prodlist.model.dao.DAOFactory;
@@ -40,7 +39,7 @@ public class addProduct extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet addProduct</title>");            
+            out.println("<title>Servlet addProduct</title>");
             out.println("</head>");
             out.println("<body>");
             out.println("<h1>Servlet addProduct at " + request.getContextPath() + "</h1>");
@@ -62,13 +61,13 @@ public class addProduct extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
-            //    processRequest(request, response);
             response.setContentType("text/plain");
             response.setCharacterEncoding("UTF-8");
             response.getWriter().println(DAOFactory.getProductDAOInstance(DAOFactory.DAOSource.JDBC, this.getServletContext()).readProductNames());
-            
+
         } catch (Exception ex) {
-            System.out.println(ex); throw new IOException(ex);
+            System.out.println(ex);
+            throw new IOException(ex);
         }
     }
 
