@@ -3,64 +3,79 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-function ImgMenu(content,owner){
-  
-    this.tablet=$(content).children("div");
-    this.amenu=$(content);
-    this.aowner=owner;
-    this.tabletHeight=0;
-    this.TabletCount=0;
-    popUp=function(){ $(this).parent().toggle("clip"); };
-    popDown=function(){  $(content).hide(); };
-    
-    $(content).mouseleave(function(){$(content).fadeOut(4000);});
-    $(content).mouseover(function(){$(content).stop().fadeIn(300);});
+function ImgMenu(content, owner) {
+
+    this.tablet = $(content).children("div");
+    this.amenu = $(content);
+    this.aowner = owner;
+    this.tabletHeight = 0;
+    this.TabletCount = 0;
+    popUp = function() {
+        $(content).stop(true,true);
+        var tabletDim=$(content).children("div").outerWidth(true);
+     
+       
+        $(content).css("position", "absolute");
+        $(content).css("left", " -5000px");
+        var menuWidth = window.innerWidth - (window.innerWidth *0.15);
+        var HorCount = Math.floor(menuWidth / tabletDim);
+        var VerCount = Math.ceil(tablCount / HorCount);
+        var left = (window.innerWidth - menuWidth) / 2;
+        var formBottom=$(owner).closest("form").position().top+$(owner).closest("form").outerHeight();
+           
+      
+        $(content).innerWidth(tabletDim * HorCount+tabletDim*0.10);
+        $(content).innerHeight(tabletDim * VerCount);
+        $(content).css("left", left);
+        $(content).css("top", formBottom);
+        $(content).toggle("clip", 300);
+        $(content).fadeOut(3000);
+       
+    };
+    popDown = function() {
+        $(content).stop(true,true);
+        $(content).hide();
+    };
+
+    $(content).mouseleave(function() {
+        $(content).stop(true,true).fadeOut(3000);
+    });
+    $(content).mouseover(function() {
+        $(content).stop(true,true).fadeIn(300);
+    });
     var maxDim = 0;
     var tablCount = 0;
-                $(this.tablet).each(function() {
-                    maxDim = $(this).width() > maxDim ? $(this).width() : maxDim > $(this).height() ? maxDim : $(this).height();
-                  $(this).mouseover(function() {
-                        $(this).addClass("SelectedTablet");
-                    });
-                    $(this).mouseout(function() {
-                      $(this).removeClass("SelectedTablet");
-                      
-                   });
-                  $(this).click(function(){   $(owner).attr("value",$(this).children("span").text());  popDown(); });
-                  ++tablCount;
-                 
-                });
-                this.TabletCount=tablCount;
-                this.tablet.width(maxDim);
-                this.tablet.height(maxDim);
-                $(content).hide();
-                $(owner).click(function(){
-                
-                     $(content).css("position","absolute");
-                     $(content).css("left"," -5000px");
-                    var awidth = window.innerWidth - (15 * window.innerWidth / 100);
-                    var i=awidth / maxDim;
-                      
-                    var HorCount=Math.floor(awidth /$(content).children("div").outerWidth(true));
-                    var VerCount=Math.ceil(tablCount /HorCount);
-                    alert(VerCount);
-                    var aleft = (window.innerWidth - awidth) / 2;
-                    var ctop = (window.innerHeight - $(content).innerHeight()) - window.innerHeight * 10 / 100;
-                    var atop = ctop>window.innerHeight/2?ctop:window.innerHeight/2;
-                    $(this).parent().position().top + $(this).parent().innerHeight();
-                    alert("herer");
-                    $(content).innerWidth($(content).children("div").outerWidth(true)*HorCount);
-                    $(content).innerHeight($(content).children("div").outerHeight(true)*VerCount);
-               
-                 //   $(content).css("width", awidth);
-                    $(content).css("left", aleft);
-                    $(content).css("top", atop);
-                    $(content).toggle("clip", 300);
-                });
+    $(this.tablet).each(function( ) {
+        maxDim = $(this).width() > maxDim ? $(this).width() : maxDim > $(this).height() ? maxDim : $(this).height();
+        $(this).mouseover(function() {
+            $(this).addClass("SelectedTablet");
+        });
+        $(this).mouseout(function() {
+            $(this).removeClass("SelectedTablet");
+        });
+        $(this).click(function() {
+                   $( "#CategorySelect").val('');
+                   $(owner).val($(this).children("span").text());
+                   
+            popDown();
+        });
+        ++tablCount;
 
-                $(content).css("visibility", "visible");
+    });
+    tablCount;
+    this.tablet.width(maxDim);
+    this.tablet.height(maxDim);
+    this.tabletHeight=maxDim;
+    $(content).hide();
+    $(owner).click(function() {
+               popUp();
            
-    
-    
+    });
+    $(owner).keypress(function() {popDown()});
+
+  
+
+
+
 }
 
