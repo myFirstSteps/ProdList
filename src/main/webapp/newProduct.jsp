@@ -23,9 +23,9 @@
         <c:set var="imgRoot" value="/resources/common_image/product_categories/"/>
         <c:set var="imgDir" value="${pageContext.servletContext.getRealPath(imgRoot)}"/>
         <c:set var="categories" value="${product:getCategories(pageContext.servletContext)}"/>
-        <div class='TabletHolder'>
+        <div class='TabletMenu'>
             <c:forEach  items="${categories}" varStatus="step" var="category">
-                <div class='CategoryTablet'>
+                <div class='Tablet'>
                     <c:set var="imgPath" value="${imgDir}/${step.count}.png"></c:set>
                         <img src="
                         <c:choose> 
@@ -39,14 +39,16 @@
         </div>
 
 
-        <form id="addProduct" class="center_form" method="post" action="productAdd">
-            <input type="text" name="category" id="CategorySelect" > 
+        <form  class="center_form" method="post" action="productAdd">
+            <input   type="text" name="category" id="CategorySelect" > 
                      </form>
         <script src="scripts/jquery-1.11.1.min.js"></script>
         <script src="scripts/jquery-ui.min.js"></script>
         <script src="scripts/PopUpMenu.js"></script>
-        <script>
-                $(document).ready(function() {
+        <script> $(document).ready(function() {
+                  
+                    new ImgMenu($('.TabletMenu'), $("#CategorySelect"));  });
+              /*  $(document).ready(function() {
                     new ImgMenu($("#addProduct"),this);               //!!!!!!!!!!!!!!!!!!!!!!!!
                 var maxDim = 0;
                 $("div.CategoryTablet").each(function() {
@@ -79,7 +81,7 @@
 
                 $(".TabletHolder").css("visibility", "visible");
             });
-            ;
+            ;*/
         </script>
     </body>
 </html>

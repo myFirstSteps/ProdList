@@ -14,11 +14,10 @@ div.HeadTemplate { margin: 10px;  vertical-align: middle; display: inline-block;
  form.center_form{ background-color:#f0f0f0; border-radius:8px; max-width: 400px;
 margin-bottom:auto; margin-top:10px; margin-left:auto; margin-right: auto; text-align: center;  vertical-align: middle; padding: 10px;}
  
-.TabletHolder{display: inline-block; border-radius: 10px; position: absolute; top: -5000px;   border: #303030 solid 2px;     background-color: #f0f0f0;  }
-.CategoryTablet {text-align: center; border-radius: 6px; vertical-align: middle;  width:200px; margin: 5px;  padding: 3px;  border: #303030 solid 1px; display: inline-block;  }
-
-.CategoryTablet span{color: #303030; font-weight: normal; font-style: italic; font-size: 150%; text-shadow: 2px;}
-.CategoryTablet img{border-radius: 4px; width: auto; border:#303030 groove 2px; }
+.TabletMenu{display: inline-block; border-radius: 10px; position: absolute; left: -5000px;   border: #303030 solid 2px;     background-color: #f0f0f0;  }
+.Tablet {text-align: center; border-radius: 6px; vertical-align: middle;  width:200px; margin: 5px;  padding: 3px;  border: #303030 solid 1px; display: inline-block;  }
+.Tablet span{color: #303030; font-weight: normal; font-style: italic; font-size: 150%; text-shadow: 2px;}
+.Tablet img{border-radius: 4px; width: auto; border:#303030 groove 2px; }
 .SelectedTablet span{color: #dea000; font-weight: bold; text-shadow: 5px;}
 .SelectedTablet img{border: #dea000 groove 5px;}
 div.SelectedTablet {border: #dea000 solid 2px;}
