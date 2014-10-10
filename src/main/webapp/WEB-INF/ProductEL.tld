@@ -27,6 +27,11 @@
         <function-class>com.pankratov.prodlist.web.el.ProductEL</function-class>
         <function-signature>boolean isImageExist(java.lang.String) </function-signature>
     </function>
+    <function>
+        <name>getUnits</name>
+        <function-class>com.pankratov.prodlist.web.el.ProductEL</function-class>
+        <function-signature>java.util.ArrayList getUnits(javax.servlet.ServletContext) throws Exception </function-signature>
+    </function>
   
 </taglib>
 

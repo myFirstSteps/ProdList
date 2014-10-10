@@ -7,14 +7,10 @@ function ImgMenu(content, owner) {
 
     this.tablet = $(content).children("div");
     this.amenu = $(content);
-    this.aowner = owner;
-    this.tabletHeight = 0;
-    this.TabletCount = 0;
+     this.TabletCount = 0;
     popUp = function() {
         $(content).stop(true,true);
-        var tabletDim=$(content).children("div").outerWidth(true);
-     
-       
+        var tabletDim=$(content).children("div").outerWidth(true);    
         $(content).css("position", "absolute");
         $(content).css("left", " -5000px");
         var menuWidth = window.innerWidth - (window.innerWidth *0.15);
@@ -29,7 +25,8 @@ function ImgMenu(content, owner) {
         $(content).css("left", left);
         $(content).css("top", formBottom);
         $(content).toggle("clip", 300);
-        $(content).fadeOut(3000);
+        $(content).fadeOut(4000);
+        
        
     };
     popDown = function() {
@@ -65,13 +62,12 @@ function ImgMenu(content, owner) {
     tablCount;
     this.tablet.width(maxDim);
     this.tablet.height(maxDim);
-    this.tabletHeight=maxDim;
     $(content).hide();
     $(owner).click(function() {
                popUp();
            
     });
-    $(owner).keypress(function() {popDown()});
+    $(owner).keypress(function() {popDown();});
 
   
 

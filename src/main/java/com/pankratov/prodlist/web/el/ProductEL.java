@@ -27,6 +27,11 @@ public class ProductEL {
             return ((JDBCProductDAO) pdao).readProductGroups();
         }
     }
+    public static ArrayList getUnits(ServletContext context) throws Exception {
+        try (ProductDAO pdao = DAOFactory.getProductDAOInstance(DAOFactory.DAOSource.JDBC, context)) {
+            return ((JDBCProductDAO) pdao).readProductUnits();
+        }
+    }
 
     public static boolean isImageExist(String path) {
         Path p = java.nio.file.Paths.get(path);

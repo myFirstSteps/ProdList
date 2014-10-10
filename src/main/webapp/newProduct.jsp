@@ -39,49 +39,76 @@
         </div>
 
 
-        <form  class="center_form" method="post" action="productAdd">
-            <input   type="text" name="category" id="CategorySelect" > 
-                     </form>
+        <form  class="center_form" id="newProduct" method="post" action="productAdd">
+            <div>
+                <span>Категория:</span><br>
+                <input   size="15" type="text" name="category"  id="CategorySelect" >
+            </div>
+            <div>
+                <span>Название:</span><br>
+                <input  type="text" name="name"  class='mandatory' >
+            </div>
+            <div>
+                <span>Уточняющее название:</span><br>
+                <input  type="text" name="sub_name" class='mandatory' >
+            </div>
+            <div>
+                <span>Производитель:</span><br>
+                <input  type="text" name="producer"  id="Name" >
+            </div>
+            <div>
+                <span id='valueLabel'>Объем:</span><br>
+                <input  type="text" size="5" maxlength="8" class="mandatory" name="value" >
+            </div>
+            <div>
+                <span>Единици:</span><br>
+                <select name="units" id='valueUnit'>
+                    <c:forEach items="${product:getUnits(pageContext.servletContext)}" var="unit"> 
+                        <option>${unit}</option>
+                    </c:forEach>
+                </select>
+            </div>
+            <div>
+                <span>Цена (руб):</span><br>
+                <input  type="text" size="5" maxlength="8" class='mandatory'  name="price" >
+            </div>
+            <div>
+                <span>Комментарий:</span><br>
+                <input  type="text" name="comment">
+            </div><br>
+            <div id='img_file'>
+                <span>Прикрепить изображение:</span><br>
+                <input type="file"  name='image'>
+            </div><br>
+            <input type="button" onclick="validate(this.form)" value="Добавить">
+
+
+        </form>
         <script src="scripts/jquery-1.11.1.min.js"></script>
         <script src="scripts/jquery-ui.min.js"></script>
+        <script src="scripts/formValidation.js"></script>
         <script src="scripts/PopUpMenu.js"></script>
-        <script> $(document).ready(function() {
-                  
-                    new ImgMenu($('.TabletMenu'), $("#CategorySelect"));  });
-              /*  $(document).ready(function() {
-                    new ImgMenu($("#addProduct"),this);               //!!!!!!!!!!!!!!!!!!!!!!!!
-                var maxDim = 0;
-                $("div.CategoryTablet").each(function() {
-                    maxDim = $(this).width() > maxDim ? $(this).width() : maxDim > $(this).height() ? maxDim : $(this).height();
-                    $(this).mouseover(function() {
-                        $(this).addClass("SelectedTablet");
+        <script> 
+                var testUnits=function(s){
+                    switch(s){
+                        case "кг": return "Вес:";
+                        case "л": return "Объем:";
+                        default : return "В единице:";
+                    }
+                };
+                $(document).ready(function() {
+                                new ImgMenu($('.TabletMenu'), $("#CategorySelect"));
+                $("#valueUnit").change(function(){$("#valueLabel").text( testUnits($("#valueUnit").val())); 
+                                    });
+             $("#valueLabel").text( testUnits($("#valueUnit").val()));
+             $("input.mandatory").bind('blur', function() {
+                        emptyCheck(this, "<span class='mandatory error'>Поле не может быть пустым</span><br class='mandatory error'>");
                     });
-                    $(this).mouseout(function() {
-                        $(this).removeClass("SelectedTablet");
-                       
+                    $("input.mandatory").bind('keyup', function() {
+                        emptyCheck(this, "<span class='mandatory error'>Поле не может быть пустым</span><br class='mandatory error'>");
                     });
-                    $(this).click(function(){  $("#CategorySelect").attr("value",$(this).children("span").text()); $("div.TabletHolder").toggle("clip");});
-                });
-                $("div.CategoryTablet").width(maxDim);
-                $("div.CategoryTablet").height(maxDim);
-                $("div.TabletHolder").hide();
-                $("#CategorySelect").click(function()
-                {
-                    var awidth = window.innerWidth - (15 * window.innerWidth / 100);
-                    var aleft = (window.innerWidth - awidth) / 2;
-                    var ctop = (window.innerHeight - $("div.TabletHolder").innerHeight()) - window.innerHeight * 10 / 100;
-                    var atop = ctop>window.innerHeight/2?ctop:window.innerHeight/2;
-                    $(this).parent().position().top + $(this).parent().innerHeight();
-
-                    $("div.TabletHolder").css("width", awidth);
-                    $("div.TabletHolder").css("left", aleft);
-                    $("div.TabletHolder").css("top", atop);
-                    $("div.TabletHolder").toggle("clip", 300);
-                });
-
-                $(".TabletHolder").css("visibility", "visible");
             });
-            ;*/
+            
         </script>
     </body>
 </html>

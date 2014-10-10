@@ -204,5 +204,7 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
     public ArrayList readProductGroups(){
         return PRODUCTS_TABLE.getEnumValues(7);
     }
-
+    public ArrayList readProductUnits(){
+        return PRODUCTS_TABLE.getEnumValues(6);
+    }
 }

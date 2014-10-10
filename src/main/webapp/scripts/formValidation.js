@@ -8,11 +8,12 @@
 //Проверка правильности заполнения  формы перед отправкой запроса.
 function validate(senderForm) {
     switch (senderForm.id) {
-        case "registration":
+        case "registration":;
+        case "newProduct":
             $(".mandatory, .confirm").keyup();
-                   
+                  
             setTimeout(function(){if ($("span.error").size() === 0) {
-                $(senderForm).submit();
+                              $(senderForm).submit();
             }},1000);
     }
 }
