@@ -39,26 +39,26 @@
         </div>
 
 
-        <form  class="center_form" id="newProduct" method="post" action="productAdd">
+        <form  class="center_form" id="newProduct" method="post"  enctype="multipart/form-data" action= '<c:url value="addImage"/>'>
             <div>
                 <span>Категория:</span><br>
-                <input   size="15" type="text" name="category"  id="CategorySelect" >
+                <input   size="15" type="text" name="category"  value="Овощи" id="CategorySelect" >
             </div>
             <div>
                 <span>Название:</span><br>
-                <input  type="text" name="name"  class='mandatory' >
+                <input  type="text" value="Помидоры" name="name"  class='mandatory' >
             </div>
             <div>
                 <span>Уточняющее название:</span><br>
-                <input  type="text" name="sub_name" class='mandatory' >
+                <input  type="text" value="Сливовидные" name="sub_name" class='mandatory' >
             </div>
             <div>
                 <span>Производитель:</span><br>
-                <input  type="text" name="producer"  id="Name" >
+                <input  type="text" name="producer"  value="Любой" id="Name" >
             </div>
             <div>
                 <span id='valueLabel'>Объем:</span><br>
-                <input  type="text" size="5" maxlength="8" class="mandatory" name="value" >
+                <input  type="text" size="5" maxlength="8" class="mandatory" value='1' name="value" >
             </div>
             <div>
                 <span>Единици:</span><br>
@@ -70,7 +70,7 @@
             </div>
             <div>
                 <span>Цена (руб):</span><br>
-                <input  type="text" size="5" maxlength="8" class='mandatory'  name="price" >
+                <input  type="text" size="5" maxlength="8" class='mandatory' value='120.99' name="price" >
             </div>
             <div>
                 <span>Комментарий:</span><br>
@@ -78,7 +78,7 @@
             </div><br>
             <div id='img_file'>
                 <span>Прикрепить изображение:</span><br>
-                <input type="file"  name='image'>
+                <input type="file"   accept="image/jpeg,image/png,image/gif" name='imageFile'>
             </div><br>
             <input type="button" onclick="validate(this.form)" value="Добавить">
 
@@ -107,6 +107,8 @@
                     $("input.mandatory").bind('keyup', function() {
                         emptyCheck(this, "<span class='mandatory error'>Поле не может быть пустым</span><br class='mandatory error'>");
                     });
+                                
+                    
             });
             
         </script>

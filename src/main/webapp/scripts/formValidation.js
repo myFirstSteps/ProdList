@@ -67,6 +67,7 @@ function uniqueCheck(field,data,method,url,errText){
             }
         }});
 }
+
 function getClassSelector(text){
      var init = new String(text).match(" class=['|\"]((?:.)+?)['|\"]");
       return  "*[class='" + new String(init[1]) + "']"; //'.'+new String(init[1]).replace(' ','.');
