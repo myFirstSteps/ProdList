@@ -18,7 +18,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.text.DateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,8 +40,6 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
  */
 public class addProduct extends HttpServlet {
 
-  
-
     private enum Error {
 
         FILE_SIZE_ERROR, FILE_TYPE_ERROR, FIELD_DATA_ERROR;
@@ -57,14 +57,15 @@ public class addProduct extends HttpServlet {
     private int maxMemSize;
     private Path temp;
     private Path imgDir;
-    private static final org.apache.logging.log4j.Logger log = org.apache.logging.log4j.LogManager.getLogger(imageAdd.class);
-    
+    private static final org.apache.logging.log4j.Logger log = org.apache.logging.log4j.LogManager.getLogger(addProduct.class);
+
     /*Не получилось быстро найти готовый класс для проверки сигнатуры файла на соответствие заявленному типу,
-        по этому решил написать свой.*/
+     по этому решил написать свой.*/
     private static class CheckFileContent {
         /*Метод проверяет содержится ли в файле f "magic number" соответствующий требуемому формату файла.
-        Если сигнатура файла соответствует формату gif,jpeg или png, метод возвращает true.
-        */
+         Если сигнатура файла соответствует формату gif,jpeg или png, метод возвращает true.
+         */
+
         static boolean isValid(File f) throws IOException {
             boolean result = false;
             final byte[] gifMagic = {0x47, 0x49, 0x46, 0x38, 0x39, 0x61};
@@ -101,7 +102,8 @@ public class addProduct extends HttpServlet {
         String param = null;
         ServletContext context = config.getServletContext();
         param = config.getServletContext().getInitParameter("MAX_UPLOAD_FILE_SIZE");
-        Path appRoot = Paths.get(context.getRealPath(context.getContextPath()));
+        Path appRoot = Paths.get(context.getRealPath(context.getContextPath())).getParent();
+       
         maxImgSize = (param != null) ? Long.parseLong(param) : 512000;
         param = context.getInitParameter("MAX_FILE_MEMORY");
         maxMemSize = (param != null) ? Integer.parseInt(param) : 100 * 1024;
@@ -109,6 +111,7 @@ public class addProduct extends HttpServlet {
         temp = (param != null) ? Paths.get(param) : Paths.get(appRoot + "temp/imgfile");
         param = context.getInitParameter("PROD_IMG_FILE_DIR");
         imgDir = (param != null) ? Paths.get(param) : Paths.get(appRoot + "resources/img/products");
+        System.out.println(appRoot);
         if (!temp.isAbsolute()) {
             temp = Paths.get(appRoot + "/" + temp);
         }
@@ -185,9 +188,9 @@ public class addProduct extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        boolean needToCheck=false;
+        boolean needToCheck = false;
         try {
-            Product product=new Product();
+            Product product = new Product();
             if (!ServletFileUpload.isMultipartContent(request)) {
                 response.setCharacterEncoding("UTF-8");
                 response.setContentType("text/plain");
@@ -197,35 +200,54 @@ public class addProduct extends HttpServlet {
             DiskFileItemFactory factory = new DiskFileItemFactory(maxMemSize, temp.toFile());
             ServletFileUpload upl = new ServletFileUpload(factory);
             upl.setFileSizeMax(maxImgSize);
-            File f = (Paths.get(imgDir + request.getSession().getId())).toFile();
-            f.createNewFile();
-            
+            String creationTime=DateFormat.getTimeInstance(DateFormat.LONG).format(new  Date());
+            File f = (Paths.get(imgDir +"/"+ request.getSession().getId()+"_"+creationTime)).toFile();
 
             List<FileItem> x = upl.parseRequest(request);
-          
+
             for (FileItem i : x) {
                 if (!i.isFormField()) {
-                    System.out.println("not form field");
-                    System.out.println(i.getFieldName()+"|"+i.getSize()+"|"+Arrays.asList(i.get()));
-                    needToCheck=true;
-                    i.write(f);
-                }else{
-                    switch(i.getFieldName()){
-                        case "category":product.setGroup(i.getString("UTF-8"));break;
-                        case "name":product.setName(i.getString("UTF-8"));break;
-                        case "sub_name":product.setSubname(i.getString("UTF-8"));break;
-                        case "produser":product.setProducer(i.getString("UTF-8"));break;
-                        case "value":product.setValue(new Float(i.getString("UTF-8")));break;
-                        case "units":product.setValueUnits(i.getString("UTF-8"));break;
-                        case "price":product.setPrice(new Float(i.getString("UTF-8")));break; 
-                        case "comment":product.setComment(i.getString("UTF-8"));break;
+                    if (i.getSize() > 0) {
+                        f.createNewFile();
+                        i.write(f);
+                    }
+                } else {
+                    switch (i.getFieldName()) {
+                        case "category":
+                            product.setGroup(i.getString("UTF-8"));
+                            break;
+                        case "name":
+                            product.setName(i.getString("UTF-8"));
+                            break;
+                        case "sub_name":
+                            product.setSubname(i.getString("UTF-8"));
+                            break;
+                        case "produser":
+                            product.setProducer(i.getString("UTF-8"));
+                            break;
+                        case "value":
+                            product.setValue(new Float(i.getString("UTF-8")));
+                            break;
+                        case "units":
+                            product.setValueUnits(i.getString("UTF-8"));
+                            break;
+                        case "price":
+                            product.setPrice(new Float(i.getString("UTF-8")));
+                            break;
+                        case "comment":
+                            product.setComment(i.getString("UTF-8"));
+                            break;
                     }
                 }
 
             }
             System.out.println(product);
-             //Проверяем, что загруженный файл является gif,png или jpeg.          
-            if(needToCheck&&!CheckFileContent.isValid(f)){f.delete(); sendError(Error.FILE_TYPE_ERROR,request,response); return;};
+            //Проверяем, что загруженный файл является gif,png или jpeg.          
+            if (f.length() > 0 && !CheckFileContent.isValid(f)) {
+                f.delete();
+                sendError(Error.FILE_TYPE_ERROR, request, response);
+                return;
+            };
         } catch (Exception e) {
             if (e.toString().contains("FileSizeLimitExceededException")) {
                 sendError(Error.FILE_SIZE_ERROR, request, response);
@@ -244,7 +266,7 @@ public class addProduct extends HttpServlet {
                         maxImgSize / Math.round(Math.pow(2, 10)));
                 break;
             case FILE_TYPE_ERROR:
-                text="Ошибка формата прикрепленного файла. Прикрепляемые файлы должны быть jpeg, png или gif.";
+                text = "Ошибка формата прикрепленного файла. Прикрепляемые файлы должны быть jpeg, png или gif.";
         }
         request.setAttribute("error", text);
         request.getRequestDispatcher(response.encodeURL("newProduct.jsp")).forward(request, response);
