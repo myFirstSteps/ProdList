@@ -39,26 +39,27 @@
         </div>
 
 
-        <form  class="center_form" id="newProduct" method="post"  enctype="multipart/form-data" action= '<c:url value="addImage"/>'>
+        <form  class="center_form" id="newProduct" method="post"  enctype="multipart/form-data" action= '<c:url value="addProduct"/>'>
+            <div id='error' class='error'>${error}</div><br>
             <div>
                 <span>Категория:</span><br>
-                <input   size="15" type="text" name="category"  value="Овощи" id="CategorySelect" >
+                <input   size="15" type="text" name="category" class="validCheck" value="Овощи" id="CategorySelect" >
             </div>
             <div>
                 <span>Название:</span><br>
-                <input  type="text" value="Помидоры" name="name"  class='mandatory' >
+                <input  type="text" value="Помидоры" name="name"  class='mandatory validCheck"' >
             </div>
             <div>
                 <span>Уточняющее название:</span><br>
-                <input  type="text" value="Сливовидные" name="sub_name" class='mandatory' >
+                <input  type="text" value="Сливовидные" class='validCheck' name="sub_name"  >
             </div>
             <div>
                 <span>Производитель:</span><br>
-                <input  type="text" name="producer"  value="Любой" id="Name" >
+                <input  type="text" name="producer"  value="Любой" class="validCheck" id="Name" >
             </div>
             <div>
                 <span id='valueLabel'>Объем:</span><br>
-                <input  type="text" size="5" maxlength="8" class="mandatory" value='1' name="value" >
+                <input  type="text" size="5" maxlength="8" class="validNumberCheck"  value='1' name="value" >
             </div>
             <div>
                 <span>Единици:</span><br>
@@ -70,7 +71,7 @@
             </div>
             <div>
                 <span>Цена (руб):</span><br>
-                <input  type="text" size="5" maxlength="8" class='mandatory' value='120.99' name="price" >
+                <input  type="text" size="5" maxlength="8" class="validNumberCheck" value='120.99' name="price" >
             </div>
             <div>
                 <span>Комментарий:</span><br>
@@ -78,7 +79,7 @@
             </div><br>
             <div id='img_file'>
                 <span>Прикрепить изображение:</span><br>
-                <input type="file"   accept="image/jpeg,image/png,image/gif" name='imageFile'>
+                <input type="file" id="a"   accept="image/jpeg,image/png,image/gif" name='imageFile'>
             </div><br>
             <input type="button" onclick="validate(this.form)" value="Добавить">
 
@@ -101,14 +102,19 @@
                 $("#valueUnit").change(function(){$("#valueLabel").text( testUnits($("#valueUnit").val())); 
                                     });
              $("#valueLabel").text( testUnits($("#valueUnit").val()));
-             $("input.mandatory").bind('blur', function() {
+             $("#img_file").on('change',function(){alert( $("#a").val()); })
+             $("input.mandatory").on('blur keyup', function() {
                         emptyCheck(this, "<span class='mandatory error'>Поле не может быть пустым</span><br class='mandatory error'>");
-                    });
-                    $("input.mandatory").bind('keyup', function() {
-                        emptyCheck(this, "<span class='mandatory error'>Поле не может быть пустым</span><br class='mandatory error'>");
-                    });
-                                
-                    
+                    });  
+                    $("input.validCheck").on('keyup blur', function() {
+                                dataValidCheck(this, '^[a-z,A-z,a-я,А-Я,0-9]+', "<span class='invalid error'>Значение поля должно начинаться с цифры или буквы.\n\
+                 </span><br class='invalid error'>");
+                            });
+                              $("input.validNumberCheck").on('keyup blur', function() {
+                                dataValidCheck(this, '^[0-9]+(?:[.|,])?[0-9]*$', "<span class='invalid error'>Значение поля должно быть целым или десятичным числом.\n\
+                 </span><br class='invalid error'>");
+                            });
+                           
             });
             
         </script>

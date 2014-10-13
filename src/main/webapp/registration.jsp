@@ -56,35 +56,29 @@
         </div>
         <script src="scripts/jquery-1.11.1.min.js"></script>
         <script src="scripts/formValidation.js"></script>
-        <script>$("input.mandatory").bind('blur', function() {
-                        emptyCheck(this, "<span class='mandatory error'>Поле не может быть пустым</span><br class='mandatory error'>");
-                    });
-                    $("input.mandatory").bind('keyup', function() {
-                        emptyCheck(this, "<span class='mandatory error'>Поле не может быть пустым</span><br class='mandatory error'>");
-                    });
-                    $("input.confirm").bind('blur', function() {
-                        confirmationCheck(this, $("input.confirmt"), "<span class='confirm error'>Значение поля не совпадает с полем</span><br class='confirm error'>");
-                    });
-                    $("input.confirm").bind('keyup', function() {
-                        if ($(this).siblings(".confirm.error").length !== 0)
-                            confirmationCheck(this, $("input.confirmt"), "<span class='confirm error'>Значение поля не совпадает с полем</span><br class='confirm error'>");
-                    });
-                    $("input[name='login']").bind('keyup', function() {
-                        uniqueCheck(this, {name: this.value}, "GET", "Registration", "<span class='unique error'>К сожалению логин уже занят</span><br class='unique error'>");
-                    });
+        <script>$("input.mandatory").on('blur keyup', function() {
+                                emptyCheck(this, "<span class='mandatory error'>Поле не может быть пустым</span><br class='mandatory error'>");
+                            });
 
-                    $("input.confirm").bind('keyup', function() {
-                        if ($(this).siblings(".confirm.error").length != 0)
-                            confirmationCheck(this);
-                    });
-                    $("input[type='text'], input[type='password']").bind('keyup', function() {
-                        dataValidCheck(this, '^[a-z,A-z,a-я,А-Я,0-9]+', "<span class='invalid error'>Значение поля должно начинаться с цифры или буквы.\n\
+                            $("input.confirm").bind('blur', function() {
+                                confirmationCheck(this, $("input.confirmt"), "<span class='confirm error'>Значение поля не совпадает с полем</span><br class='confirm error'>");
+                            });
+                            $("input.confirm").bind('keyup', function() {
+                                if ($(this).siblings(".confirm.error").length !== 0)
+                                    confirmationCheck(this, $("input.confirmt"), "<span class='confirm error'>Значение поля не совпадает с полем</span><br class='confirm error'>");
+                            });
+                            $("input[name='login']").bind('keyup', function() {
+                                uniqueCheck(this, {name: this.value}, "GET", "Registration", "<span class='unique error'>К сожалению логин уже занят</span><br class='unique error'>");
+                            });
+
+                            $("input.confirm").bind('keyup', function() {
+                                if ($(this).siblings(".confirm.error").length != 0)
+                                    confirmationCheck(this);
+                            });
+                            $("input[type='text'], input[type='password']").on('keyup blur', function() {
+                                dataValidCheck(this, '^[a-z,A-z,a-я,А-Я,0-9]+', "<span class='invalid error'>Значение поля должно начинаться с цифры или буквы.\n\
                  </span><br class='invalid error'>");
-                    });
-                    $("input[type='text'], input[type='password']").bind('blur', function() {
-                        dataValidCheck(this, '^[a-z,A-z,a-я,А-Я,0-9]+', "<span class='invalid error'>Значение поля должно начинаться с цифры или буквы.\n\
-                 </span><br class='invalid error'>");
-                    });
+                            });
         </script>     
     </body>
 </html> 

@@ -146,4 +146,11 @@ public class Product {
     public void setComment(String comment) {
         this.comment = comment;
     }
+    @Override
+    public String toString(){
+      return String.format("id:%d\nНазвание:%s\nУточняющее название:%s\nПроизводитель:%s\n"
+              + "Объем:%7.2f\nЕдиници объема: %s\nЦена:%7.2f\nКомментарий:%s", id,
+              name!=null?name:"null", subname!=null?subname:"Любой(-ая,-ое)",producer!=null?producer:"Любой(-ая,-ое)",
+              value, valueUnits!=null?valueUnits:"null",price,comment!=null?comment:"") ; 
+    }
 }

@@ -43,6 +43,7 @@ function confirmationCheck(field,target,errText) {
 function dataValidCheck(field,pattern,errText) {
     var val = new String($(field).prop('value'));
     var sel=getClassSelector(errText);
+    
     if (val !='' && (val.match(pattern) === null)) {
         
         addErr(field,sel,errText);
