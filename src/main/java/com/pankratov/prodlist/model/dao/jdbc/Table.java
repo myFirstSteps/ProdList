@@ -11,6 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 import javax.sql.rowset.CachedRowSet;
 import javax.sql.rowset.RowSetProvider;
@@ -59,6 +60,29 @@ public class Table {
         }
         return true;
     }
+    
+    protected boolean addRecord(TreeMap<String,Integer> s) throws Exception {
+        int i = 1;
+        String params = "";
+        String colsNames="";
+        String colValues="";
+        
+        for (int j = 0; j < s.size(); j++) {
+            
+            params += ", ?";
+        }
+        params = params.replaceAll("^, ", "");
+        try(PreparedStatement stat = connection.prepareStatement(String.format("Insert into %s(%s) values(%s)", tableName, params));){
+        for (String st : s) {
+            stat.setString(i++, st);
+
+        }
+
+        stat.execute();
+        }
+        return true;
+    }
+    
     protected ConcurrentSkipListSet<String> readColumn(int n)throws JDBCDAOException {
          ConcurrentSkipListSet<String> result = new ConcurrentSkipListSet<>();
         try (Statement st = connection.createStatement();) {

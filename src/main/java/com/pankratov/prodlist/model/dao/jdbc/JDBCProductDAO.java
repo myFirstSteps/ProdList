@@ -16,6 +16,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.regex.Matcher;
@@ -56,7 +57,7 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
             return getRowSet();
         }
 
-        private boolean addProduct(String... s) throws Exception {
+        private boolean addProduct(TreeMap<String,Integer> s) throws Exception {
             addRecord(s);
             return true;
         }
@@ -87,31 +88,34 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
 
         }
 
-        protected boolean addEnumValues(int col, String... newValues) {
+        protected boolean addEnumValues(int col, String... newValues) throws Exception {
+            boolean result=false;
             try (Statement st = connection.createStatement();
                     ResultSet source = st.executeQuery(String.format("Describe %s %s",
                                     this.getTableName(), this.getColumnName(col)));
-                    PreparedStatement dest = connection.prepareStatement("Alter table ? modify ? enum(?) not null default '?'");) {
-
-                Pattern p = Pattern.compile("(\'.)+?\'[)]$");
+                    PreparedStatement dest = connection.prepareStatement("Alter table ? modify ? ? not null default '?'");) {
+                StringBuilder insertion = new StringBuilder("'"), enums = null;
+                String def = "";
                 while (source.next()) {
-                    Matcher m = p.matcher(source.getString(2));
-                    String def = source.getString(5);
-                    System.out.println(def);
-                    int start = 0;
-                    while(m.find()){
-                        System.out.println("matcher " + m.group());
-                        start = m.end();
-                        System.out.println(start);
+                    enums = new StringBuilder(source.getString(2));
+                    def = source.getString(5);
+                }
+                for (String s : newValues) {
+                    if (enums != null && enums.indexOf("'" + s + "'") == -1) {
+                        insertion.append(",'" + s);
                     }
-
+                }
+                if (insertion.length() > 3) {
+                    enums.insert(enums.lastIndexOf("','"), insertion);
+                    
+                    st.executeUpdate(String.format("Alter table %s modify %s %s not null default '%s'", this.getTableName(), this.getColumnName(col), enums, def));
+                    result=true;
                 }
             } catch (SQLException | JDBCDAOException ex) {
 
-                new JDBCDAOException("Ошибка чтения категорий продуктов", ex);
+                throw new JDBCDAOException("Ошибка добавления категорий продуктов", ex);
             }
-
-            return false;
+            return result;
         }
     }
 
@@ -222,8 +226,18 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
         switch (whosAdd) {
             case "admin":
                 if (!readProductGroups().contains(what.getGroup())) {
-
+                        addGroup(what.getGroup());
                 }
+                TreeMap<String,Integer> s=new TreeMap<>();
+                s.put(what.getName(), 2);
+                s.put(what.getSubname(), 3);
+                s.put(what.getProducer(), 4);
+                s.put(String.valueOf(what.getValue()), 5);
+                s.put(what.getValueUnits(), 6);
+                s.put(what.getGroup(), 7);
+                s.put(String.valueOf(what.getPrice()), 8);
+                s.put(what.getComment(), 10);
+                PRODUCTS_TABLE.addProduct(s);
         }
         return null;
     }
@@ -260,7 +274,10 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
     }
 
     @Override
-    public boolean addGroup(String ... group) throws Exception {
+    public boolean addGroup(String... group) throws Exception {
+        if (group.length == 0) {
+            return false;
+        }
         PRODUCTS_TABLE.addEnumValues(7, group);
         return false;
     }

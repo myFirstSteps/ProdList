@@ -245,8 +245,8 @@ public class addProduct extends HttpServlet {
             }
             
             try(ProductDAO pdao=DAOFactory.getProductDAOInstance(DAOFactory.DAOSource.JDBC, request.getServletContext() )){
-                pdao.addProduct(product);
-                pdao.addGroup(product.getGroup());////////////TEMPPPPPP!!!!!!!!!!!!
+                pdao.addProduct(product,request.isUserInRole("admin")?"admin":"гость");
+             //   pdao.addGroup(product.getGroup());////////////TEMPPPPPP!!!!!!!!!!!!
             }
             System.out.println(product);
             //Проверяем, что загруженный файл является gif,png или jpeg.          
