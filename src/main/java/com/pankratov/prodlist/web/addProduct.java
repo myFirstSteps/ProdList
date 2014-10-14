@@ -6,6 +6,8 @@
 package com.pankratov.prodlist.web;
 
 import com.pankratov.prodlist.model.dao.DAOFactory;
+import com.pankratov.prodlist.model.dao.ProductDAO;
+import com.pankratov.prodlist.model.dao.jdbc.JDBCProductDAO;
 import com.pankratov.prodlist.model.products.Product;
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -188,9 +190,10 @@ public class addProduct extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        boolean needToCheck = false;
         try {
             Product product = new Product();
+            String creator=request.getRemoteUser()!=null?request.getRemoteUser():(String)request.getSession().getAttribute("clid");
+            if (creator!=null) product.setAuthor(creator);
             if (!ServletFileUpload.isMultipartContent(request)) {
                 response.setCharacterEncoding("UTF-8");
                 response.setContentType("text/plain");
@@ -238,8 +241,12 @@ public class addProduct extends HttpServlet {
                             product.setComment(i.getString("UTF-8"));
                             break;
                     }
-                }
-
+                }   
+            }
+            
+            try(ProductDAO pdao=DAOFactory.getProductDAOInstance(DAOFactory.DAOSource.JDBC, request.getServletContext() )){
+                pdao.addProduct(product);
+                pdao.addGroup(product.getGroup());////////////TEMPPPPPP!!!!!!!!!!!!
             }
             System.out.println(product);
             //Проверяем, что загруженный файл является gif,png или jpeg.          

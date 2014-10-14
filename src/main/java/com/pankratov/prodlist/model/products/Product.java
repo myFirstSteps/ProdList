@@ -20,6 +20,7 @@ public class Product {
     private String group;
     private float price;
     private String comment;
+    private String author;
 
     /**
      * @return the id
@@ -149,8 +150,22 @@ public class Product {
     @Override
     public String toString(){
       return String.format("id:%d\nНазвание:%s\nУточняющее название:%s\nПроизводитель:%s\n"
-              + "Объем:%7.2f\nЕдиници объема: %s\nЦена:%7.2f\nКомментарий:%s", id,
+              + "Объем:%7.2f\nЕдиници объема: %s\nЦена:%7.2f\nКомментарий:%s\nДобавил:%s", id,
               name!=null?name:"null", subname!=null?subname:"Любой(-ая,-ое)",producer!=null?producer:"Любой(-ая,-ое)",
-              value, valueUnits!=null?valueUnits:"null",price,comment!=null?comment:"") ; 
+              value, valueUnits!=null?valueUnits:"null",price,comment!=null?comment:"",author!=null?author:"гость") ; 
+    }
+
+    /**
+     * @return the author
+     */
+    public String getAuthor() {
+        return author;
+    }
+
+    /**
+     * @param author the author to set
+     */
+    public void setAuthor(String author) {
+        this.author = author;
     }
 }

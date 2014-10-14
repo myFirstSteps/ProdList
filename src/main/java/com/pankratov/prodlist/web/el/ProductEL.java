@@ -29,7 +29,7 @@ public class ProductEL {
     }
     public static ArrayList getUnits(ServletContext context) throws Exception {
         try (ProductDAO pdao = DAOFactory.getProductDAOInstance(DAOFactory.DAOSource.JDBC, context)) {
-            return ((JDBCProductDAO) pdao).readProductUnits();
+            return ((JDBCProductDAO) pdao).readProductValueUnits();
         }
     }
 

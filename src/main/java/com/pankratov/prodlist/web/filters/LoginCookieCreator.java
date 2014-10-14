@@ -41,6 +41,7 @@ public class LoginCookieCreator implements Filter {
      * @exception ServletException if a servlet error occurs
      */
     //Если пользователь авторизован, устанавливаем cookie с его login
+    @Override
     public void doFilter(ServletRequest request, ServletResponse response,
             FilterChain chain)
             throws IOException, ServletException {
@@ -49,8 +50,9 @@ public class LoginCookieCreator implements Filter {
             HttpServletRequest req =(HttpServletRequest) request;
             String login = ((HttpServletRequest) request).getRemoteUser();
              if (login != null) {
-                Cookie c = new Cookie("login", login);
-                c.setMaxAge(60 * 60 * 24 * 365 * 10);
+                Cookie c = new Cookie("clid", login);
+                c.setMaxAge(60 * 60 * 24 * 365 * 1);
+                req.getSession().setAttribute("clid", login);
                 ((HttpServletResponse)response).addCookie(c);
             }
             chain.doFilter(request,response);      
@@ -67,9 +69,7 @@ public class LoginCookieCreator implements Filter {
     public void destroy() {
     }
 
-    /**
-     * Init method for this filter
-     */
+    
     @Override
     public void init(FilterConfig filterConfig) {
         this.filterConfig = filterConfig;

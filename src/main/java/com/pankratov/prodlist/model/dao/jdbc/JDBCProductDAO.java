@@ -7,8 +7,10 @@ package com.pankratov.prodlist.model.dao.jdbc;
 
 import com.pankratov.prodlist.model.dao.ProductDAO;
 import com.pankratov.prodlist.model.products.Product;
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -36,6 +38,7 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
     private final String DB_LOGIN;
     private final String DB_PASSWORD;
     private final ProductTable PRODUCTS_TABLE;
+    private final ProductTable USERS_PRODUCTS_TABLE;
     private final ProductTable IMAGES_TABLE;
     private final Connection connection;
 
@@ -61,29 +64,54 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
         protected ArrayList getEnumValues(int col) {
             ArrayList<String> result = new ArrayList<>();
 
-            try (Statement st = connection.createStatement();) {
-                ResultSet res = st.executeQuery(String.format("Describe %s %s", this.getTableName(), this.getColumnName(col)));
+            try (Statement st = connection.createStatement();
+                    ResultSet res = st.executeQuery(String.format("Describe %s %s",
+                                    this.getTableName(), this.getColumnName(col)));) {
+
                 Pattern p = Pattern.compile("(?:(?:enum[(]\')|(?:,\'))(.+?)(?:(?:\',)|(?:\'[)]))");
                 while (res.next()) {
-                     Matcher m = p.matcher(res.getString(2));
-                     int start=0;
-                    while (start>=0&&m.find(start)) {
-                                     System.out.println("matcher "+m.group(1)) ;  
-                          result.add(m.group(1));
-                          
-                          start=m.end(1);
+                    Matcher m = p.matcher(res.getString(2));
+                    int start = 0;
+                    while (start >= 0 && m.find(start)) {
+                        System.out.println("matcher " + m.group(1));
+                        result.add(m.group(1));
+                        start = m.end(1);
                     }
-                  
-                }
-                res.close();
 
+                }
             } catch (SQLException | JDBCDAOException ex) {
 
-                new JDBCDAOException("Ошибка чтения имен пользователя", ex);
-
+                new JDBCDAOException("Ошибка чтения категорий продуктов", ex);
             }
             return result;
 
+        }
+
+        protected boolean addEnumValues(int col, String... newValues) {
+            try (Statement st = connection.createStatement();
+                    ResultSet source = st.executeQuery(String.format("Describe %s %s",
+                                    this.getTableName(), this.getColumnName(col)));
+                    PreparedStatement dest = connection.prepareStatement("Alter table ? modify ? enum(?) not null default '?'");) {
+
+                Pattern p = Pattern.compile("(\'.)+?\'[)]$");
+                while (source.next()) {
+                    Matcher m = p.matcher(source.getString(2));
+                    String def = source.getString(5);
+                    System.out.println(def);
+                    int start = 0;
+                    while(m.find()){
+                        System.out.println("matcher " + m.group());
+                        start = m.end();
+                        System.out.println(start);
+                    }
+
+                }
+            } catch (SQLException | JDBCDAOException ex) {
+
+                new JDBCDAOException("Ошибка чтения категорий продуктов", ex);
+            }
+
+            return false;
         }
     }
 
@@ -144,6 +172,7 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
         DB_LOGIN = context.getInitParameter("DB_PROD_LOGIN");
         DB_PASSWORD = context.getInitParameter("DB_PROD_PASSWORD");
         String productsTableName = context.getInitParameter("PRODUCTS_TABLE");
+        String usersProductsTableName = context.getInitParameter("USERS_PRODUCTS_TABLE");
         String imagesTableName = context.getInitParameter("IMAGES_TABLE");
         try {
             connection = DriverManager.getConnection(DB_NAME, DB_LOGIN, DB_PASSWORD);
@@ -161,6 +190,7 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
                     m.get(currentTableName).add(columnName);
                 }
                 PRODUCTS_TABLE = new JDBCProductDAO.ProductTable(productsTableName, connection, m.get(productsTableName));
+                USERS_PRODUCTS_TABLE = new JDBCProductDAO.ProductTable(usersProductsTableName, connection, m.get(usersProductsTableName));
                 IMAGES_TABLE = new JDBCProductDAO.ProductTable(imagesTableName, connection, m.get(imagesTableName));
             }
             log.debug("ProductDAO created");
@@ -183,6 +213,24 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
 
     @Override
     public Product addProduct(Product what) throws Exception {
+        this.addProduct(what, "гость");
+        return null;
+    }
+
+    @Override
+    public Product addProduct(Product what, String whosAdd) throws Exception {
+        switch (whosAdd) {
+            case "admin":
+                if (!readProductGroups().contains(what.getGroup())) {
+
+                }
+        }
+        return null;
+    }
+
+    @Override
+    public Product addProduct(Product what, String whosAdd, File prodImage) throws Exception {
+        this.addProduct(what, whosAdd);
         return null;
     }
 
@@ -193,18 +241,27 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
 
     @Override
     public ConcurrentSkipListSet<String> readProductNames() throws Exception {
-        PRODUCTS_TABLE.getEnumValues(7);
         return PRODUCTS_TABLE.readColumn(2);
     }
 
     @Override
     public ConcurrentSkipListSet<String> readProductSubNames() throws Exception {
-        return null;
+        return PRODUCTS_TABLE.readColumn(2);
     }
-    public ArrayList readProductGroups(){
+
+    @Override
+    public ArrayList readProductGroups() {
         return PRODUCTS_TABLE.getEnumValues(7);
     }
-    public ArrayList readProductUnits(){
+
+    @Override
+    public ArrayList readProductValueUnits() {
         return PRODUCTS_TABLE.getEnumValues(6);
+    }
+
+    @Override
+    public boolean addGroup(String ... group) throws Exception {
+        PRODUCTS_TABLE.addEnumValues(7, group);
+        return false;
     }
 }
