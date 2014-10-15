@@ -10,6 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
@@ -30,22 +31,37 @@ public class Table {
     private String tableName;
     private List<String> columnNames;
 
-    protected Table(String tableName,Connection con,  List<String> colNames) throws JDBCDAOException {
+    protected Table(String tableName, Connection con, List<String> colNames) throws JDBCDAOException {
         try {
             rowset = RowSetProvider.newFactory().createCachedRowSet();
             this.tableName = tableName;
             columnNames = colNames;
-            connection=con;
+            connection = con;
             //  log.debug(String.format("created table %s with columns: %s rowset:%s", tableName, columnNames, rowset));
         } catch (Exception e) {
             throw new JDBCDAOException("Ошибка при создании:" + Table.class + "для: " + tableName, e);
         }
 
     }
-    protected String getTableName(){
+
+    protected String getTableName() {
         return tableName;
     }
-    
+
+    private String[] parseConditionMap(TreeMap<Integer, String> s) throws Exception {
+        String colNames = "";
+        String colValues = "";
+
+        for (Entry<Integer, String> e : s.entrySet()) {
+
+            colNames += ", " + getColumnName(e.getKey());
+            colValues += ", '" + e.getValue() + "'";
+        }
+        colValues = colValues.replaceAll("^, ", "");
+        colNames = colNames.replaceAll("^, ", "");
+        return new String[]{colNames, colValues};
+    }
+
     protected boolean addRecord(String... s) throws Exception {
         int i = 1;
         String params = "";
@@ -53,65 +69,79 @@ public class Table {
             params += ", ?";
         }
         params = params.replaceAll("^, ", "");
-        try(PreparedStatement stat = connection.prepareStatement(String.format("Insert into %s values(%s)", tableName, params));){
-        for (String st : s) {
-            stat.setString(i++, st);
+        try (PreparedStatement stat = connection.prepareStatement(String.format("Insert into %s values(%s)", tableName, params));) {
+            for (String st : s) {
+                stat.setString(i++, st);
 
-        }
+            }
 
-        stat.execute();
+            stat.execute();
         }
         return true;
     }
-    
-    protected boolean addRecord(TreeMap<String,Integer> s) throws Exception {
+
+    protected boolean addRecord(TreeMap<String, Integer> s) throws Exception {
         int i = 1;
         String params = "";
-        String colsNames="";
-        String colValues="";
-        
+        String colsNames = "";
+        String colValues = "";
+
         for (int j = 0; j < s.size(); j++) {
-            
+
             params += ", ?";
         }
-     
-        for(Entry<String,Integer> e:s.entrySet()){
-            colValues+=", '"+e.getKey()+"'";
-            colsNames+=", "+ getColumnName(e.getValue());
+
+        for (Entry<String, Integer> e : s.entrySet()) {
+            colValues += ", '" + e.getKey() + "'";
+            colsNames += ", " + getColumnName(e.getValue());
         }
-        colValues=colValues.replaceAll("^, ", "");
-        colsNames=colsNames.replaceAll("^, ", "");
-        try(Statement st=connection.createStatement();){
-           st.executeUpdate(String.format("insert into %s  (%s) values (%s)", this.tableName,  colsNames ,colValues ));
-           st.getConnection().commit();
+        colValues = colValues.replaceAll("^, ", "");
+        colsNames = colsNames.replaceAll("^, ", "");
+        try (Statement st = connection.createStatement();) {
+            st.executeUpdate(String.format("insert into %s  (%s) values (%s)", this.tableName, colsNames, colValues));
+            st.getConnection().commit();
         }
         return true;
-        }
-        
-    
-    protected LinkedList <JDBCDAOObject> readRecordWhere(TreeMap<Integer,String> condition){
-        ghgh
     }
-    protected ConcurrentSkipListSet<String> readColumn(int n)throws JDBCDAOException {
-         ConcurrentSkipListSet<String> result = new ConcurrentSkipListSet<>();
+
+    protected List<List<String>> readRawsWhere(TreeMap<Integer, String> condition) throws Exception {
+        LinkedList<List<String>> result = new LinkedList<>();
+        List<String> resultRow = new LinkedList<>();
+        String[] s = parseConditionMap(condition);
+        String columns = s[0];
+        String values = s[1];
+        String query = String.format("select * from %s where %s = %s", tableName, columns, values);
+        try (Statement st = connection.createStatement(); ResultSet rs = st.executeQuery(query)) {
+            while (rs.next()) {
+                for (int i = 1; i < rs.getMetaData().getColumnCount(); i++) {
+                    resultRow.add(rs.getString(i));
+                }
+                result.add(resultRow);
+            }
+        }
+        return result;
+    }
+
+    protected ConcurrentSkipListSet<String> readColumn(int n) throws JDBCDAOException {
+        ConcurrentSkipListSet<String> result = new ConcurrentSkipListSet<>();
         try (Statement st = connection.createStatement();) {
-            ResultSet res = st.executeQuery(String.format("select %s from %s", this.columnNames.get(n-1), this.tableName));
+            ResultSet res = st.executeQuery(String.format("select %s from %s", this.columnNames.get(n - 1), this.tableName));
             while (res.next()) {
                 result.add(res.getString(1));
             }
             res.close();
 
         } catch (SQLException ex) {
-           
+
             throw new JDBCDAOException("Ошибка чтения имен пользователя", ex);
 
         }
         return result;
     }
-    protected CachedRowSet getRowSet(){
+
+    protected CachedRowSet getRowSet() {
         return rowset;
     }
-  
 
     protected String getColumnName(int numb) throws JDBCDAOException {
         String res = null;
