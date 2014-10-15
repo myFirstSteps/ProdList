@@ -10,8 +10,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 import javax.sql.rowset.CachedRowSet;
 import javax.sql.rowset.RowSetProvider;
@@ -42,7 +45,7 @@ public class Table {
     protected String getTableName(){
         return tableName;
     }
-
+    
     protected boolean addRecord(String... s) throws Exception {
         int i = 1;
         String params = "";
@@ -71,18 +74,24 @@ public class Table {
             
             params += ", ?";
         }
-        params = params.replaceAll("^, ", "");
-        try(PreparedStatement stat = connection.prepareStatement(String.format("Insert into %s(%s) values(%s)", tableName, params));){
-        for (String st : s) {
-            stat.setString(i++, st);
-
+     
+        for(Entry<String,Integer> e:s.entrySet()){
+            colValues+=", '"+e.getKey()+"'";
+            colsNames+=", "+ getColumnName(e.getValue());
         }
-
-        stat.execute();
+        colValues=colValues.replaceAll("^, ", "");
+        colsNames=colsNames.replaceAll("^, ", "");
+        try(Statement st=connection.createStatement();){
+           st.executeUpdate(String.format("insert into %s  (%s) values (%s)", this.tableName,  colsNames ,colValues ));
+           st.getConnection().commit();
         }
         return true;
-    }
+        }
+        
     
+    protected LinkedList <JDBCDAOObject> readRecordWhere(TreeMap<Integer,String> condition){
+        ghgh
+    }
     protected ConcurrentSkipListSet<String> readColumn(int n)throws JDBCDAOException {
          ConcurrentSkipListSet<String> result = new ConcurrentSkipListSet<>();
         try (Statement st = connection.createStatement();) {

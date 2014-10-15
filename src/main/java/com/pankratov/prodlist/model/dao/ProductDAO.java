@@ -26,5 +26,5 @@ public interface ProductDAO extends AutoCloseable {
     public Product deleteProduct(Product what) throws Exception;
     public ConcurrentSkipListSet<String> readProductNames() throws Exception;
     public ConcurrentSkipListSet<String> readProductSubNames() throws Exception;
-    
+       
 }

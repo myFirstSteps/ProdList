@@ -59,6 +59,7 @@ public class addProduct extends HttpServlet {
     private int maxMemSize;
     private Path temp;
     private Path imgDir;
+    //private Path appRoot
     private static final org.apache.logging.log4j.Logger log = org.apache.logging.log4j.LogManager.getLogger(addProduct.class);
 
     /*Не получилось быстро найти готовый класс для проверки сигнатуры файла на соответствие заявленному типу,
@@ -110,9 +111,9 @@ public class addProduct extends HttpServlet {
         param = context.getInitParameter("MAX_FILE_MEMORY");
         maxMemSize = (param != null) ? Integer.parseInt(param) : 100 * 1024;
         param = context.getInitParameter("TEMP_FILE_DIR");
-        temp = (param != null) ? Paths.get(param) : Paths.get(appRoot + "temp/imgfile");
+        temp = (param != null) ? Paths.get(param) : Paths.get(appRoot + "/temp/imgfile");
         param = context.getInitParameter("PROD_IMG_FILE_DIR");
-        imgDir = (param != null) ? Paths.get(param) : Paths.get(appRoot + "resources/img/products");
+        imgDir = (param != null) ? Paths.get(param) : Paths.get(appRoot + "/resources/img/products");
         System.out.println(appRoot);
         if (!temp.isAbsolute()) {
             temp = Paths.get(appRoot + "/" + temp);
@@ -190,6 +191,7 @@ public class addProduct extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        File f=null;
         try {
             Product product = new Product();
             String creator=request.getRemoteUser()!=null?request.getRemoteUser():(String)request.getSession().getAttribute("clid");
@@ -204,7 +206,7 @@ public class addProduct extends HttpServlet {
             ServletFileUpload upl = new ServletFileUpload(factory);
             upl.setFileSizeMax(maxImgSize);
             String creationTime=DateFormat.getTimeInstance(DateFormat.LONG).format(new  Date());
-            File f = (Paths.get(imgDir +"/"+ request.getSession().getId()+"_"+creationTime)).toFile();
+             f = (Paths.get(imgDir +"/"+ request.getSession().getId()+"_"+creationTime)).toFile();
 
             List<FileItem> x = upl.parseRequest(request);
 
@@ -215,51 +217,60 @@ public class addProduct extends HttpServlet {
                         i.write(f);
                     }
                 } else {
+                    String s=i.getString("UTF-8");
                     switch (i.getFieldName()) {
                         case "category":
-                            product.setGroup(i.getString("UTF-8"));
+                            product.setGroup(!s.equals("")?s:null);
                             break;
                         case "name":
-                            product.setName(i.getString("UTF-8"));
+                            product.setName(!s.equals("")?s:null);
                             break;
                         case "sub_name":
-                            product.setSubname(i.getString("UTF-8"));
+                            product.setSubName(!s.equals("")?s:null);
                             break;
-                        case "produser":
-                            product.setProducer(i.getString("UTF-8"));
+                        case "producer":
+                            product.setProducer(!s.equals("")?s:null);
                             break;
                         case "value":
-                            product.setValue(new Float(i.getString("UTF-8")));
+                            product.setValue(new Float(!s.equals("")?s:"0"));
                             break;
                         case "units":
-                            product.setValueUnits(i.getString("UTF-8"));
+                            product.setValueUnits(!s.equals("")?s:null);
                             break;
                         case "price":
-                            product.setPrice(new Float(i.getString("UTF-8")));
+                            product.setPrice(new Float(!s.equals("")?s:"0"));
                             break;
                         case "comment":
-                            product.setComment(i.getString("UTF-8"));
+                            product.setComment(!s.equals("")?s:null);
                             break;
                     }
                 }   
             }
-            
-            try(ProductDAO pdao=DAOFactory.getProductDAOInstance(DAOFactory.DAOSource.JDBC, request.getServletContext() )){
-                pdao.addProduct(product,request.isUserInRole("admin")?"admin":"гость");
-             //   pdao.addGroup(product.getGroup());////////////TEMPPPPPP!!!!!!!!!!!!
-            }
-            System.out.println(product);
+           
+              
             //Проверяем, что загруженный файл является gif,png или jpeg.          
             if (f.length() > 0 && !CheckFileContent.isValid(f)) {
                 f.delete();
                 sendError(Error.FILE_TYPE_ERROR, request, response);
                 return;
             };
+             try(ProductDAO pdao=DAOFactory.getProductDAOInstance(DAOFactory.DAOSource.JDBC, request.getServletContext() )){
+               Path p=Paths.get(request.getServletContext().getRealPath(request.getServletContext().getContextPath())).getParent();
+               
+               p=Paths.get(p.getRoot().toString()+f.toPath().subpath(p.getNameCount(), f.toPath().getNameCount()));
+               System.out.println(p);
+               product= pdao.addProduct(product,request.isUserInRole("admin")?"admin":"гость",p.toFile());
+             //   pdao.addGroup(product.getGroup());////////////TEMPPPPPP!!!!!!!!!!!!
+            }
+            request.setAttribute("addProduct", product);
+            request.getRequestDispatcher(response.encodeURL("newProduct.jsp")).forward(request, response);
         } catch (Exception e) {
+            if(f!=null)f.deleteOnExit();
             if (e.toString().contains("FileSizeLimitExceededException")) {
                 sendError(Error.FILE_SIZE_ERROR, request, response);
                 return;
             }
+            
             throw new ServletException(e);
         }
     }

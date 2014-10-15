@@ -37,9 +37,15 @@
                 </div>
             </c:forEach>
         </div>
-
+       
 
         <form  class="center_form" id="newProduct" method="post"  enctype="multipart/form-data" action= '<c:url value="addProduct"/>'>
+             <div>
+            <h3>Продукт успешно добавлен.</h3>
+            ${addProduct.id}
+            ${addProduct.name}
+            ${addProduct.subName}
+            </div>
             <div id='error' class='error'>${error}</div><br>
             <div>
                 <span>Категория:</span><br>
@@ -82,9 +88,8 @@
                 <input type="file" id="a"   accept="image/jpeg,image/png,image/gif" name='imageFile'>
             </div><br>
             <input type="button" onclick="validate(this.form)" value="Добавить">
-
-
         </form>
+            
         <script src="scripts/jquery-1.11.1.min.js"></script>
         <script src="scripts/jquery-ui.min.js"></script>
         <script src="scripts/formValidation.js"></script>

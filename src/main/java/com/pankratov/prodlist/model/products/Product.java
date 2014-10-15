@@ -3,17 +3,19 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.pankratov.prodlist.model.products;
+
+import java.util.ArrayList;
 
 /**
  *
  * @author pankratov
  */
 public class Product {
+
     private long id;
     private String name;
-    private String subname;
+    private String subName;
     private String producer;
     private float value;
     private String valueUnits;
@@ -21,6 +23,24 @@ public class Product {
     private float price;
     private String comment;
     private String author;
+    private ArrayList<String> imageLinks;
+    
+    public Product(){
+        
+    }
+    public Product(String id, String name, String subname, String producer,
+            String value, String valueUnits, String group, String price, String comment) {
+        this.id = new Long(id);
+        this.name = name;
+        this.subName = subname;
+        this.producer = producer;
+        this.value = new Float(value);
+        this.valueUnits = valueUnits;
+        this.group = group;
+        this.price = new Float(price);
+        this.comment = comment;
+        this.author = author;
+    }
 
     /**
      * @return the id
@@ -53,15 +73,15 @@ public class Product {
     /**
      * @return the subname
      */
-    public String getSubname() {
-        return subname;
+    public String getSubName() {
+        return subName;
     }
 
     /**
-     * @param subname the subname to set
+     * @param subName the subname to set
      */
-    public void setSubname(String subname) {
-        this.subname = subname;
+    public void setSubName(String subName) {
+        this.subName = subName;
     }
 
     /**
@@ -147,12 +167,13 @@ public class Product {
     public void setComment(String comment) {
         this.comment = comment;
     }
+
     @Override
-    public String toString(){
-      return String.format("id:%d\nНазвание:%s\nУточняющее название:%s\nПроизводитель:%s\n"
-              + "Объем:%7.2f\nЕдиници объема: %s\nЦена:%7.2f\nКомментарий:%s\nДобавил:%s", id,
-              name!=null?name:"null", subname!=null?subname:"Любой(-ая,-ое)",producer!=null?producer:"Любой(-ая,-ое)",
-              value, valueUnits!=null?valueUnits:"null",price,comment!=null?comment:"",author!=null?author:"гость") ; 
+    public String toString() {
+        return String.format("id:%d\nНазвание:%s\nУточняющее название:%s\nПроизводитель:%s\n"
+                + "Объем:%7.2f\nЕдиници объема: %s\nГруппа: %s\nЦена:%7.2f\nКомментарий:%s\nДобавил:%s", id,
+                name != null ? name : "null", subName != null ? subName : "Любой(-ая,-ое)", producer != null ? producer : "Любой(-ая,-ое)",
+                value, valueUnits != null ? valueUnits : "null", group != null ? group : "null", price, comment != null ? comment : "", author != null ? author : "гость");
     }
 
     /**

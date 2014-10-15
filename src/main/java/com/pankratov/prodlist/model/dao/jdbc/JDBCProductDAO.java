@@ -15,6 +15,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
@@ -49,12 +50,31 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
             super(tableName, con, colNames);
         }
 
-        private CachedRowSet readProductByName(String name) throws SQLException, JDBCDAOException {
+        private LinkedList<Product> readProductsByName(String name) throws SQLException, JDBCDAOException {
+            LinkedList<Product> result=new LinkedList<>();
             CachedRowSet crs = getRowSet();
             crs.setCommand("select * from " + getTableName() + " where "
-                    + getColumnName(1) + "= '" + name + "'");
-            getRowSet().execute(getConnection());
-            return getRowSet();
+                    + getColumnName(2) + "= '" + name + "'");
+            crs.execute(getConnection());
+            while(crs.next()){
+                result.offer(new Product(crs.getString(1), crs.getString(2), crs.getString(3), crs.getString(4),
+                crs.getString(5), crs.getString(6), crs.getString(7), crs.getString(8), crs.getString(10)));
+            }
+            return result;
+        }
+        
+        private Product readProduct(String name, String subName, String group, String producer) throws SQLException, JDBCDAOException {
+            Product result=null;
+            CachedRowSet crs = getRowSet();
+            crs.setCommand("select * from " + getTableName() + " where "
+                    + getColumnName(2) + "= '" + name + "' and "+getColumnName(3) + "= '" + subName + "' and "+getColumnName(7) + "= '" + group + "' and "+
+                    getColumnName(4) + "= '" + producer +"'");
+            crs.execute(getConnection());
+            while(crs.next()){
+                result=new Product(crs.getString(1), crs.getString(2), crs.getString(3), crs.getString(4),
+                crs.getString(5), crs.getString(6), crs.getString(7), crs.getString(8), crs.getString(10));
+            }
+            return result;
         }
 
         private boolean addProduct(TreeMap<String,Integer> s) throws Exception {
@@ -223,29 +243,36 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
 
     @Override
     public Product addProduct(Product what, String whosAdd) throws Exception {
-        switch (whosAdd) {
-            case "admin":
+        Product result=null;
+        ProductTable table=USERS_PRODUCTS_TABLE;
+        if(whosAdd.equals("admin")){
+                table=PRODUCTS_TABLE;
                 if (!readProductGroups().contains(what.getGroup())) {
                         addGroup(what.getGroup());
                 }
-                TreeMap<String,Integer> s=new TreeMap<>();
-                s.put(what.getName(), 2);
-                s.put(what.getSubname(), 3);
-                s.put(what.getProducer(), 4);
-                s.put(String.valueOf(what.getValue()), 5);
-                s.put(what.getValueUnits(), 6);
-                s.put(what.getGroup(), 7);
-                s.put(String.valueOf(what.getPrice()), 8);
-                s.put(what.getComment(), 10);
-                PRODUCTS_TABLE.addProduct(s);
         }
-        return null;
+                TreeMap<String,Integer> s=new TreeMap<>();
+                if(what.getName()!=null)s.put(what.getName(), 2);
+                if(what.getSubName()!=null)s.put(what.getSubName(), 3);
+                if(what.getProducer()!=null)s.put(what.getProducer(), 4);
+                s.put(String.valueOf(what.getValue()), 5);
+                if(what.getValueUnits()!=null)s.put(what.getValueUnits(), 6);
+                if(what.getGroup()!=null)s.put(what.getGroup(), 7);
+                s.put(String.valueOf(what.getPrice()), 8);
+                if(what.getComment()!=null)s.put(what.getComment(), 10);
+                table.addProduct(s);
+                      
+        return table.readProductsByName(what.getName()).pollLast();
     }
 
     @Override
     public Product addProduct(Product what, String whosAdd, File prodImage) throws Exception {
-        this.addProduct(what, whosAdd);
-        return null;
+        Product p=this.addProduct(what, whosAdd);
+        TreeMap<String,Integer>s=new TreeMap<>();
+        s.put(prodImage.getAbsoluteFile().toString(), 2);
+        s.put(String.valueOf(p.getId()), whosAdd.equals("admin")?3:4);
+        IMAGES_TABLE.addRecord(s);
+        return p;
     }
 
     @Override
