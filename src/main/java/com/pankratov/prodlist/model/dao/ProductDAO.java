@@ -19,7 +19,7 @@ public interface ProductDAO extends AutoCloseable {
     public Product readProduct(Product what) throws Exception;
     public Product addProduct(Product what) throws Exception;
     public Product addProduct(Product what, String whosAdd) throws Exception;
-    public Product addProduct(Product what, String whosAdd, File prodImage) throws Exception;
+    public Product addProduct(Product what, String whosAdd, String imagePath) throws Exception;
     public ArrayList readProductGroups()throws Exception; 
     public ArrayList readProductValueUnits()throws Exception; 
     public boolean addGroup (String ...group)throws Exception;

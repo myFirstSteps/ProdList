@@ -37,15 +37,15 @@
                 </div>
             </c:forEach>
         </div>
-       
+
 
         <form  class="center_form" id="newProduct" method="post"  enctype="multipart/form-data" action= '<c:url value="addProduct"/>'>
-             <div>
-            <h3>Продукт успешно добавлен.</h3>
-            ${addProduct.id}
-            ${addProduct.name}
-            ${addProduct.subName}
-            </div>
+            <c:if test='${addProduct ne null}'>
+                <h4>Продукт успешно добавлен.</h4>
+                <div class="productTable"> 
+                    <c:import url="/WEB-INF/template/productinfo.jsp"/> 
+                </div></c:if>
+                <h2>Добавить новый продукт в базу.</h2>
             <div id='error' class='error'>${error}</div><br>
             <div>
                 <span>Категория:</span><br>
@@ -89,39 +89,45 @@
             </div><br>
             <input type="button" onclick="validate(this.form)" value="Добавить">
         </form>
-            
+
         <script src="scripts/jquery-1.11.1.min.js"></script>
         <script src="scripts/jquery-ui.min.js"></script>
         <script src="scripts/formValidation.js"></script>
         <script src="scripts/PopUpMenu.js"></script>
-        <script> 
-                var testUnits=function(s){
-                    switch(s){
-                        case "кг": return "Вес:";
-                        case "л": return "Объем:";
-                        default : return "В единице:";
+        <script>
+                var testUnits = function(s) {
+                    switch (s) {
+                        case "кг":
+                            return "Вес:";
+                        case "л":
+                            return "Объем:";
+                        default :
+                            return "В единице:";
                     }
                 };
                 $(document).ready(function() {
-                                new ImgMenu($('.TabletMenu'), $("#CategorySelect"));
-                $("#valueUnit").change(function(){$("#valueLabel").text( testUnits($("#valueUnit").val())); 
-                                    });
-             $("#valueLabel").text( testUnits($("#valueUnit").val()));
-             $("#img_file").on('change',function(){alert( $("#a").val()); })
-             $("input.mandatory").on('blur keyup', function() {
+                    new ImgMenu($('.TabletMenu'), $("#CategorySelect"));
+                    $("#valueUnit").change(function() {
+                        $("#valueLabel").text(testUnits($("#valueUnit").val()));
+                    });
+                    $("#valueLabel").text(testUnits($("#valueUnit").val()));
+                    $("#img_file").on('change', function() {
+                        alert($("#a").val());
+                    })
+                    $("input.mandatory").on('blur keyup', function() {
                         emptyCheck(this, "<span class='mandatory error'>Поле не может быть пустым</span><br class='mandatory error'>");
-                    });  
+                    });
                     $("input.validCheck").on('keyup blur', function() {
-                                dataValidCheck(this, '^[a-z,A-z,a-я,А-Я,0-9]+', "<span class='invalid error'>Значение поля должно начинаться с цифры или буквы.\n\
+                        dataValidCheck(this, '^[a-z,A-z,a-я,А-Я,0-9]+', "<span class='invalid error'>Значение поля должно начинаться с цифры или буквы.\n\
                  </span><br class='invalid error'>");
-                            });
-                              $("input.validNumberCheck").on('keyup blur', function() {
-                                dataValidCheck(this, '^[0-9]+(?:[.|,])?[0-9]*$', "<span class='invalid error'>Значение поля должно быть целым или десятичным числом.\n\
+                    });
+                    $("input.validNumberCheck").on('keyup blur', function() {
+                        dataValidCheck(this, '^[0-9]+(?:[.|,])?[0-9]*$', "<span class='invalid error'>Значение поля должно быть целым или десятичным числом.\n\
                  </span><br class='invalid error'>");
-                            });
-                           
-            });
-            
+                    });
+
+                });
+
         </script>
     </body>
 </html>

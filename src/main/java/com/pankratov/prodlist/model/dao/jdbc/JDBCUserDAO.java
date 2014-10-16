@@ -20,12 +20,12 @@ import org.apache.logging.log4j.*;
  *
  * @author pankratov
  */
-public class JDBCUserDAO extends JDBCDAOObject implements UserDAO{
+public class JDBCUserDAO extends JDBCDAOObject implements UserDAO {
 
     private class UserTable extends Table {
 
-        protected UserTable(String tableName,Connection con, List<String> colNames) throws JDBCDAOException {
-            super(tableName,con, colNames);
+        protected UserTable(String tableName, Connection con, List<String> colNames) throws JDBCDAOException {
+            super(tableName, con, colNames);
         }
 
         private CachedRowSet readUser(String name) throws SQLException, JDBCDAOException {
@@ -36,10 +36,7 @@ public class JDBCUserDAO extends JDBCDAOObject implements UserDAO{
             return getRowSet();
         }
 
-        private boolean addUser(String... s) throws Exception {
-            addRecord(s);
-            return true;
-        }
+      
     }
 
     private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(JDBCUserDAO.class);
@@ -75,6 +72,7 @@ public class JDBCUserDAO extends JDBCDAOObject implements UserDAO{
         LOGINS_TABLE.getRowSet().release();
         ROLES_TABLE.getRowSet().release();
         USER_INFO_TABLE.getRowSet().release();
+        connection.setAutoCommit(true);
         pool.put(this);
     }
 
@@ -111,7 +109,7 @@ public class JDBCUserDAO extends JDBCDAOObject implements UserDAO{
         String userInfoTableName = context.getInitParameter("USER_INFO_TABLE");
         try {
             connection = DriverManager.getConnection(DB_NAME, DB_LOGIN, DB_PASSWORD);
-            connection.setAutoCommit(false);
+            connection.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
             try (ResultSet colMetaData = connection.getMetaData().getColumns(null, null, null, null);) {
                 String lastTableName = "", columnName = "", currentTableName = "";
                 ConcurrentHashMap<String, List<String>> m = new ConcurrentHashMap<>();
@@ -124,7 +122,7 @@ public class JDBCUserDAO extends JDBCDAOObject implements UserDAO{
                     }
                     m.get(currentTableName).add(columnName);
                 }
-                LOGINS_TABLE = new UserTable(loginsTableName, connection,m.get(loginsTableName));
+                LOGINS_TABLE = new UserTable(loginsTableName, connection, m.get(loginsTableName));
                 ROLES_TABLE = new UserTable(rolesTableName, connection, m.get(rolesTableName));
                 USER_INFO_TABLE = new UserTable(userInfoTableName, connection, m.get(userInfoTableName));
             }
@@ -142,21 +140,31 @@ public class JDBCUserDAO extends JDBCDAOObject implements UserDAO{
     }
 
     @Override
-    public User registerUser(User user) throws JDBCDAOException {
+    public User registerUser(User user) throws JDBCDAOException,SQLException {
         try {
-
-            LOGINS_TABLE.addRecord(user.getLogin(), user.getPassword());
-            ROLES_TABLE.addRecord(user.getLogin(), user.getRoles()[0]);
-            USER_INFO_TABLE.addRecord(user.getLogin(), user.getFirstName(), user.getLastName(), user.getEmail());
-            connection.commit();
+            TreeMap<Integer,String> pairs=new TreeMap<>();
+            connection.setAutoCommit(false);
+            pairs.put(1, user.getLogin());
+            pairs.put(2, user.getPassword());
+            LOGINS_TABLE.addRecord(pairs);
+            pairs.put(2,user.getRoles()[0]);
+            ROLES_TABLE.addRecord(pairs);
+            pairs.put(2, user.getFirstName());
+            pairs.put(3, user.getLastName());
+            pairs.put(4, user.getEmail());
+            USER_INFO_TABLE.addRecord(pairs);
+            connection.setAutoCommit(true);
 
         } catch (Exception e) {
+             connection.rollback();
             if (e.toString().matches(".*Duplicate entry.*for key 'PRIMARY'.*")) {
+                
                 throw new JDBCDAOException(String.format("Пользователь с loginom: %s уже сушествует.", user.getLogin()));
             } else {
                 throw new JDBCDAOException("Ошибка регистрации пользователя.", e);
             }
         }
+        finally{connection.setAutoCommit(true);}
         return user;
     }
 
@@ -210,7 +218,7 @@ public class JDBCUserDAO extends JDBCDAOObject implements UserDAO{
 
     @Override
     public ConcurrentSkipListSet<String> readUsersNames() throws JDBCDAOException {
-       return LOGINS_TABLE.readColumn(1);
+        return LOGINS_TABLE.readColumn(1);
     }
 
 }

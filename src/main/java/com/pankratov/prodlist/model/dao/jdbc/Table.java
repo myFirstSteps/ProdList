@@ -62,44 +62,18 @@ public class Table {
         return new String[]{colNames, colValues};
     }
 
-    protected boolean addRecord(String... s) throws Exception {
+    
+
+    protected boolean addRecord(TreeMap<Integer, String> c) throws Exception {
         int i = 1;
+        String[] s = parseConditionMap(c);
         String params = "";
-        for (int j = 0; j < s.length; j++) {
-            params += ", ?";
-        }
-        params = params.replaceAll("^, ", "");
-        try (PreparedStatement stat = connection.prepareStatement(String.format("Insert into %s values(%s)", tableName, params));) {
-            for (String st : s) {
-                stat.setString(i++, st);
+        String colsNames = s[0];
+        String colValues = s[1];
 
-            }
-
-            stat.execute();
-        }
-        return true;
-    }
-
-    protected boolean addRecord(TreeMap<String, Integer> s) throws Exception {
-        int i = 1;
-        String params = "";
-        String colsNames = "";
-        String colValues = "";
-
-        for (int j = 0; j < s.size(); j++) {
-
-            params += ", ?";
-        }
-
-        for (Entry<String, Integer> e : s.entrySet()) {
-            colValues += ", '" + e.getKey() + "'";
-            colsNames += ", " + getColumnName(e.getValue());
-        }
-        colValues = colValues.replaceAll("^, ", "");
-        colsNames = colsNames.replaceAll("^, ", "");
+        String query = String.format("insert into %s  (%s) values (%s)", tableName, colsNames, colValues);
         try (Statement st = connection.createStatement();) {
-            st.executeUpdate(String.format("insert into %s  (%s) values (%s)", this.tableName, colsNames, colValues));
-            st.getConnection().commit();
+            st.executeUpdate(query);
         }
         return true;
     }

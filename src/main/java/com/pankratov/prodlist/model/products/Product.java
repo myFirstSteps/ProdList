@@ -23,7 +23,7 @@ public class Product {
     private float price;
     private String comment;
     private String author;
-    private ArrayList<String> imageLinks;
+    private ArrayList<String> imageLinks=new ArrayList<>();
     
     public Product(){
         
@@ -130,7 +130,7 @@ public class Product {
      * @return the group
      */
     public String getGroup() {
-        return group;
+        return group.toLowerCase();
     }
 
     /**
@@ -173,7 +173,7 @@ public class Product {
         return String.format("id:%d\nНазвание:%s\nУточняющее название:%s\nПроизводитель:%s\n"
                 + "Объем:%7.2f\nЕдиници объема: %s\nГруппа: %s\nЦена:%7.2f\nКомментарий:%s\nДобавил:%s", id,
                 name != null ? name : "null", subName != null ? subName : "Любой(-ая,-ое)", producer != null ? producer : "Любой(-ая,-ое)",
-                value, valueUnits != null ? valueUnits : "null", group != null ? group : "null", price, comment != null ? comment : "", author != null ? author : "гость");
+                value, valueUnits != null ? valueUnits : "null", group != null ? group.toLowerCase() : "null", price, comment != null ? comment : "", author != null ? author : "гость");
     }
 
     /**
@@ -188,5 +188,19 @@ public class Product {
      */
     public void setAuthor(String author) {
         this.author = author;
+    }
+
+    /**
+     * @return the imageLinks
+     */
+    public ArrayList<String> getImageLinks() {
+        return imageLinks;
+    }
+
+    /**
+     * @param imageLinks the imageLinks to set
+     */
+    public void setImageLinks(ArrayList<String> imageLinks) {
+        this.imageLinks = imageLinks;
     }
 }

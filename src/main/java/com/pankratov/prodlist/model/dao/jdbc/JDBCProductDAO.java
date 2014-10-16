@@ -51,33 +51,33 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
         }
 
         private LinkedList<Product> readProductsByName(String name) throws SQLException, JDBCDAOException {
-            LinkedList<Product> result=new LinkedList<>();
+            LinkedList<Product> result = new LinkedList<>();
             CachedRowSet crs = getRowSet();
             crs.setCommand("select * from " + getTableName() + " where "
                     + getColumnName(2) + "= '" + name + "'");
             crs.execute(getConnection());
-            while(crs.next()){
+            while (crs.next()) {
                 result.offer(new Product(crs.getString(1), crs.getString(2), crs.getString(3), crs.getString(4),
-                crs.getString(5), crs.getString(6), crs.getString(7), crs.getString(8), crs.getString(10)));
-            }
-            return result;
-        }
-        
-        private Product readProduct(String name, String subName, String group, String producer) throws SQLException, JDBCDAOException {
-            Product result=null;
-            CachedRowSet crs = getRowSet();
-            crs.setCommand("select * from " + getTableName() + " where "
-                    + getColumnName(2) + "= '" + name + "' and "+getColumnName(3) + "= '" + subName + "' and "+getColumnName(7) + "= '" + group + "' and "+
-                    getColumnName(4) + "= '" + producer +"'");
-            crs.execute(getConnection());
-            while(crs.next()){
-                result=new Product(crs.getString(1), crs.getString(2), crs.getString(3), crs.getString(4),
-                crs.getString(5), crs.getString(6), crs.getString(7), crs.getString(8), crs.getString(10));
+                        crs.getString(5), crs.getString(6), crs.getString(7), crs.getString(8), crs.getString(10)));
             }
             return result;
         }
 
-        private boolean addProduct(TreeMap<String,Integer> s) throws Exception {
+        private Product readProduct(String name, String subName, String group, String producer) throws SQLException, JDBCDAOException {
+            Product result = null;
+            CachedRowSet crs = getRowSet();
+            crs.setCommand("select * from " + getTableName() + " where "
+                    + getColumnName(2) + "= '" + name + "' and " + getColumnName(3) + "= '" + subName + "' and " + getColumnName(7) + "= '" + group + "' and "
+                    + getColumnName(4) + "= '" + producer + "'");
+            crs.execute(getConnection());
+            while (crs.next()) {
+                result = new Product(crs.getString(1), crs.getString(2), crs.getString(3), crs.getString(4),
+                        crs.getString(5), crs.getString(6), crs.getString(7), crs.getString(8), crs.getString(10));
+            }
+            return result;
+        }
+
+        private boolean addProduct(TreeMap<Integer, String> s) throws Exception {
             addRecord(s);
             return true;
         }
@@ -109,7 +109,7 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
         }
 
         protected boolean addEnumValues(int col, String... newValues) throws Exception {
-            boolean result=false;
+            boolean result = false;
             try (Statement st = connection.createStatement();
                     ResultSet source = st.executeQuery(String.format("Describe %s %s",
                                     this.getTableName(), this.getColumnName(col)));
@@ -127,9 +127,9 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
                 }
                 if (insertion.length() > 3) {
                     enums.insert(enums.lastIndexOf("','"), insertion);
-                    
+
                     st.executeUpdate(String.format("Alter table %s modify %s %s not null default '%s'", this.getTableName(), this.getColumnName(col), enums, def));
-                    result=true;
+                    result = true;
                 }
             } catch (SQLException | JDBCDAOException ex) {
 
@@ -162,8 +162,10 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
 
     @Override
     public void close() throws SQLException {
+        USERS_PRODUCTS_TABLE.getRowSet().release();
         PRODUCTS_TABLE.getRowSet().release();
         IMAGES_TABLE.getRowSet().release();
+        connection.setAutoCommit(true);
         pool.put(this);
     }
 
@@ -200,7 +202,7 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
         String imagesTableName = context.getInitParameter("IMAGES_TABLE");
         try {
             connection = DriverManager.getConnection(DB_NAME, DB_LOGIN, DB_PASSWORD);
-            connection.setAutoCommit(false);
+            connection.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
             try (ResultSet colMetaData = connection.getMetaData().getColumns(null, null, null, null);) {
                 String lastTableName = "", columnName = "", currentTableName = "";
                 ConcurrentHashMap<String, List<String>> m = new ConcurrentHashMap<>();
@@ -243,35 +245,50 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
 
     @Override
     public Product addProduct(Product what, String whosAdd) throws Exception {
-        Product result=null;
-        ProductTable table=USERS_PRODUCTS_TABLE;
-        if(whosAdd.equals("admin")){
-                table=PRODUCTS_TABLE;
-                if (!readProductGroups().contains(what.getGroup())) {
-                        addGroup(what.getGroup());
-                }
+        Product result = null;
+        ProductTable table = USERS_PRODUCTS_TABLE;
+        if (whosAdd.equals("admin")) {
+            table = PRODUCTS_TABLE;
+            if (!readProductGroups().contains(what.getGroup())) {
+                addGroup(what.getGroup());
+            }
         }
-                TreeMap<String,Integer> s=new TreeMap<>();
-                if(what.getName()!=null)s.put(what.getName(), 2);
-                if(what.getSubName()!=null)s.put(what.getSubName(), 3);
-                if(what.getProducer()!=null)s.put(what.getProducer(), 4);
-                s.put(String.valueOf(what.getValue()), 5);
-                if(what.getValueUnits()!=null)s.put(what.getValueUnits(), 6);
-                if(what.getGroup()!=null)s.put(what.getGroup(), 7);
-                s.put(String.valueOf(what.getPrice()), 8);
-                if(what.getComment()!=null)s.put(what.getComment(), 10);
-                table.addProduct(s);
-                      
+        TreeMap<Integer, String> s = new TreeMap<>();
+        if (what.getName() != null) {
+            s.put(2, what.getName());
+        }
+        if (what.getSubName() != null) {
+            s.put(3, what.getSubName());
+        }
+        if (what.getProducer() != null) {
+            s.put(4, what.getProducer());
+        }
+        s.put(5, String.valueOf(what.getValue()));
+        if (what.getValueUnits() != null) {
+            s.put(6, what.getValueUnits());
+        }
+        if (what.getGroup() != null) {
+            s.put(7, what.getGroup());
+        }
+        s.put(8, String.valueOf(what.getPrice()));
+        if (what.getComment() != null) {
+            s.put(10, what.getComment());
+        }
+        table.addProduct(s);
+
         return table.readProductsByName(what.getName()).pollLast();
     }
 
     @Override
-    public Product addProduct(Product what, String whosAdd, File prodImage) throws Exception {
-        Product p=this.addProduct(what, whosAdd);
-        TreeMap<String,Integer>s=new TreeMap<>();
-        s.put(prodImage.getAbsoluteFile().toString(), 2);
-        s.put(String.valueOf(p.getId()), whosAdd.equals("admin")?3:4);
+    public Product addProduct(Product what, String whosAdd, String imagePath) throws Exception {
+        Product p = this.addProduct(what, whosAdd);
+        TreeMap<Integer, String> s = new TreeMap<>();
+        s.put(2, imagePath);
+        s.put(whosAdd.equals("admin") ? 3 : 4, String.valueOf(p.getId()));
         IMAGES_TABLE.addRecord(s);
+        ArrayList<String>img=new ArrayList<>();
+        img.add(imagePath);
+        p.setImageLinks(img);
         return p;
     }
 

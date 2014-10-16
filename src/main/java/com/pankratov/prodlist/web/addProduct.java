@@ -5,34 +5,18 @@
  */
 package com.pankratov.prodlist.web;
 
-import com.pankratov.prodlist.model.dao.DAOFactory;
-import com.pankratov.prodlist.model.dao.ProductDAO;
-import com.pankratov.prodlist.model.dao.jdbc.JDBCProductDAO;
+import com.pankratov.prodlist.model.dao.*;
 import com.pankratov.prodlist.model.products.Product;
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
-import java.io.RandomAccessFile;
-import java.nio.channels.FileChannel;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
+import java.io.*;
+import java.nio.file.*;
+import java.sql.SQLException;
 import java.text.DateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
+import javax.servlet.*;
+import javax.servlet.http.*;
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
@@ -44,21 +28,14 @@ public class addProduct extends HttpServlet {
 
     private enum Error {
 
-        FILE_SIZE_ERROR, FILE_TYPE_ERROR, FIELD_DATA_ERROR;
-        String fieldName;
-
-        public void setFieldName(String name) {
-            fieldName = name;
-        }
-
-        public String getFieldName(String name) {
-            return fieldName;
-        }
+        FILE_SIZE_ERROR, FILE_TYPE_ERROR, DUBLICATE;
+       
     }
     private long maxImgSize;
     private int maxMemSize;
-    private Path temp;
-    private Path imgDir;
+    private Path absTempDir; //абсолютный путь к директории временных файлов ServletFileUpload
+    private Path absImgDir; //абсолютный путь к директории изображений продуктов
+    private Path relImgDir; //путь к директории изображений продуктов от корня проекта
     //private Path appRoot
     private static final org.apache.logging.log4j.Logger log = org.apache.logging.log4j.LogManager.getLogger(addProduct.class);
 
@@ -106,29 +83,31 @@ public class addProduct extends HttpServlet {
         ServletContext context = config.getServletContext();
         param = config.getServletContext().getInitParameter("MAX_UPLOAD_FILE_SIZE");
         Path appRoot = Paths.get(context.getRealPath(context.getContextPath())).getParent();
-       
+
         maxImgSize = (param != null) ? Long.parseLong(param) : 512000;
         param = context.getInitParameter("MAX_FILE_MEMORY");
         maxMemSize = (param != null) ? Integer.parseInt(param) : 100 * 1024;
         param = context.getInitParameter("TEMP_FILE_DIR");
-        temp = (param != null) ? Paths.get(param) : Paths.get(appRoot + "/temp/imgfile");
+        absTempDir = (param != null) ? Paths.get(param) : Paths.get(appRoot + "/temp/imgfile");
         param = context.getInitParameter("PROD_IMG_FILE_DIR");
-        imgDir = (param != null) ? Paths.get(param) : Paths.get(appRoot + "/resources/img/products");
-        System.out.println(appRoot);
-        if (!temp.isAbsolute()) {
-            temp = Paths.get(appRoot + "/" + temp);
+        absImgDir = (param != null) ? Paths.get(param) : Paths.get(appRoot + "/resources/img/products");
+        if (!absTempDir.isAbsolute()) {
+            absTempDir = Paths.get(appRoot + "/" + absTempDir);
         }
-        if (!imgDir.isAbsolute()) {
-            imgDir = Paths.get(appRoot + "/" + imgDir);
+        if (!absImgDir.isAbsolute()) {
+            absImgDir = Paths.get(appRoot + "/" + absImgDir);
         }
+        relImgDir = Paths.get(context.getRealPath(context.getContextPath())).getParent();
+        relImgDir = Paths.get(relImgDir.getRoot().toString() + absImgDir.subpath(relImgDir.getNameCount(), absImgDir.getNameCount()));
+        System.out.println(relImgDir);
         try {
-            Files.createDirectories(temp);
-            Files.createDirectories(imgDir);
+            Files.createDirectories(absTempDir);
+            Files.createDirectories(absImgDir);
         } catch (IOException ex) {
-            log.error("Ошибка  создания директории.", ex);
+            log.error("Ошибка инициализации", ex);
         }
         log.debug(String.format("Максимальный объем файла: %s\n Максимальный объем кеша: %s\n Директория временных файлов: %s\n Директория изображений: %s",
-                maxImgSize, maxMemSize, temp, imgDir));
+                maxImgSize, maxMemSize, absTempDir, absImgDir));
     }
 
     /**
@@ -191,22 +170,26 @@ public class addProduct extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        File f=null;
+        File f = null;
         try {
             Product product = new Product();
-            String creator=request.getRemoteUser()!=null?request.getRemoteUser():(String)request.getSession().getAttribute("clid");
-            if (creator!=null) product.setAuthor(creator);
+            String creator = request.getRemoteUser() != null ? request.getRemoteUser() : (String) request.getSession().getAttribute("clid");
+            if (creator != null) {
+                product.setAuthor(creator);
+            }
             if (!ServletFileUpload.isMultipartContent(request)) {
                 response.setCharacterEncoding("UTF-8");
                 response.setContentType("text/plain");
                 response.getWriter().println("Использован ошибочный способ передачи данных формы. Данные должны передаваться в 'multipart/form-data'");
                 return;
             }
-            DiskFileItemFactory factory = new DiskFileItemFactory(maxMemSize, temp.toFile());
+            DiskFileItemFactory factory = new DiskFileItemFactory(maxMemSize, absTempDir.toFile());
             ServletFileUpload upl = new ServletFileUpload(factory);
             upl.setFileSizeMax(maxImgSize);
-            String creationTime=DateFormat.getTimeInstance(DateFormat.LONG).format(new  Date());
-             f = (Paths.get(imgDir +"/"+ request.getSession().getId()+"_"+creationTime)).toFile();
+            String creationTime = DateFormat.getTimeInstance(DateFormat.LONG).format(new Date());
+            String fileName = "/" + request.getSession().getId() + "_" + creationTime + "_"
+                    + String.valueOf(ThreadLocalRandom.current().nextInt(maxMemSize));
+            f = (Paths.get(absImgDir + fileName)).toFile();
 
             List<FileItem> x = upl.parseRequest(request);
 
@@ -215,63 +198,66 @@ public class addProduct extends HttpServlet {
                     if (i.getSize() > 0) {
                         f.createNewFile();
                         i.write(f);
+                        System.out.println("NEW FILE:" + f);
                     }
                 } else {
-                    String s=i.getString("UTF-8");
+                    String s = i.getString("UTF-8");
                     switch (i.getFieldName()) {
                         case "category":
-                            product.setGroup(!s.equals("")?s:null);
+                            product.setGroup(!s.equals("") ? s : null);
                             break;
                         case "name":
-                            product.setName(!s.equals("")?s:null);
+                            product.setName(!s.equals("") ? s : null);
                             break;
                         case "sub_name":
-                            product.setSubName(!s.equals("")?s:null);
+                            product.setSubName(!s.equals("") ? s : null);
                             break;
                         case "producer":
-                            product.setProducer(!s.equals("")?s:null);
+                            product.setProducer(!s.equals("") ? s : null);
                             break;
                         case "value":
-                            product.setValue(new Float(!s.equals("")?s:"0"));
+                            product.setValue(new Float(!s.equals("") ? s : "0"));
                             break;
                         case "units":
-                            product.setValueUnits(!s.equals("")?s:null);
+                            product.setValueUnits(!s.equals("") ? s : null);
                             break;
                         case "price":
-                            product.setPrice(new Float(!s.equals("")?s:"0"));
+                            product.setPrice(new Float(!s.equals("") ? s : "0"));
                             break;
                         case "comment":
-                            product.setComment(!s.equals("")?s:null);
+                            product.setComment(!s.equals("") ? s : null);
                             break;
                     }
-                }   
+                }
             }
-           
-              
+
             //Проверяем, что загруженный файл является gif,png или jpeg.          
             if (f.length() > 0 && !CheckFileContent.isValid(f)) {
                 f.delete();
                 sendError(Error.FILE_TYPE_ERROR, request, response);
                 return;
             };
-             try(ProductDAO pdao=DAOFactory.getProductDAOInstance(DAOFactory.DAOSource.JDBC, request.getServletContext() )){
-               Path p=Paths.get(request.getServletContext().getRealPath(request.getServletContext().getContextPath())).getParent();
-               
-               p=Paths.get(p.getRoot().toString()+f.toPath().subpath(p.getNameCount(), f.toPath().getNameCount()));
-               System.out.println(p);
-               product= pdao.addProduct(product,request.isUserInRole("admin")?"admin":"гость",p.toFile());
-             //   pdao.addGroup(product.getGroup());////////////TEMPPPPPP!!!!!!!!!!!!
+            try (ProductDAO pdao = DAOFactory.getProductDAOInstance(DAOFactory.DAOSource.JDBC, request.getServletContext())) {
+                product = f.length() > 0 ? pdao.addProduct(product, request.isUserInRole("admin") ? "admin" : "гость", relImgDir + fileName)
+                        : pdao.addProduct(product, request.isUserInRole("admin") ? "admin" : "гость");
+
             }
             request.setAttribute("addProduct", product);
             request.getRequestDispatcher(response.encodeURL("newProduct.jsp")).forward(request, response);
-        } catch (Exception e) {
-            if(f!=null)f.deleteOnExit();
+        } catch (FileUploadException | SQLException e) {
+            if (f != null) {
+                f.delete();
+            }
             if (e.toString().contains("FileSizeLimitExceededException")) {
                 sendError(Error.FILE_SIZE_ERROR, request, response);
                 return;
             }
-            
-            throw new ServletException(e);
+            if (e.toString().contains("Duplicate entry")) {
+                sendError(Error.DUBLICATE, request, response);
+                return;
+            }
+        } catch (Exception ex) {
+            throw new ServletException(ex);
         }
     }
 
@@ -285,6 +271,10 @@ public class addProduct extends HttpServlet {
                 break;
             case FILE_TYPE_ERROR:
                 text = "Ошибка формата прикрепленного файла. Прикрепляемые файлы должны быть jpeg, png или gif.";
+                break;
+            case DUBLICATE:
+                text = "Данный продукт уже существует";
+                break;
         }
         request.setAttribute("error", text);
         request.getRequestDispatcher(response.encodeURL("newProduct.jsp")).forward(request, response);
