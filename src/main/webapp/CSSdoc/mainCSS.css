@@ -1,8 +1,8 @@
-html{height: 100%;}
+html{height: 100%; }
 body{ font-family: serif, Arial ;  font-size:small; margin:0; height: 100%;   padding: 0; }
 em{font-size: 120%}
 #HeadTemplate{ background-color:#303030; padding:0px; margin: 0px; width: 100%;  color:white; }
-table {border-collapse: collapse; text-align: center; margin: 10px;}
+table {border-collapse: collapse;  text-align: center; margin: 10px; }
 #HeadTemplate img{border-radius: 4px; }
 #HeadTemplate span{font-size:120%}
 div.HeadTemplate { margin: 10px;  vertical-align: middle; display: inline-block; }
@@ -21,9 +21,10 @@ margin-bottom:auto; margin-top:10px; margin-left:auto; margin-right: auto; text-
 .SelectedTablet span{color: #dea000; font-weight: bold; text-shadow: 5px;}
 .SelectedTablet img{border: #dea000 groove 5px;}
 div.SelectedTablet {border: #dea000 solid 2px;}
-table.productTable { width: 80%;}
+
+//#prodTableImg{max-width: 80px;}
+div.productTable {max-width: 90%;  overflow: auto; }
 .productTable td, .productTable th {border: solid 2px #303030; padding: 4px;  }
-div.productTable{width: 60%;}
 form#newProduct{max-width: none; margin: 20px auto 20px auto; padding: 10px;   width: 85%;  }
 #newProduct > input {padding: 5px;}
 form#newProduct > div {margin: 5px; position: static; display: inline-block;}

@@ -9,6 +9,7 @@ package com.pankratov.prodlist.model.dao;
 import com.pankratov.prodlist.model.products.Product;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 /**
@@ -17,6 +18,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
  */
 public interface ProductDAO extends AutoCloseable {
     public Product readProduct(Product what) throws Exception;
+    public LinkedList <Product> readTempProducts(Product what) throws Exception;
     public Product addProduct(Product what) throws Exception;
     public Product addProduct(Product what, String whosAdd) throws Exception;
     public Product addProduct(Product what, String whosAdd, String imagePath) throws Exception;

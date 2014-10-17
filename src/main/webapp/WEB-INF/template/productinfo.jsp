@@ -25,15 +25,15 @@
             </tr>
             <tr>
                 <c:if test="${prodImg ne null}">
-                <td><img src="<c:url value='${prodImg}'/>"   height="80" alt="изображение продукта"></td>
+                    <td id="prodTableImg"><img  src="<c:url value='${prodImg}'/>"   height="80" alt="изображение продукта"></td>
                 </c:if>
-                <td><div>${addProduct.name}</div></td>
-                <td><div>${addProduct.subName}</div></td>
-                <td><div>${addProduct.producer}</div></td>
-                <td><div>${addProduct.group}</div></td>
+                <td>${addProduct.name}</td>
+                <td>${addProduct.subName}</td>
+                <td>${addProduct.producer}</td>
+                <td>${addProduct.group}</td>
                 <td>${addProduct.value} ${addProduct.valueUnits}</td>
                 <td>${addProduct.price} руб</td>
-                <td><div>${addProduct.comment}</div></td>
+                <td>${addProduct.comment}</td>
             </tr>
       
     </table>

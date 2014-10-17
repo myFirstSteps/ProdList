@@ -5,6 +5,7 @@
  */
 package com.pankratov.prodlist.model.dao.jdbc;
 
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -70,24 +71,27 @@ public class Table {
         String params = "";
         String colsNames = s[0];
         String colValues = s[1];
-
-        String query = String.format("insert into %s  (%s) values (%s)", tableName, colsNames, colValues);
+                String query = String.format("insert into %s  (%s) values (%s)", tableName, colsNames, colValues);
         try (Statement st = connection.createStatement();) {
             st.executeUpdate(query);
         }
         return true;
     }
 
-    protected List<List<String>> readRawsWhere(TreeMap<Integer, String> condition) throws Exception {
+    protected LinkedList<List<String>> readRawsWhere(TreeMap<Integer, String> condition) throws Exception {
         LinkedList<List<String>> result = new LinkedList<>();
         List<String> resultRow = new LinkedList<>();
         String[] s = parseConditionMap(condition);
-        String columns = s[0];
-        String values = s[1];
-        String query = String.format("select * from %s where %s = %s", tableName, columns, values);
+       
+        String param="";
+        for(Entry<Integer,String> st:condition.entrySet()){
+            if (param.length()>0) param+=" and ";
+            param+=getColumnName(st.getKey())+"= '"+st.getValue()+"'";
+        }
+        String query = String.format("select * from %s where %s", tableName,param);
         try (Statement st = connection.createStatement(); ResultSet rs = st.executeQuery(query)) {
             while (rs.next()) {
-                for (int i = 1; i < rs.getMetaData().getColumnCount(); i++) {
+                for (int i = 1; i <= rs.getMetaData().getColumnCount(); i++) {
                     resultRow.add(rs.getString(i));
                 }
                 result.add(resultRow);
@@ -108,7 +112,6 @@ public class Table {
         } catch (SQLException ex) {
 
             throw new JDBCDAOException("Ошибка чтения имен пользователя", ex);
-
         }
         return result;
     }

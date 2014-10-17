@@ -256,6 +256,7 @@ public class addProduct extends HttpServlet {
                 sendError(Error.DUBLICATE, request, response);
                 return;
             }
+            throw new ServletException(e);
         } catch (Exception ex) {
             throw new ServletException(ex);
         }

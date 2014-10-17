@@ -232,9 +232,32 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
         return context;
     }
 
-    @Override
-    public Product readProduct(Product what) throws Exception {
-        return null;
+    private Product productFromTable(List<String>s) {
+        return new Product(s.get(0),s.get(1),s.get(2),s.get(3),s.get(4),s.get(5),s.get(6),s.get(7),s.get(9));
+    }
+    private TreeMap<Integer, String> productToTable(Product product) {
+        TreeMap<Integer, String> s = new TreeMap<>();
+        if (product.getName() != null) {
+            s.put(2, product.getName());
+        }
+        if (product.getSubName() != null) {
+            s.put(3, product.getSubName());
+        }
+        if (product.getProducer() != null) {
+            s.put(4, product.getProducer());
+        }
+        s.put(5, String.valueOf(product.getValue()));
+        if (product.getValueUnits() != null) {
+            s.put(6, product.getValueUnits());
+        }
+        if (product.getGroup() != null) {
+            s.put(7, product.getGroup());
+        }
+        s.put(8, String.valueOf(product.getPrice()));
+        if (product.getComment() != null) {
+            s.put(10, product.getComment());
+        }
+        return s;
     }
 
     @Override
@@ -253,31 +276,15 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
                 addGroup(what.getGroup());
             }
         }
-        TreeMap<Integer, String> s = new TreeMap<>();
-        if (what.getName() != null) {
-            s.put(2, what.getName());
+        table.addProduct(productToTable(what));
+        if (table != USERS_PRODUCTS_TABLE) {
+            return readProduct(what);
+        } else {
+            return readTempProducts(what).poll();
         }
-        if (what.getSubName() != null) {
-            s.put(3, what.getSubName());
-        }
-        if (what.getProducer() != null) {
-            s.put(4, what.getProducer());
-        }
-        s.put(5, String.valueOf(what.getValue()));
-        if (what.getValueUnits() != null) {
-            s.put(6, what.getValueUnits());
-        }
-        if (what.getGroup() != null) {
-            s.put(7, what.getGroup());
-        }
-        s.put(8, String.valueOf(what.getPrice()));
-        if (what.getComment() != null) {
-            s.put(10, what.getComment());
-        }
-        table.addProduct(s);
-
-        return table.readProductsByName(what.getName()).pollLast();
     }
+
+    
 
     @Override
     public Product addProduct(Product what, String whosAdd, String imagePath) throws Exception {
@@ -286,7 +293,7 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
         s.put(2, imagePath);
         s.put(whosAdd.equals("admin") ? 3 : 4, String.valueOf(p.getId()));
         IMAGES_TABLE.addRecord(s);
-        ArrayList<String>img=new ArrayList<>();
+        ArrayList<String> img = new ArrayList<>();
         img.add(imagePath);
         p.setImageLinks(img);
         return p;
@@ -295,6 +302,25 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
     @Override
     public Product deleteProduct(Product what) throws Exception {
         return null;
+    }
+
+    @Override
+    public Product readProduct(Product product) throws Exception {
+        LinkedList<List<String>> pr = PRODUCTS_TABLE.readRawsWhere(productToTable(product));
+        if (pr.size() > 1) {
+            throw new Exception("Во время чтения продукта, произошла ошибка.\n Объект не уникален.");
+        }
+        return productFromTable(pr.peek());
+    }
+
+    @Override
+    public LinkedList<Product> readTempProducts(Product product) throws Exception {
+        LinkedList<List<String>> pr = USERS_PRODUCTS_TABLE.readRawsWhere(productToTable(product));
+        LinkedList<Product> res = new LinkedList<>();
+        for (List<String> s : pr) {
+            res.add(productFromTable( pr.peek()));
+        }
+        return res;
     }
 
     @Override

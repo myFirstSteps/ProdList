@@ -41,11 +41,13 @@
 
         <form  class="center_form" id="newProduct" method="post"  enctype="multipart/form-data" action= '<c:url value="addProduct"/>'>
             <c:if test='${addProduct ne null}'>
-                <h4>Продукт успешно добавлен.</h4>
-                <div class="productTable"> 
+                <div class="productTable">
+                    <h4>Продукт успешно добавлен.</h4>
+
                     <c:import url="/WEB-INF/template/productinfo.jsp"/> 
-                </div></c:if>
-                <h2>Добавить новый продукт в базу.</h2>
+                </div>
+            </c:if>
+            <h2>Добавить новый продукт в базу.</h2>
             <div id='error' class='error'>${error}</div><br>
             <div>
                 <span>Категория:</span><br>
@@ -125,7 +127,6 @@
                         dataValidCheck(this, '^[0-9]+(?:[.|,])?[0-9]*$', "<span class='invalid error'>Значение поля должно быть целым или десятичным числом.\n\
                  </span><br class='invalid error'>");
                     });
-
                 });
 
         </script>
