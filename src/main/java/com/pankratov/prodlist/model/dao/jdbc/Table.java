@@ -5,21 +5,12 @@
  */
 package com.pankratov.prodlist.model.dao.jdbc;
 
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.sql.*;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.TreeMap;
-import java.util.TreeSet;
-import java.util.concurrent.ConcurrentSkipListSet;
-import javax.sql.rowset.CachedRowSet;
-import javax.sql.rowset.RowSetProvider;
+import java.util.concurrent.*;
+import java.util.regex.*;
+import javax.sql.rowset.*;
 
 /**
  *
@@ -49,7 +40,7 @@ public class Table {
         return tableName;
     }
 
-    private String[] parseConditionMap(TreeMap<Integer, String> s) throws Exception {
+    private String[] parseConditionMap(TreeMap<Integer, String> s) throws JDBCDAOException {
         String colNames = "";
         String colValues = "";
 
@@ -63,32 +54,63 @@ public class Table {
         return new String[]{colNames, colValues};
     }
 
-    
-
-    protected boolean addRecord(TreeMap<Integer, String> c) throws Exception {
+    protected boolean addRecord(TreeMap<Integer, String> c) throws JDBCDAOException {
         int i = 1;
         String[] s = parseConditionMap(c);
         String params = "";
         String colsNames = s[0];
         String colValues = s[1];
-                String query = String.format("insert into %s  (%s) values (%s)", tableName, colsNames, colValues);
+        String query = String.format("insert into %s  (%s) values (%s)", tableName, colsNames, colValues);
         try (Statement st = connection.createStatement();) {
             st.executeUpdate(query);
+        } catch (SQLException e) {
+            throw new JDBCDAOException(String.format("Ошибка при добавлении данных в таблицу %s", tableName), e);
         }
         return true;
     }
 
-    protected LinkedList<List<String>> readRawsWhere(TreeMap<Integer, String> condition) throws Exception {
+    protected boolean addEnumValues(int col, String... newValues) throws JDBCDAOException {
+        boolean result = false;
+        try (Statement st = connection.createStatement();
+                ResultSet source = st.executeQuery(String.format("Describe %s %s",
+                                this.getTableName(), this.getColumnName(col)));) {
+            StringBuilder insertion = new StringBuilder("'"), enums = null;
+            String def = "";
+            while (source.next()) {
+                enums = new StringBuilder(source.getString(2));
+                def = source.getString(5);
+            }
+            for (String s : newValues) {
+                if (enums != null && enums.indexOf("'" + s + "'") == -1) {
+                    insertion.append(",'" + s);
+                }
+            }
+            if (insertion.length() > 3) {
+                enums.insert(enums.lastIndexOf("','"), insertion);
+
+                st.executeUpdate(String.format("Alter table %s modify %s %s not null default '%s'", this.getTableName(), this.getColumnName(col), enums, def));
+                result = true;
+            }
+        } catch (SQLException | JDBCDAOException ex) {
+
+            throw new JDBCDAOException("Ошибка добавления категорий продуктов", ex);
+        }
+        return result;
+    }
+
+    protected LinkedList<List<String>> readRawsWhere(TreeMap<Integer, String> condition) throws JDBCDAOException {
         LinkedList<List<String>> result = new LinkedList<>();
         List<String> resultRow = new LinkedList<>();
         String[] s = parseConditionMap(condition);
-       
-        String param="";
-        for(Entry<Integer,String> st:condition.entrySet()){
-            if (param.length()>0) param+=" and ";
-            param+=getColumnName(st.getKey())+"= '"+st.getValue()+"'";
+
+        String param = "";
+        for (Entry<Integer, String> st : condition.entrySet()) {
+            if (param.length() > 0) {
+                param += " and ";
+            }
+            param += getColumnName(st.getKey()) + "= '" + st.getValue() + "'";
         }
-        String query = String.format("select * from %s where %s", tableName,param);
+        String query = String.format("select * from %s where %s", tableName, param);
         try (Statement st = connection.createStatement(); ResultSet rs = st.executeQuery(query)) {
             while (rs.next()) {
                 for (int i = 1; i <= rs.getMetaData().getColumnCount(); i++) {
@@ -96,22 +118,45 @@ public class Table {
                 }
                 result.add(resultRow);
             }
+        } catch (SQLException e) {
+            throw new JDBCDAOException(String.format("Ошибка при чтении данных из таблицы %s", tableName), e);
         }
         return result;
     }
 
     protected ConcurrentSkipListSet<String> readColumn(int n) throws JDBCDAOException {
         ConcurrentSkipListSet<String> result = new ConcurrentSkipListSet<>();
-        try (Statement st = connection.createStatement();) {
-            ResultSet res = st.executeQuery(String.format("select %s from %s", this.columnNames.get(n - 1), this.tableName));
+        String query = String.format("select %s from %s", this.columnNames.get(n - 1), this.tableName);
+        try (Statement st = connection.createStatement(); ResultSet res = st.executeQuery(query);) {
             while (res.next()) {
                 result.add(res.getString(1));
             }
-            res.close();
-
         } catch (SQLException ex) {
 
             throw new JDBCDAOException("Ошибка чтения имен пользователя", ex);
+        }
+        return result;
+    }
+
+    protected ArrayList getEnumValues(int col) throws JDBCDAOException {
+        ArrayList<String> result = new ArrayList<>();
+        String query = String.format("Describe %s %s", this.getTableName(), this.getColumnName(col));
+        try (Statement st = connection.createStatement();
+                ResultSet res = st.executeQuery(query);) {
+
+            Pattern p = Pattern.compile("(?:(?:enum[(]\')|(?:,\'))(.+?)(?:(?:\',)|(?:\'[)]))");
+            while (res.next()) {
+                Matcher m = p.matcher(res.getString(2));
+                int start = 0;
+                while (start >= 0 && m.find(start)) {
+                    result.add(m.group(1));
+                    start = m.end(1);
+                }
+
+            }
+        } catch (SQLException ex) {
+
+            throw new JDBCDAOException(String.format("Ошибка чтения enum значений столбца %s таблицы %s", this.getColumnName(col), this.getTableName()), ex);
         }
         return result;
     }

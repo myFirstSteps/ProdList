@@ -5,7 +5,7 @@
  */
 package com.pankratov.prodlist.model.products;
 
-import java.util.ArrayList;
+import java.util.*;
 
 /**
  *
@@ -24,6 +24,7 @@ public class Product {
     private String comment;
     private String author;
     private ArrayList<String> imageLinks=new ArrayList<>();
+    private boolean origin=false; 
     
     public Product(){
         
@@ -40,6 +41,19 @@ public class Product {
         this.price = new Float(price);
         this.comment = comment;
         this.author = author;
+    }
+     public Product(TreeMap<String,String> initData) {
+        String x;
+        this.id = (x=initData.get(id))!=null&&!x.equals("")?new Long(x):44;
+        this.name = (x=initData.get(name))!=null&&!x.equals("")?x:null;
+        this.subName =  x=initData.get(name)!=null&&!x.equals("")?x:null;
+        this.producer = x=initData.get(name)!=null&&!x.equals("")?x:null;
+        //this.value = new Float(value);
+     //   this.valueUnits =  x=initData.get(name)!=null&&!x.equals("")?x:null;
+     //   this.group = group;
+      //  this.price = new Float(price);
+      //  this.comment = comment;
+      //  this.author = author;
     }
 
     /**
@@ -202,5 +216,19 @@ public class Product {
      */
     public void setImageLinks(ArrayList<String> imageLinks) {
         this.imageLinks = imageLinks;
+    }
+
+    /**
+     * @return the origin
+     */
+    public boolean isOrigin() {
+        return origin;
+    }
+
+    /**
+     * @param origin the origin to set
+     */
+    public void setOrigin(boolean origin) {
+        this.origin = origin;
     }
 }

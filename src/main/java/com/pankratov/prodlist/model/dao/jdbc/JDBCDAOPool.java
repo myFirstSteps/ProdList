@@ -18,8 +18,8 @@ import org.apache.logging.log4j.Logger;
  */
 public class JDBCDAOPool<T extends JDBCDAOObject> {
 
-    private static Logger log = LogManager.getLogger(JDBCDAOPool.class);
-    private T adam;
+    private static final Logger log = LogManager.getLogger(JDBCDAOPool.class);
+    private final T adam;
     private int maxCount;
     private int minCount;
     private long idleTime;

@@ -47,11 +47,12 @@
                     <c:import url="/WEB-INF/template/productinfo.jsp"/> 
                 </div>
             </c:if>
+                 
             <h2>Добавить новый продукт в базу.</h2>
             <div id='error' class='error'>${error}</div><br>
             <div>
                 <span>Категория:</span><br>
-                <input   size="15" type="text" name="category" class="validCheck" value="Овощи" id="CategorySelect" >
+                <input   size="15" type="text" name="group" class="validCheck" value="Овощи" id="CategorySelect" >
             </div>
             <div>
                 <span>Название:</span><br>
@@ -59,7 +60,7 @@
             </div>
             <div>
                 <span>Уточняющее название:</span><br>
-                <input  type="text" value="Сливовидные" class='validCheck' name="sub_name"  >
+                <input  type="text" value="Сливовидные" class='validCheck' name="subName"  >
             </div>
             <div>
                 <span>Производитель:</span><br>

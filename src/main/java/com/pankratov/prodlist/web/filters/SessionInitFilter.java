@@ -47,18 +47,18 @@ public class SessionInitFilter implements Filter {
         HttpSession ses= req.getSession(false);
         try {   
             if (ses==null) {
-                boolean hasId=false;
+                boolean hasID=false;
                 ses=req.getSession();
                  Cookie [] c= req.getCookies();
                  if (c!=null){
                  for(Cookie co:c){
                      if(co.getName().equals("clid")){
-                        hasId=true;
+                        hasID=true;
                         ses.setAttribute("clid", co.getValue());
                      };
                  }
                  }
-                 if (!hasId){Cookie id=new Cookie("clid","_clid"+ System.currentTimeMillis()+ses.getId());
+                 if (!hasID){Cookie id=new Cookie("clid","_clid"+ System.currentTimeMillis()+ses.getId());
                     id.setMaxAge(60*60*24*365);
                     ses.setAttribute("clid",id.getValue());
                     resp.addCookie(id);

@@ -29,7 +29,7 @@ public class addProduct extends HttpServlet {
     private enum Error {
 
         FILE_SIZE_ERROR, FILE_TYPE_ERROR, DUBLICATE;
-       
+
     }
     private long maxImgSize;
     private int maxMemSize;
@@ -83,7 +83,6 @@ public class addProduct extends HttpServlet {
         ServletContext context = config.getServletContext();
         param = config.getServletContext().getInitParameter("MAX_UPLOAD_FILE_SIZE");
         Path appRoot = Paths.get(context.getRealPath(context.getContextPath())).getParent();
-
         maxImgSize = (param != null) ? Long.parseLong(param) : 512000;
         param = context.getInitParameter("MAX_FILE_MEMORY");
         maxMemSize = (param != null) ? Integer.parseInt(param) : 100 * 1024;
@@ -110,33 +109,7 @@ public class addProduct extends HttpServlet {
                 maxImgSize, maxMemSize, absTempDir, absImgDir));
     }
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet addProduct</title>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet addProduct at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        }
-    }
-
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+   
     /**
      * Handles the HTTP <code>GET</code> method.
      *
@@ -172,11 +145,7 @@ public class addProduct extends HttpServlet {
             throws ServletException, IOException {
         File f = null;
         try {
-            Product product = new Product();
-            String creator = request.getRemoteUser() != null ? request.getRemoteUser() : (String) request.getSession().getAttribute("clid");
-            if (creator != null) {
-                product.setAuthor(creator);
-            }
+           
             if (!ServletFileUpload.isMultipartContent(request)) {
                 response.setCharacterEncoding("UTF-8");
                 response.setContentType("text/plain");
@@ -192,7 +161,7 @@ public class addProduct extends HttpServlet {
             f = (Paths.get(absImgDir + fileName)).toFile();
 
             List<FileItem> x = upl.parseRequest(request);
-
+            TreeMap<String, String> prodInit = new TreeMap<>();
             for (FileItem i : x) {
                 if (!i.isFormField()) {
                     if (i.getSize() > 0) {
@@ -201,45 +170,38 @@ public class addProduct extends HttpServlet {
                         System.out.println("NEW FILE:" + f);
                     }
                 } else {
-                    String s = i.getString("UTF-8");
                     switch (i.getFieldName()) {
-                        case "category":
-                            product.setGroup(!s.equals("") ? s : null);
-                            break;
-                        case "name":
-                            product.setName(!s.equals("") ? s : null);
-                            break;
-                        case "sub_name":
-                            product.setSubName(!s.equals("") ? s : null);
-                            break;
-                        case "producer":
-                            product.setProducer(!s.equals("") ? s : null);
-                            break;
-                        case "value":
-                            product.setValue(new Float(!s.equals("") ? s : "0"));
-                            break;
-                        case "units":
-                            product.setValueUnits(!s.equals("") ? s : null);
-                            break;
-                        case "price":
-                            product.setPrice(new Float(!s.equals("") ? s : "0"));
-                            break;
-                        case "comment":
-                            product.setComment(!s.equals("") ? s : null);
-                            break;
+                        case "group":;
+                        case "name":;
+                        case "subName":;
+                        case "producer":;
+                        case "value": System.out.println("v");
+                        case "units":System.out.println("u");
+                        case "price":;
+                        case "comment":;System.out.println("c");
+                            prodInit.put(i.getFieldName(), i.getString("UTF-8"));
+
                     }
+ 
                 }
             }
-
             //Проверяем, что загруженный файл является gif,png или jpeg.          
             if (f.length() > 0 && !CheckFileContent.isValid(f)) {
                 f.delete();
                 sendError(Error.FILE_TYPE_ERROR, request, response);
                 return;
             };
+            
+            Product product;
+            String creator =  (String) request.getSession().getAttribute("clid");
+            prodInit.put("author", creator);
+            if (request.isUserInRole("admin")) {
+                 prodInit.put("origin", "");
+            }
             try (ProductDAO pdao = DAOFactory.getProductDAOInstance(DAOFactory.DAOSource.JDBC, request.getServletContext())) {
-                product = f.length() > 0 ? pdao.addProduct(product, request.isUserInRole("admin") ? "admin" : "гость", relImgDir + fileName)
-                        : pdao.addProduct(product, request.isUserInRole("admin") ? "admin" : "гость");
+                  product=  new Product(prodInit);
+                  product = f.length() > 0 ? pdao.addProduct(product, relImgDir + fileName)
+                        : pdao.addProduct(product);
 
             }
             request.setAttribute("addProduct", product);

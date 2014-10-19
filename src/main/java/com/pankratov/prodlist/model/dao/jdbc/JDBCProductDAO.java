@@ -8,20 +8,10 @@ package com.pankratov.prodlist.model.dao.jdbc;
 import com.pankratov.prodlist.model.dao.ProductDAO;
 import com.pankratov.prodlist.model.products.Product;
 import java.io.File;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.TreeMap;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentSkipListSet;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.sql.*;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.regex.*;
 import javax.servlet.ServletContext;
 import javax.sql.rowset.CachedRowSet;
 import org.apache.logging.log4j.Logger;
@@ -48,95 +38,7 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
 
         protected ProductTable(String tableName, Connection con, List<String> colNames) throws JDBCDAOException {
             super(tableName, con, colNames);
-        }
-
-        private LinkedList<Product> readProductsByName(String name) throws SQLException, JDBCDAOException {
-            LinkedList<Product> result = new LinkedList<>();
-            CachedRowSet crs = getRowSet();
-            crs.setCommand("select * from " + getTableName() + " where "
-                    + getColumnName(2) + "= '" + name + "'");
-            crs.execute(getConnection());
-            while (crs.next()) {
-                result.offer(new Product(crs.getString(1), crs.getString(2), crs.getString(3), crs.getString(4),
-                        crs.getString(5), crs.getString(6), crs.getString(7), crs.getString(8), crs.getString(10)));
-            }
-            return result;
-        }
-
-        private Product readProduct(String name, String subName, String group, String producer) throws SQLException, JDBCDAOException {
-            Product result = null;
-            CachedRowSet crs = getRowSet();
-            crs.setCommand("select * from " + getTableName() + " where "
-                    + getColumnName(2) + "= '" + name + "' and " + getColumnName(3) + "= '" + subName + "' and " + getColumnName(7) + "= '" + group + "' and "
-                    + getColumnName(4) + "= '" + producer + "'");
-            crs.execute(getConnection());
-            while (crs.next()) {
-                result = new Product(crs.getString(1), crs.getString(2), crs.getString(3), crs.getString(4),
-                        crs.getString(5), crs.getString(6), crs.getString(7), crs.getString(8), crs.getString(10));
-            }
-            return result;
-        }
-
-        private boolean addProduct(TreeMap<Integer, String> s) throws Exception {
-            addRecord(s);
-            return true;
-        }
-
-        protected ArrayList getEnumValues(int col) {
-            ArrayList<String> result = new ArrayList<>();
-
-            try (Statement st = connection.createStatement();
-                    ResultSet res = st.executeQuery(String.format("Describe %s %s",
-                                    this.getTableName(), this.getColumnName(col)));) {
-
-                Pattern p = Pattern.compile("(?:(?:enum[(]\')|(?:,\'))(.+?)(?:(?:\',)|(?:\'[)]))");
-                while (res.next()) {
-                    Matcher m = p.matcher(res.getString(2));
-                    int start = 0;
-                    while (start >= 0 && m.find(start)) {
-                        System.out.println("matcher " + m.group(1));
-                        result.add(m.group(1));
-                        start = m.end(1);
-                    }
-
-                }
-            } catch (SQLException | JDBCDAOException ex) {
-
-                new JDBCDAOException("Ошибка чтения категорий продуктов", ex);
-            }
-            return result;
-
-        }
-
-        protected boolean addEnumValues(int col, String... newValues) throws Exception {
-            boolean result = false;
-            try (Statement st = connection.createStatement();
-                    ResultSet source = st.executeQuery(String.format("Describe %s %s",
-                                    this.getTableName(), this.getColumnName(col)));
-                    PreparedStatement dest = connection.prepareStatement("Alter table ? modify ? ? not null default '?'");) {
-                StringBuilder insertion = new StringBuilder("'"), enums = null;
-                String def = "";
-                while (source.next()) {
-                    enums = new StringBuilder(source.getString(2));
-                    def = source.getString(5);
-                }
-                for (String s : newValues) {
-                    if (enums != null && enums.indexOf("'" + s + "'") == -1) {
-                        insertion.append(",'" + s);
-                    }
-                }
-                if (insertion.length() > 3) {
-                    enums.insert(enums.lastIndexOf("','"), insertion);
-
-                    st.executeUpdate(String.format("Alter table %s modify %s %s not null default '%s'", this.getTableName(), this.getColumnName(col), enums, def));
-                    result = true;
-                }
-            } catch (SQLException | JDBCDAOException ex) {
-
-                throw new JDBCDAOException("Ошибка добавления категорий продуктов", ex);
-            }
-            return result;
-        }
+        }       
     }
 
     @Override
@@ -267,7 +169,7 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
     }
 
     @Override
-    public Product addProduct(Product what, String whosAdd) throws Exception {
+    public Product addProduct(Product what, String whosAdd) throws JDBCDAOException {
         Product result = null;
         ProductTable table = USERS_PRODUCTS_TABLE;
         if (whosAdd.equals("admin")) {
@@ -276,7 +178,7 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
                 addGroup(what.getGroup());
             }
         }
-        table.addProduct(productToTable(what));
+        table.addRecord(productToTable(what));
         if (table != USERS_PRODUCTS_TABLE) {
             return readProduct(what);
         } else {
@@ -287,7 +189,7 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
     
 
     @Override
-    public Product addProduct(Product what, String whosAdd, String imagePath) throws Exception {
+    public Product addProduct(Product what, String whosAdd, String imagePath) throws JDBCDAOException {
         Product p = this.addProduct(what, whosAdd);
         TreeMap<Integer, String> s = new TreeMap<>();
         s.put(2, imagePath);
@@ -300,21 +202,21 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
     }
 
     @Override
-    public Product deleteProduct(Product what) throws Exception {
+    public Product deleteProduct(Product what) throws JDBCDAOException {
         return null;
     }
 
     @Override
-    public Product readProduct(Product product) throws Exception {
+    public Product readProduct(Product product) throws JDBCDAOException {
         LinkedList<List<String>> pr = PRODUCTS_TABLE.readRawsWhere(productToTable(product));
         if (pr.size() > 1) {
-            throw new Exception("Во время чтения продукта, произошла ошибка.\n Объект не уникален.");
+            throw new JDBCDAOException("Во время чтения продукта, произошла ошибка.\n Объект не уникален.");
         }
         return productFromTable(pr.peek());
     }
 
     @Override
-    public LinkedList<Product> readTempProducts(Product product) throws Exception {
+    public LinkedList<Product> readTempProducts(Product product) throws JDBCDAOException {
         LinkedList<List<String>> pr = USERS_PRODUCTS_TABLE.readRawsWhere(productToTable(product));
         LinkedList<Product> res = new LinkedList<>();
         for (List<String> s : pr) {
@@ -324,31 +226,31 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
     }
 
     @Override
-    public ConcurrentSkipListSet<String> readProductNames() throws Exception {
+    public ConcurrentSkipListSet<String> readProductNames() throws JDBCDAOException {
         return PRODUCTS_TABLE.readColumn(2);
     }
 
     @Override
-    public ConcurrentSkipListSet<String> readProductSubNames() throws Exception {
-        return PRODUCTS_TABLE.readColumn(2);
+    public ConcurrentSkipListSet<String> readProductSubNames() throws JDBCDAOException {
+        return PRODUCTS_TABLE.readColumn(3);
     }
 
     @Override
-    public ArrayList readProductGroups() {
+    public ArrayList readProductGroups() throws JDBCDAOException {
         return PRODUCTS_TABLE.getEnumValues(7);
     }
 
     @Override
-    public ArrayList readProductValueUnits() {
+    public ArrayList readProductValueUnits() throws JDBCDAOException {
         return PRODUCTS_TABLE.getEnumValues(6);
     }
 
     @Override
-    public boolean addGroup(String... group) throws Exception {
+    public boolean addGroup(String... group) throws JDBCDAOException {
         if (group.length == 0) {
             return false;
         }
         PRODUCTS_TABLE.addEnumValues(7, group);
-        return false;
+        return true;
     }
 }

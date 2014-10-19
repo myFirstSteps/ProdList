@@ -1,0 +1,79 @@
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ Таблица продуктов, таблица продуктов пользователя, таблица изображений продуктов
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+| products | CREATE TABLE `products` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(254) NOT NULL,
+  `sub_name` varchar(254) DEFAULT NULL,
+  `producer` varchar(254) DEFAULT NULL,
+  `value` decimal(8,4) NOT NULL DEFAULT '1.0000',
+  `value_unit` enum('кг','л') NOT NULL DEFAULT 'кг',
+  `agroup` enum('фрукты','овощи','мясо','молочные продукты','птица','рыба','орехи','специи','бакалея','хлеб','сладости','чай кофе','алкогольные напитки','безалкогольные напитки','бытовая химия','личная гигиена','товары для дачи','товары для дома','игрушки','другое') NOT NULL DEFAULT 'другое',
+  `price` decimal(8,2) NOT NULL DEFAULT '1.00',
+  `comment` varchar(500) DEFAULT NULL,
+  `stamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id` (`id`),
+  UNIQUE KEY `name` (`name`,`producer`,`value`,`sub_name`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8                                                                                                           |
+|users_products | users_products | CREATE TABLE `users_products` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(254) NOT NULL,
+  `sub_name` varchar(254) DEFAULT NULL,
+  `producer` varchar(254) DEFAULT NULL,
+  `value` decimal(8,4) DEFAULT '1.0000',
+  `value_unit` enum('кг','л') NOT NULL DEFAULT 'кг',
+  `agroup` varchar(254) NOT NULL DEFAULT 'другое',
+  `price` decimal(8,2) NOT NULL DEFAULT '1.00',
+  `comment` varchar(500) DEFAULT NULL,
+  `owner` varchar(254) DEFAULT NULL,
+  `products_id` bigint(20) unsigned DEFAULT NULL,
+  `stamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id` (`id`),
+  UNIQUE KEY `name` (`name`,`products_id`),
+  KEY `products_id` (`products_id`),
+  CONSTRAINT `users_products_ibfk_1` FOREIGN KEY (`products_id`) REFERENCES `products` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8            |
+ 
+| images | CREATE TABLE `images` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `link` varchar(2000) NOT NULL,
+  `product_id` bigint(20) unsigned DEFAULT NULL,
+  `users_product_id` bigint(20) unsigned DEFAULT NULL,
+  `stamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY `id` (`id`),
+  KEY `users_product_id` (`users_product_id`),
+  KEY `product_id` (`product_id`),
+  CONSTRAINT `images_ibfk_3` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE SET NULL ON UPDATE SET NULL,
+  CONSTRAINT `images_ibfk_2` FOREIGN KEY (`users_product_id`) REFERENCES `users_products` (`id`) ON DELETE SET NULL ON UPDATE SET NULL
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 |
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Данные пользователя для авторизации
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+| logins | CREATE TABLE `logins` (
+  `login` varchar(254) NOT NULL,
+  `pass` varchar(254) NOT NULL,
+  `stamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`login`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 |
+
+login_role | CREATE TABLE `login_role` (
+  `login` varchar(254) NOT NULL,
+  `login_role` varchar(50) NOT NULL,
+  `stamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`login`,`login_role`),
+  CONSTRAINT `login_role_ibfk_1` FOREIGN KEY (`login`) REFERENCES `logins` (`login`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 
+
+user_info | CREATE TABLE `user_info` (
+  `login` varchar(254) NOT NULL,
+  `firstname` varchar(254) DEFAULT NULL,
+  `lastname` varchar(254) DEFAULT NULL,
+  `email` varchar(254) DEFAULT NULL,
+  `stamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`login`),
+  CONSTRAINT `user_info_ibfk_1` FOREIGN KEY (`login`) REFERENCES `logins` (`login`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 
+
