@@ -14,7 +14,6 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Добавить продукт.</title>
         <style><%@include file="/CSSdoc/mainCSS.css"%></style>
-        <style><%@include file="/CSSdoc/jquery-ui.css"%></style>
     </head>
     <body>
         <div id="header">
@@ -68,11 +67,11 @@
             <c:set var="commentValue" value="" /> 
             <c:if test="${newProduct.comment ne null}"><c:set var="commentValue" value="${newProduct.comment}"/></c:if>
 
-            <div>
+                <div>
                     <span>Категория:</span><br>
                     <input   size="15" type="text" name="group" class="validCheck" value='${categoryValue}' id="CategorySelect" >
             </div>
-            <div>
+            <div  class="ui-widget">
                 <span>Название:</span><br>
                 <input id="tags" type="text" value='${nameValue}' autocomplete='off' name="name"  class='mandatory validCheck"' >
             </div>
@@ -111,10 +110,13 @@
             <input type="button" onclick="validate(this.form)" value="Добавить">
         </form>
 
+        
+
         <script src="scripts/jquery-1.11.1.min.js"></script>
         <script src="scripts/jquery-ui.min.js"></script>
         <script src="scripts/formValidation.js"></script>
         <script src="scripts/PopUpMenu.js"></script>
+
         <script>
 
                 var testUnits = function(s) {
@@ -127,45 +129,6 @@
                             return "В единице:";
                     }
                 };
-
-
-                $(function() {
-                    var availableTags = [
-                        "ActionScript",
-                        "AppleScript",
-                        "Asp",
-                        "BASIC",
-                        "C",
-                        "C++",
-                        "Clojure",
-                        "COBOL",
-                        "ColdFusion",
-                        "Erlang",
-                        "Fortran",
-                        "Groovy",
-                        "Haskell",
-                        "Java",
-                        "JavaScript",
-                        "Lisp",
-                        "Perl",
-                        "PHP",
-                        "Python",
-                        "Ruby",
-                        "Scala",
-                        "Scheme"
-                    ];
-                    $("#tags").autocomplete({
-                        source: availableTags
-                    });
-                });
-
-
-
-
-
-
-
-
                 $(document).ready(function() {
                     new ImgMenu($('.TabletMenu'), $("#CategorySelect"));
                     $("#valueUnit").change(function() {
@@ -188,6 +151,8 @@
                     });
                 });
 
+
         </script>
+        
     </body>
 </html>

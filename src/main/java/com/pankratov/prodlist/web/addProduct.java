@@ -20,6 +20,8 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.json.simple.*;
+import org.json.simple.parser.*;
 
 /**
  *
@@ -124,8 +126,22 @@ public class addProduct extends HttpServlet {
         try {
             response.setContentType("text/plain");
             response.setCharacterEncoding("UTF-8");
-            response.getWriter().println(DAOFactory.getProductDAOInstance(DAOFactory.DAOSource.JDBC, this.getServletContext()).readProductNames());
-
+            
+           System.out.println(request.getParameter("term"));
+                String s = "[0,{\"1\":{\"2\":{\"3\":{\"4\":[5,{\"6\":7}]}}}}]";
+                JSONParser parser=new org.json.simple.parser.JSONParser();
+                Object obj = parser.parse(request.getParameter("term"));
+                JSONArray array = (JSONArray)obj;
+                
+           
+           System.out.println("Parset"+array.toJSONString());
+          
+              try{
+            Thread.sleep(5000);
+            }
+            catch(InterruptedException e){}
+           // response.getWriter().println(DAOFactory.getProductDAOInstance(DAOFactory.DAOSource.JDBC, this.getServletContext()).readProductNames());
+          
         } catch (Exception ex) {
             System.out.println(ex);
             throw new IOException(ex);
