@@ -6,9 +6,6 @@
 package com.pankratov.prodlist.web.filters;
 
 import java.io.IOException;
-import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import javax.servlet.http.*;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -50,9 +47,9 @@ public class LoginCookieCreator implements Filter {
             HttpServletRequest req =(HttpServletRequest) request;
             String login = ((HttpServletRequest) request).getRemoteUser();
              if (login != null) {
-                Cookie c = new Cookie("clid", login);
+                Cookie c = new Cookie("login", login);
                 c.setMaxAge(60 * 60 * 24 * 365 * 1);
-                req.getSession().setAttribute("clid", login);
+                req.getSession().setAttribute("login", login);
                 ((HttpServletResponse)response).addCookie(c);
             }
             chain.doFilter(request,response);      

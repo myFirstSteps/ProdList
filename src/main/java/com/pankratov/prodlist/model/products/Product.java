@@ -13,27 +13,29 @@ import java.util.*;
  */
 public class Product {
 
-    private long id;
+    private Long id;
     private String name;
     private String subName;
     private String producer;
-    private float value;
+    private Float value;
     private String valueUnits;
     private String group;
-    private float price;
+    private Float price;
     private String comment;
     private String author;
-    private ArrayList<String> imageLinks=new ArrayList<>();
-    private boolean origin=false; 
-    
-    public Product(){
-        
+    private ArrayList<String> imageLinks = new ArrayList<>();
+    private boolean origin = false;
+    private Long originID; 
+
+    public Product() {
+
     }
-    public Product(String id, String name, String subname, String producer,
-            String value, String valueUnits, String group, String price, String comment) {
+
+    public Product(String id, String name, String subName, String producer,
+            String value, String valueUnits, String group, String price, String comment, String author,String originID) {
         this.id = new Long(id);
         this.name = name;
-        this.subName = subname;
+        this.subName = subName;
         this.producer = producer;
         this.value = new Float(value);
         this.valueUnits = valueUnits;
@@ -41,32 +43,61 @@ public class Product {
         this.price = new Float(price);
         this.comment = comment;
         this.author = author;
+        this.originID = originID!=null?new Long(originID):null;
     }
-     public Product(TreeMap<String,String> initData) {
+    public Product(Product product,boolean uniqueOnly) {
+        this.id = product.id;
+        this.name = product.name;
+        this.subName = product.subName;
+        this.producer = product.producer;
+        this.value = product.value;
+        if(uniqueOnly){
+        this.valueUnits = product.valueUnits;
+        this.group = product.group;
+        this.price = product.price;
+        this.comment = product.comment;
+        this.author = product.author;
+        this.originID = product.originID;
+        }
+    }
+
+    public Product(TreeMap<String, String> initData) {
         String x;
-        this.id = (x=initData.get(id))!=null&&!x.equals("")?new Long(x):44;
-        this.name = (x=initData.get(name))!=null&&!x.equals("")?x:null;
-        this.subName =  x=initData.get(name)!=null&&!x.equals("")?x:null;
-        this.producer = x=initData.get(name)!=null&&!x.equals("")?x:null;
-        //this.value = new Float(value);
-     //   this.valueUnits =  x=initData.get(name)!=null&&!x.equals("")?x:null;
-     //   this.group = group;
-      //  this.price = new Float(price);
-      //  this.comment = comment;
-      //  this.author = author;
+        try {
+            this.id = (x = initData.get("id")) != null && !x.equals("") ? new Long(x.replace(",", ".")) : null;
+        } catch (java.lang.NumberFormatException e) {
+        }
+        try {
+            this.price = (x = initData.get("price")) != null && !x.equals("") ? new Float(x.replace(",", ".")) : null;
+        } catch (java.lang.NumberFormatException e) {
+        }
+        try {
+            this.value = (x = initData.get("value")) != null && !x.equals("") ? new Float(x.replace(",", ".")) : null;
+        } catch (java.lang.NumberFormatException e) {
+        }
+
+        this.name = (x = initData.get("name")) != null && !x.equals("") ? x : null;
+        this.subName = (x = initData.get("subName")) != null && !x.equals("") ? x : null;
+        this.producer = (x = initData.get("producer")) != null && !x.equals("") ? x : null;
+        this.value = (x = initData.get("value")) != null && !x.equals("") ? new Float(x) : null;
+        this.valueUnits = (x = initData.get("units")) != null && !x.equals("") ? x : null;
+        this.group = (x = initData.get("group")) != null && !x.equals("") ? x : null;
+        this.comment = (x = initData.get("comment")) != null && !x.equals("") ? x : null;
+        this.author = (x = initData.get("author")) != null && !x.equals("") ? x : null;
+        this.origin = (x = initData.get("origin")) != null? true : false;
     }
 
     /**
      * @return the id
      */
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
     /**
      * @param id the id to set
      */
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -115,14 +146,14 @@ public class Product {
     /**
      * @return the value
      */
-    public float getValue() {
+    public Float getValue() {
         return value;
     }
 
     /**
      * @param value the value to set
      */
-    public void setValue(float value) {
+    public void setValue(Float value) {
         this.value = value;
     }
 
@@ -157,14 +188,14 @@ public class Product {
     /**
      * @return the price
      */
-    public float getPrice() {
+    public Float getPrice() {
         return price;
     }
 
     /**
      * @param price the price to set
      */
-    public void setPrice(float price) {
+    public void setPrice(Float price) {
         this.price = price;
     }
 
@@ -230,5 +261,19 @@ public class Product {
      */
     public void setOrigin(boolean origin) {
         this.origin = origin;
+    }
+
+    /**
+     * @return the originID
+     */
+    public Long getOriginID() {
+        return originID;
+    }
+
+    /**
+     * @param originID the originID to set
+     */
+    public void setOriginID(Long originID) {
+        this.originID = originID;
     }
 }

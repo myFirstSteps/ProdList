@@ -38,7 +38,7 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
 
         protected ProductTable(String tableName, Connection con, List<String> colNames) throws JDBCDAOException {
             super(tableName, con, colNames);
-        }       
+        }
     }
 
     @Override
@@ -126,7 +126,6 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
             log.error("JDBCProductDAO creation error", e);
             throw new JDBCDAOException("JDBCProductDAO creation error: ", e);
         }
-
     }
 
     @Override
@@ -134,11 +133,16 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
         return context;
     }
 
-    private Product productFromTable(List<String>s) {
-        return new Product(s.get(0),s.get(1),s.get(2),s.get(3),s.get(4),s.get(5),s.get(6),s.get(7),s.get(9));
+    private Product productFromTable(List<String> s) {
+        return new Product(s.get(0), s.get(1), s.get(2), s.get(3), s.get(4), s.get(5), s.get(6), s.get(7), s.get(8), s.size() > 9 ? s.get(9) : null,
+                s.size() > 10 ? s.get(10) : null);
     }
+
     private TreeMap<Integer, String> productToTable(Product product) {
         TreeMap<Integer, String> s = new TreeMap<>();
+        if (product.getId() != null) {
+            s.put(1, product.getId().toString());
+        }
         if (product.getName() != null) {
             s.put(2, product.getName());
         }
@@ -148,52 +152,49 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
         if (product.getProducer() != null) {
             s.put(4, product.getProducer());
         }
-        s.put(5, String.valueOf(product.getValue()));
+        if (product.getValue() != null) {
+            s.put(5, product.getValue().toString());
+        }
         if (product.getValueUnits() != null) {
             s.put(6, product.getValueUnits());
         }
         if (product.getGroup() != null) {
             s.put(7, product.getGroup());
         }
-        s.put(8, String.valueOf(product.getPrice()));
+        if (product.getPrice() != null) {
+            s.put(8, product.getPrice().toString());
+        }
         if (product.getComment() != null) {
-            s.put(10, product.getComment());
+            s.put(9, product.getComment());
         }
         return s;
     }
 
     @Override
-    public Product addProduct(Product what) throws Exception {
-        this.addProduct(what, "гость");
-        return null;
-    }
+    public Product addProduct(Product product) throws JDBCDAOException {
 
-    @Override
-    public Product addProduct(Product what, String whosAdd) throws JDBCDAOException {
-        Product result = null;
         ProductTable table = USERS_PRODUCTS_TABLE;
-        if (whosAdd.equals("admin")) {
+        if (product.isOrigin()) {
             table = PRODUCTS_TABLE;
-            if (!readProductGroups().contains(what.getGroup())) {
-                addGroup(what.getGroup());
+            if (!readProductGroups().contains(product.getGroup())) {
+                addGroup(product.getGroup());
             }
         }
-        table.addRecord(productToTable(what));
-        if (table != USERS_PRODUCTS_TABLE) {
-            return readProduct(what);
-        } else {
-            return readTempProducts(what).poll();
+        if (readProducts(new Product(product, true)).size() > 0) {
+            throw new JDBCDAOException("Данный продукт уже существует.");
         }
+        table.addRecord(productToTable(product));
+
+        return readProduct(product);
+
     }
 
-    
-
     @Override
-    public Product addProduct(Product what, String whosAdd, String imagePath) throws JDBCDAOException {
-        Product p = this.addProduct(what, whosAdd);
+    public Product addProduct(Product product, String imagePath) throws JDBCDAOException {
+        Product p = this.addProduct(product);
         TreeMap<Integer, String> s = new TreeMap<>();
         s.put(2, imagePath);
-        s.put(whosAdd.equals("admin") ? 3 : 4, String.valueOf(p.getId()));
+        s.put(product.isOrigin() ? 3 : 4, String.valueOf(p.getId()));
         IMAGES_TABLE.addRecord(s);
         ArrayList<String> img = new ArrayList<>();
         img.add(imagePath);
@@ -208,7 +209,8 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
 
     @Override
     public Product readProduct(Product product) throws JDBCDAOException {
-        LinkedList<List<String>> pr = PRODUCTS_TABLE.readRawsWhere(productToTable(product));
+        Table table = product.isOrigin() ? PRODUCTS_TABLE : USERS_PRODUCTS_TABLE;
+        LinkedList<List<String>> pr = table.readRawsWhere(productToTable(product));
         if (pr.size() > 1) {
             throw new JDBCDAOException("Во время чтения продукта, произошла ошибка.\n Объект не уникален.");
         }
@@ -216,13 +218,17 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
     }
 
     @Override
-    public LinkedList<Product> readTempProducts(Product product) throws JDBCDAOException {
-        LinkedList<List<String>> pr = USERS_PRODUCTS_TABLE.readRawsWhere(productToTable(product));
-        LinkedList<Product> res = new LinkedList<>();
-        for (List<String> s : pr) {
-            res.add(productFromTable( pr.peek()));
+    public List<Product> readProducts(Product product) throws JDBCDAOException {
+        List<Product> products = new LinkedList<>();
+        Table table = product.isOrigin() ? PRODUCTS_TABLE : USERS_PRODUCTS_TABLE;
+        LinkedList<List<String>> pr = table.readRawsWhere(productToTable(product));
+        if (pr.size() > 1) {
+            throw new JDBCDAOException("Во время чтения продукта, произошла ошибка.\n Объект не уникален.");
         }
-        return res;
+        for (List<String> l : pr) {
+            products.add(productFromTable(pr.poll()));
+        }
+        return products;
     }
 
     @Override

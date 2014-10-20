@@ -16,7 +16,7 @@
   UNIQUE KEY `id` (`id`),
   UNIQUE KEY `name` (`name`,`producer`,`value`,`sub_name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8                                                                                                           |
-|users_products | CREATE TABLE `users_products` (
+|users_products | users_products | CREATE TABLE `users_products` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(254) NOT NULL,
   `sub_name` varchar(254) DEFAULT NULL,

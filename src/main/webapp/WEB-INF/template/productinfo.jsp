@@ -7,8 +7,8 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
 <!DOCTYPE html>
-
-<c:set var="prodImg" value="${addProduct.imageLinks[0]}"/>
+  
+<c:set var="prodImg" value="${addedProduct.imageLinks[0]}"/>
 <table class="productTable">
         
             <tr>
@@ -27,13 +27,13 @@
                 <c:if test="${prodImg ne null}">
                     <td id="prodTableImg"><img  src="<c:url value='${prodImg}'/>"   height="80" alt="изображение продукта"></td>
                 </c:if>
-                <td>${addProduct.name}</td>
-                <td>${addProduct.subName}</td>
-                <td>${addProduct.producer}</td>
-                <td>${addProduct.group}</td>
-                <td>${addProduct.value} ${addProduct.valueUnits}</td>
-                <td>${addProduct.price} руб</td>
-                <td>${addProduct.comment}</td>
+                <td>${addedProduct.name}</td>
+                <td>${addedProduct.subName}</td>
+                <td>${addedProduct.producer}</td>
+                <td>${addedProduct.group}</td>
+                <td>${addedProduct.value} ${addedProduct.valueUnits}</td>
+                <td>${addedProduct.price} руб</td>
+                <td>${addedProduct.comment}</td>
             </tr>
       
     </table>

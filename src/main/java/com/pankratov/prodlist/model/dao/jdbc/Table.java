@@ -64,6 +64,7 @@ public class Table {
         try (Statement st = connection.createStatement();) {
             st.executeUpdate(query);
         } catch (SQLException e) {
+            if( e.toString().contains("Duplicate entry"))throw new JDBCDAOException("Данный продукт уже существует.");else
             throw new JDBCDAOException(String.format("Ошибка при добавлении данных в таблицу %s", tableName), e);
         }
         return true;

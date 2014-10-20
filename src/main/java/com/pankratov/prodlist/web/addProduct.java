@@ -6,6 +6,7 @@
 package com.pankratov.prodlist.web;
 
 import com.pankratov.prodlist.model.dao.*;
+import com.pankratov.prodlist.model.dao.jdbc.JDBCDAOException;
 import com.pankratov.prodlist.model.products.Product;
 import java.io.*;
 import java.nio.file.*;
@@ -109,7 +110,6 @@ public class addProduct extends HttpServlet {
                 maxImgSize, maxMemSize, absTempDir, absImgDir));
     }
 
-   
     /**
      * Handles the HTTP <code>GET</code> method.
      *
@@ -145,7 +145,7 @@ public class addProduct extends HttpServlet {
             throws ServletException, IOException {
         File f = null;
         try {
-           
+
             if (!ServletFileUpload.isMultipartContent(request)) {
                 response.setCharacterEncoding("UTF-8");
                 response.setContentType("text/plain");
@@ -167,22 +167,21 @@ public class addProduct extends HttpServlet {
                     if (i.getSize() > 0) {
                         f.createNewFile();
                         i.write(f);
-                        System.out.println("NEW FILE:" + f);
                     }
                 } else {
                     switch (i.getFieldName()) {
-                        case "group":;
-                        case "name":;
-                        case "subName":;
-                        case "producer":;
-                        case "value": System.out.println("v");
-                        case "units":System.out.println("u");
-                        case "price":;
-                        case "comment":;System.out.println("c");
+                        case "group":
+                        case "name":
+                        case "subName":
+                        case "producer":
+                        case "value":
+                        case "units":
+                        case "price":
+                        case "comment":
                             prodInit.put(i.getFieldName(), i.getString("UTF-8"));
 
                     }
- 
+
                 }
             }
             //Проверяем, что загруженный файл является gif,png или jpeg.          
@@ -191,22 +190,25 @@ public class addProduct extends HttpServlet {
                 sendError(Error.FILE_TYPE_ERROR, request, response);
                 return;
             };
-            
+
             Product product;
-            String creator =  (String) request.getSession().getAttribute("clid");
+            String creator = (String) request.getSession().getAttribute("clid");
+            if(request.getRemoteUser()!=null) creator=request.getRemoteUser();
             prodInit.put("author", creator);
             if (request.isUserInRole("admin")) {
-                 prodInit.put("origin", "");
+                prodInit.put("origin", "");
             }
+            product = new Product(prodInit);
+            request.setAttribute("newProduct", product);
             try (ProductDAO pdao = DAOFactory.getProductDAOInstance(DAOFactory.DAOSource.JDBC, request.getServletContext())) {
-                  product=  new Product(prodInit);
-                  product = f.length() > 0 ? pdao.addProduct(product, relImgDir + fileName)
+               
+                product = f.length() > 0 ? pdao.addProduct(product, relImgDir + fileName)
                         : pdao.addProduct(product);
 
             }
-            request.setAttribute("addProduct", product);
+            request.setAttribute("addedProduct", product);
             request.getRequestDispatcher(response.encodeURL("newProduct.jsp")).forward(request, response);
-        } catch (FileUploadException | SQLException e) {
+        } catch (FileUploadException | SQLException | JDBCDAOException e) {
             if (f != null) {
                 f.delete();
             }
@@ -214,7 +216,7 @@ public class addProduct extends HttpServlet {
                 sendError(Error.FILE_SIZE_ERROR, request, response);
                 return;
             }
-            if (e.toString().contains("Duplicate entry")) {
+            if (e.toString().contains("Данный продукт уже существует.")) {
                 sendError(Error.DUBLICATE, request, response);
                 return;
             }
