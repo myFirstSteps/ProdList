@@ -14,6 +14,7 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Добавить продукт.</title>
         <style><%@include file="/CSSdoc/mainCSS.css"%></style>
+        <link rel="stylesheet" href="<c:url value='/CSSdoc/jquery-ui.min.css'/>">
     </head>
     <body>
         <div id="header">
@@ -69,19 +70,19 @@
 
                 <div>
                     <span>Категория:</span><br>
-                    <input   size="15" type="text" name="group" class="validCheck" value='${categoryValue}' id="CategorySelect" >
+                    <input   size="15" type="text" name="group" class="validCheck autocomplDepended" value='${categoryValue}' id="CategorySelect" >
             </div>
-            <div  class="ui-widget">
+            <div>
                 <span>Название:</span><br>
-                <input id="tags" type="text" value='${nameValue}' autocomplete='off' name="name"  class='mandatory validCheck"' >
+                <input id="name" type="text" value='${nameValue}' autocomplete='off' name="name"  class='mandatory autocompl validCheck autocomplDepended' >
             </div>
             <div>
                 <span>Уточняющее название:</span><br>
-                <input  type="text" value='${subNameValue}' class='validCheck' name="subName"  >
+                <input  type="text" value='${subNameValue}' class='validCheck autocompl autocomplDepended' name="subName"  >
             </div>
             <div>
                 <span>Производитель:</span><br>
-                <input  type="text" name="producer"  value='${producerValue}' class="validCheck" id="Name" >
+                <input  type="text" name="producer"  value='${producerValue}' class="validCheck autocompl autocomplDepended" id="Name" >
             </div>
             <div>
                 <span id='valueLabel'>Объем:</span><br>
@@ -103,14 +104,14 @@
                 <span>Комментарий:</span><br>
                 <input  type="text" name="comment" value="${commentValue}">
             </div><br>
-            <div id='img_file'>
+            <div>
                 <span>Прикрепить изображение:</span><br>
                 <input type="file" id="a"   accept="image/jpeg,image/png,image/gif" name='imageFile'>
             </div><br>
             <input type="button" onclick="validate(this.form)" value="Добавить">
         </form>
 
-        
+
 
         <script src="scripts/jquery-1.11.1.min.js"></script>
         <script src="scripts/jquery-ui.min.js"></script>
@@ -135,9 +136,7 @@
                         $("#valueLabel").text(testUnits($("#valueUnit").val()));
                     });
                     $("#valueLabel").text(testUnits($("#valueUnit").val()));
-                    $("#img_file").on('change', function() {
-                        alert($("#a").val());
-                    })
+                    
                     $("input.mandatory").on('blur keyup', function() {
                         emptyCheck(this, "<span class='mandatory error'>Поле не может быть пустым</span><br class='mandatory error'>");
                     });
@@ -149,10 +148,27 @@
                         dataValidCheck(this, '^[0-9]+(?:[.|,])?[0-9]*$', "<span class='invalid error'>Значение поля должно быть целым или десятичным числом.\n\
                  </span><br class='invalid error'>");
                     });
+                    $.each($("input.autocompl"),function(k,v){ prodAutoComplete(v,$("input.autocomplDepended"));});
                 });
+                
+                function prodAutoComplete(field, dependent) {
+
+                    $(field).autocomplete({
+                        minLength: 2,
+                        source: function(request, response) {
+                            var term = request.term;
+                            request.term = JSON.stringify($(field).serializeArray().concat($(dependent).filter("[name!="+ $(field).attr("name") +"]").serializeArray())); //$(".ter:input").serializeArray();              //[{category:"фрукты"},{name:"бананы"}];
+
+                            $.getJSON("addProduct", request, function(data, status, xhr) {
+                                response(data);
+                            });
+                        }
+
+                    });
+                }
 
 
         </script>
-        
+
     </body>
 </html>

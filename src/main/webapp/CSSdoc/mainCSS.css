@@ -28,3 +28,8 @@ div.productTable {max-width: 90%;  overflow: auto; }
 form#newProduct{max-width: none; margin: 20px auto 20px auto; padding: 10px;   width: 85%;  }
 #newProduct > input {padding: 5px;}
 form#newProduct > div {margin: 5px; position: static; display: inline-block;}
+.ui-menu{background-color: white; border: solid 1px #303030;}
+.ui-state-focus.ui-menu-item {background-color: #dea000; color: white;}
+.ui-autocomplete-loading {
+    background: white url("resources/common_image/loading.gif") right center no-repeat;
+}

@@ -175,7 +175,7 @@ public class Product {
      * @return the group
      */
     public String getGroup() {
-        return group.toLowerCase();
+        return group!=null?group.toLowerCase():null;
     }
 
     /**

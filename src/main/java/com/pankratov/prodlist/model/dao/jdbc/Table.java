@@ -102,7 +102,6 @@ public class Table {
     protected LinkedList<List<String>> readRawsWhere(TreeMap<Integer, String> condition) throws JDBCDAOException {
         LinkedList<List<String>> result = new LinkedList<>();
         List<String> resultRow = new LinkedList<>();
-        String[] s = parseConditionMap(condition);
 
         String param = "";
         for (Entry<Integer, String> st : condition.entrySet()) {
@@ -128,6 +127,29 @@ public class Table {
     protected ConcurrentSkipListSet<String> readColumn(int n) throws JDBCDAOException {
         ConcurrentSkipListSet<String> result = new ConcurrentSkipListSet<>();
         String query = String.format("select %s from %s", this.columnNames.get(n - 1), this.tableName);
+        try (Statement st = connection.createStatement(); ResultSet res = st.executeQuery(query);) {
+            while (res.next()) {
+                result.add(res.getString(1));
+            }
+        } catch (SQLException ex) {
+
+            throw new JDBCDAOException("Ошибка чтения имен пользователя", ex);
+        }
+        return result;
+    }
+    protected ConcurrentSkipListSet<String> readColumn(int n, TreeMap<Integer, String> condition) throws JDBCDAOException {
+        ConcurrentSkipListSet<String> result = new ConcurrentSkipListSet<>();
+        String param = "";
+        for (Entry<Integer, String> st : condition.entrySet()) {
+            if (param.length() > 0) {
+                param += " and ";
+            }
+            param += getColumnName(st.getKey()) + " like '%" + st.getValue().replace("'", "\\'") + "%'";
+        }
+        System.out.println();
+        
+        String query = String.format("select %s from %s where %s", this.columnNames.get(n - 1), this.tableName,param);
+         System.out.println(query);
         try (Statement st = connection.createStatement(); ResultSet res = st.executeQuery(query);) {
             while (res.next()) {
                 result.add(res.getString(1));

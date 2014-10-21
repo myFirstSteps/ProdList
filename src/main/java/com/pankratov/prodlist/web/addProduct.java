@@ -13,6 +13,7 @@ import java.nio.file.*;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.util.*;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.ThreadLocalRandom;
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -124,26 +125,46 @@ public class addProduct extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
-            response.setContentType("text/plain");
+            ConcurrentSkipListSet<String> list=new  ConcurrentSkipListSet<>();
+            TreeMap<String, String> prodInit = new TreeMap<>();
+            String key = "name";
+
+            response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
-            
-           System.out.println(request.getParameter("term"));
-                String s = "[0,{\"1\":{\"2\":{\"3\":{\"4\":[5,{\"6\":7}]}}}}]";
-                JSONParser parser=new org.json.simple.parser.JSONParser();
-                Object obj = parser.parse(request.getParameter("term"));
-                JSONArray array = (JSONArray)obj;
-                
-           
-           System.out.println("Parset"+array.toJSONString());
-          
-              try{
-            Thread.sleep(5000);
+
+            JSONParser parser = new org.json.simple.parser.JSONParser();
+            Object reqJSONObj = parser.parse(request.getParameter("term"));
+            JSONArray array = (JSONArray) reqJSONObj;
+
+            JSONObject keyObj = (JSONObject) array.get(0);
+            for (Object ar : array) {
+                JSONObject obj = (JSONObject) ar;
+                if (obj == keyObj) {
+                    key = (String) obj.get("name");
+                }
+                    prodInit.put((String) obj.get("name"), (String) obj.get("value"));              
             }
-            catch(InterruptedException e){}
-           // response.getWriter().println(DAOFactory.getProductDAOInstance(DAOFactory.DAOSource.JDBC, this.getServletContext()).readProductNames());
-          
+            String userName=
+            request.getRemoteUser()!=null? request.getRemoteUser():(String)request.getSession().getAttribute("clid");
+            System.out.println(userName);
+            Product prod = new Product(prodInit);
+            try (ProductDAO pdao = DAOFactory.getProductDAOInstance(DAOFactory.DAOSource.JDBC, request.getServletContext());) {
+                switch(key){
+                    case "name": list = pdao.readProductNames(prod); 
+                                break;
+                    case "subName":  list = pdao.readProductSubNames(prod);
+                                break;
+                    case "producer":  list = pdao.readProductProducers(prod);
+                                break;
+                }
+            }
+            JSONObject resp = new JSONObject();
+            int i = 1;
+            for (String s : list) {
+                resp.put(i++, s);
+            }
+            response.getWriter().println(resp);
         } catch (Exception ex) {
-            System.out.println(ex);
             throw new IOException(ex);
         }
     }
@@ -209,7 +230,9 @@ public class addProduct extends HttpServlet {
 
             Product product;
             String creator = (String) request.getSession().getAttribute("clid");
-            if(request.getRemoteUser()!=null) creator=request.getRemoteUser();
+            if (request.getRemoteUser() != null) {
+                creator = request.getRemoteUser();
+            }
             prodInit.put("author", creator);
             if (request.isUserInRole("admin")) {
                 prodInit.put("origin", "");
@@ -217,7 +240,7 @@ public class addProduct extends HttpServlet {
             product = new Product(prodInit);
             request.setAttribute("newProduct", product);
             try (ProductDAO pdao = DAOFactory.getProductDAOInstance(DAOFactory.DAOSource.JDBC, request.getServletContext())) {
-               
+
                 product = f.length() > 0 ? pdao.addProduct(product, relImgDir + fileName)
                         : pdao.addProduct(product);
 

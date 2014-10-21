@@ -6,6 +6,7 @@
 
 package com.pankratov.prodlist.model.dao;
 
+import com.pankratov.prodlist.model.dao.jdbc.JDBCDAOException;
 import com.pankratov.prodlist.model.products.Product;
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListSet;
@@ -25,5 +26,8 @@ public interface ProductDAO extends AutoCloseable {
     public Product deleteProduct(Product what) throws Exception;
     public ConcurrentSkipListSet<String> readProductNames() throws Exception;
     public ConcurrentSkipListSet<String> readProductSubNames() throws Exception;
-       
+    public ConcurrentSkipListSet<String> readProductProducers() throws Exception;
+    public ConcurrentSkipListSet<String> readProductNames(Product forProduct) throws Exception;
+    public ConcurrentSkipListSet<String> readProductSubNames(Product forProduct) throws Exception;
+    public ConcurrentSkipListSet<String> readProductProducers(Product forProduct) throws Exception;
 }

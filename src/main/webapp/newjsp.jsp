@@ -13,9 +13,7 @@
 <script src="scripts/jquery-ui.js"></script>
  
  <style>
-.ui-autocomplete-loading {
-background: white url("resources/common_image/loading.gif") right center no-repeat;
-}
+
 </style>
 <script>
 $(function() {
@@ -32,14 +30,16 @@ var term = request.term;
 /*if ( term in cache ) {
 response( cache[ term ] );
 return;
-}*/
-//alert(request.term);
+}*/    
 
-request.term=JSON.stringify([{vf:"bf"},{ff:"gh"}]); //$(".ter:input").serializeArray();              //[{category:"фрукты"},{name:"бананы"}];
-alert(request.term);
+request.term=JSON.stringify($("input#birds").serializeArray().concat($("input.ter").serializeArray())); //$(".ter:input").serializeArray();              //[{category:"фрукты"},{name:"бананы"}];
+
 $.getJSON( "addProduct", request, function( data, status, xhr ) {
+   // alert(data.name);
+  // alert(data.name);
+    response(data);
 //cache[ term ] = data;
-response( data );
+   
 });
 }
 
@@ -50,9 +50,9 @@ response( data );
 <body>
 <div class="ui-widget">
 <label for="birds">Birds: </label>
-<input id="birds">
-<input class="ter" name="gogo" value="bubu">
-<input class="ter" name="dodo" value="fufu">
+<input id="birds" name="name" value="ом">
+<input class="ter" name="subName" value="">
+<input class="ter" name="producer" value="любой">
 </div>
 <div class="ui-widget" style="margin-top:2em; font-family:Arial">
 Result:
