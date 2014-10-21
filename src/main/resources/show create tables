@@ -4,8 +4,8 @@
 | products | CREATE TABLE `products` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(254) NOT NULL,
-  `sub_name` varchar(254) DEFAULT NULL,
-  `producer` varchar(254) DEFAULT NULL,
+  `sub_name` varchar(254) DEFAULT 'любой' NOT NULL,
+  `producer` varchar(254) DEFAULT 'любой' NOT NULL,
   `value` decimal(8,4) NOT NULL DEFAULT '1.0000',
   `value_unit` enum('кг','л') NOT NULL DEFAULT 'кг',
   `agroup` enum('фрукты','овощи','мясо','молочные продукты','птица','рыба','орехи','специи','бакалея','хлеб','сладости','чай кофе','алкогольные напитки','безалкогольные напитки','бытовая химия','личная гигиена','товары для дачи','товары для дома','игрушки','другое') NOT NULL DEFAULT 'другое',

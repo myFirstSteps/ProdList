@@ -33,3 +33,6 @@ form#newProduct > div {margin: 5px; position: static; display: inline-block;}
 .ui-autocomplete-loading {
     background: white url("resources/common_image/loading.gif") right center no-repeat;
 }
+#temp_prodholder{display: table; width: 85%;  border-collapse: collapse;}
+.temp_prodheader{display: table-row; }
+.temp_raw{display: table-cell; border: solid 1px #303030; border-collapse: collapse; margin: 0px; padding:5px; }
