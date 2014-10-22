@@ -10,9 +10,6 @@ import java.security.Principal;
 import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 /**
  *
@@ -20,34 +17,22 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
  */
 public class Product {
 
-    private Long id;
-    private String name;
-    private String subName;
-    private String producer;
-    private Float value;
-    private String valueUnits;
-    private String group;
-    private Float price;
-    private String comment;
-    private String author;
-    private String authorRole;
+    private Long id=-1l;
+    private String name="";
+    private String subName="";
+    private String producer="";
+    private Float value=-1f;
+    private String valueUnits="";
+    private String group="";
+    private Float price=-1f;
+    private String comment="";
+    private String author="";
+    private String authorRole="";
     private ArrayList<String> imageLinks = new ArrayList<>();
-    private boolean origin = false;
-    private Long originID;
+    private boolean origin;
+    private Long originID=-1l;
 
-    /**
-     * @return the authorRole
-     */
-    public String getAuthorRole() {
-        return authorRole;
-    }
-
-    /**
-     * @param authorRole the authorRole to set
-     */
-    public void setAuthorRole(String authorRole) {
-        this.authorRole = authorRole;
-    }
+   
 
     private static class ProductFieldsRiper {
 
@@ -78,7 +63,7 @@ public class Product {
                 case "subName":
                 case "producer":
                 case "value":
-                case "units":
+                case "valueUnits":
                 case "price":
                 case "comment":
                     return true;
@@ -123,8 +108,8 @@ public class Product {
         this.subName = product.subName;
         this.producer = product.producer;
         this.value = product.value;
+        this.valueUnits = product.valueUnits;
         if (uniqueOnly) {
-            this.valueUnits = product.valueUnits;
             this.group = product.group;
             this.price = product.price;
             this.comment = product.comment;
@@ -136,34 +121,32 @@ public class Product {
     public Product(TreeMap<String, String> initData) {
         String x;
         try {
-            this.id = (x = initData.get("id")) != null && !x.equals("") ? new Long(x.replace(",", ".")) : null;
-        } catch (java.lang.NumberFormatException e) {
+            this.id = (x = initData.get("id")) != null? new Long(x.replace(",", ".")) : -1;
+        } catch (java.lang.NumberFormatException e) { this.id=-1l;
         }
         try {
-            this.price = (x = initData.get("price")) != null && !x.equals("") ? new Float(x.replace(",", ".")) : null;
-        } catch (java.lang.NumberFormatException e) {
+            this.price = (x = initData.get("price")) != null && !x.equals("") ? new Float(x.replace(",", ".")) : -1;
+        } catch (java.lang.NumberFormatException e) { this.price=-1f;
         }
         try {
-            this.value = (x = initData.get("value")) != null && !x.equals("") ? new Float(x.replace(",", ".")) : null;
-        } catch (java.lang.NumberFormatException e) {
+            this.value = (x = initData.get("value")) != null && !x.equals("") ? new Float(x.replace(",", ".")) : -1;
+        } catch (java.lang.NumberFormatException e) { this.value=-1f;
         }
 
         this.name = (x = initData.get("name")) != null ? x : "";
         this.subName = (x = initData.get("subName")) != null ? x : "";
-        this.producer = (x = initData.get("producer")) != null ? x : "";
-        this.value = (x = initData.get("value")) != null ? new Float(x) : 0;
-        this.valueUnits = (x = initData.get("units")) != null ? x : "";
+        this.producer = (x = initData.get("producer")) != null ? x : ""; 
+        this.valueUnits = (x = initData.get("valueUnits")) != null ? x : "";
         this.group = (x = initData.get("group")) != null ? x : "";
         this.comment = (x = initData.get("comment")) != null ? x : "";
         this.author = (x = initData.get("author")) != null ? x : "";
         this.authorRole = (x = initData.get("authorRole")) != null ? x : "";
-        this.price = (x = initData.get("price")) != null ? new Float(x) : 0;
         this.origin = (x = initData.get("origin")) != null ? true : false;
     }
 
     public static Product getInstanceFromRequest(HttpServletRequest req) {
         TreeMap<String, String> prodInit = new TreeMap<>();
-        prodInit = new ProductFieldsRiper().ripFields(req.getParameterMap());
+        prodInit =  ProductFieldsRiper.ripFields(req.getParameterMap());
         prodInit.put("author", ProductFieldsRiper.readAuthor(req));
         prodInit.put("authorRole", ProductFieldsRiper.readAuthorRole(req));
 
@@ -266,7 +249,7 @@ public class Product {
      * @return the group
      */
     public String getGroup() {
-        return group != null ? group.toLowerCase() : null;
+        return  group.toLowerCase();
     }
 
     /**
@@ -366,5 +349,18 @@ public class Product {
      */
     public void setOriginID(Long originID) {
         this.originID = originID;
+    }
+     /**
+     * @return the authorRole
+     */
+    public String getAuthorRole() {
+        return authorRole;
+    }
+
+    /**
+     * @param authorRole the authorRole to set
+     */
+    public void setAuthorRole(String authorRole) {
+        this.authorRole = authorRole;
     }
 }

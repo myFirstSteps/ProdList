@@ -45,7 +45,6 @@ public class ProductAutocomplete extends HttpServlet {
             ConcurrentSkipListSet<String> list = new ConcurrentSkipListSet<>();
             TreeMap<String, String> prodInit = new TreeMap<>();
             String key = "name";
-
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
 

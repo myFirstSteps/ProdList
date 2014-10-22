@@ -92,9 +92,9 @@
             </div>
             <div>
                 <span>Единици:</span><br>
-                <select name="units" id='valueUnit'>
-                    <c:forEach items="${product:getUnits(pageContext.servletContext)}" var="unit"> 
-                        <option>${unit}</option>
+                <select name="valueUnits" id='valueUnits'>
+                    <c:forEach items="${product:getUnits(pageContext.servletContext)}" var="units"> 
+                        <option>${units}</option>
                     </c:forEach>
                 </select>
             </div>
@@ -111,7 +111,7 @@
                 <input type="file" id="a"   accept="image/jpeg,image/png,image/gif" name='imageFile'>
             </div><br>
             <input type="button" onclick="validate(this.form)" value="Добавить">
-            <button formaction="<c:url value='readproduct'/>">Найти</button>
+            <button formaction="<c:url value='ReadProduct'/>">Найти</button>
             
         </form>
 
@@ -136,10 +136,10 @@
                 };
                 $(document).ready(function() {
                     new ImgMenu($('.TabletMenu'), $("#CategorySelect"));
-                    $("#valueUnit").change(function() {
-                        $("#valueLabel").text(testUnits($("#valueUnit").val()));
+                    $("#valueUnits").change(function() {
+                        $("#valueLabel").text(testUnits($("#valueUnits").val()));
                     });
-                    $("#valueLabel").text(testUnits($("#valueUnit").val()));
+                    $("#valueLabel").text(testUnits($("#valueUnits").val()));
 
                     $("input.mandatory").on('blur keyup', function() {
                         emptyCheck(this, "<span class='mandatory error'>Поле не может быть пустым</span><br class='mandatory error'>");
@@ -167,7 +167,7 @@
                             var term = request.term;
                             request.term = JSON.stringify($(field).serializeArray().concat($(dependent).filter("[name!=" + $(field).attr("name") + "]").serializeArray())); //$(".ter:input").serializeArray();              //[{category:"фрукты"},{name:"бананы"}];
 
-                            $.getJSON("ProductAutocomplete", request, function(data, status, xhr) {
+                            $.getJSON("productAutocomplete", request, function(data, status, xhr) {
                                 response(data);
                             });
                         }

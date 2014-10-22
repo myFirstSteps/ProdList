@@ -28,7 +28,7 @@ import org.json.simple.parser.*;
  *
  * @author pankratov
  */
-public class addProduct extends HttpServlet {
+public class AddProduct extends HttpServlet {
 
     private enum Error {
 
@@ -41,7 +41,7 @@ public class addProduct extends HttpServlet {
     private Path absImgDir; //абсолютный путь к директории изображений продуктов
     private Path relImgDir; //путь к директории изображений продуктов от корня проекта
     //private Path appRoot
-    private static final org.apache.logging.log4j.Logger log = org.apache.logging.log4j.LogManager.getLogger(addProduct.class);
+    private static final org.apache.logging.log4j.Logger log = org.apache.logging.log4j.LogManager.getLogger(AddProduct.class);
 
     /*Не получилось быстро найти готовый класс для проверки сигнатуры файла на соответствие заявленному типу,
      по этому решил написать свой.*/

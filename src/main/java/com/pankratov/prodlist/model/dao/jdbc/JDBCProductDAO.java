@@ -134,50 +134,55 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
     }
 
     private Product productFromTable(List<String> s) {
+        for(String f: s){
+            o99;'[']'
+        }
         return new Product(s.get(0), s.get(1), s.get(2), s.get(3), s.get(4), s.get(5), s.get(6), s.get(7), s.get(8), s.size() > 9 ? s.get(9) : null,
                 s.size() > 10 ? s.get(10) : null);
+        
     }
 
     private TreeMap<Integer, String> productToTable(Product product) {
         TreeMap<Integer, String> s = new TreeMap<>();
-        if (product.getId() != null) {
+        if (product.getId() !=-1) {
             s.put(1, product.getId().toString());
         }
-        if (product.getName() != null) {
+        if (!product.getName().equals("")) {
             s.put(2, product.getName());
         }
-        if (product.getSubName() != null) {
+        if (!product.getSubName().equals("")) {
             s.put(3, product.getSubName());
         }
-        if (product.getProducer() != null) {
+        if (!product.getProducer().equals("")) {
             s.put(4, product.getProducer());
         }
-        if (product.getValue() != null) {
+        if (product.getValue() != -1) {
             s.put(5, product.getValue().toString());
         }
-        if (product.getValueUnits() != null) {
+        if (!product.getValueUnits().equals("")) {
             s.put(6, product.getValueUnits());
         }
-        if (product.getGroup() != null) {
+        if (!product.getGroup().equals("")) {
             s.put(7, product.getGroup());
         }
-        if (product.getPrice() != null) {
+        if (product.getPrice() !=-1) {
             s.put(8, product.getPrice().toString());
         }
-        if (product.getComment() != null) {
+        if (!product.getComment().equals("")) {
             s.put(9, product.getComment());
         }
-        if (product.getAuthor() != null) {
-            s.put(10, product.getAuthor());
-        }
+        
         return s;
     }
     private TreeMap<Integer, String> productToTable(Product product, boolean full) {
         TreeMap<Integer, String> s = new TreeMap<>();
         s=this.productToTable(product);
         if (!full) return s; 
-        if (product.getAuthor() != null) {
+        if (!product.getAuthor().equals("")) {
             s.put(10, product.getAuthor());
+        }
+        if (product.getOriginID()!=-1) {
+            s.put(11, product.getOriginID().toString());
         }
         return s;
     }
@@ -192,14 +197,15 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
             if (!readProductGroups().contains(product.getGroup())) {
                 addGroup(product.getGroup());
             }
+            
         }
-        if (readProducts(new Product(product, true)).size() > 0) {
+        if (readProducts(new Product(product, false),true).size() > 0) {
             throw new JDBCDAOException("Данный продукт уже существует.");
         }
       
         table.addRecord(productToTable(product,!isAdmin));
 
-        return readProducts(product).get(0);
+        return readProducts(product,false).get(0);
 
     }
 
@@ -232,14 +238,15 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
     }*/
 
     @Override
-    public List<Product> readProducts(Product product) throws JDBCDAOException {
+    public List<Product> readProducts(Product product,boolean originalOnly) throws JDBCDAOException {
         List<Product> products = new LinkedList<>();
         
       
         LinkedList<List<String>> pr =  PRODUCTS_TABLE.readRawsWhere(productToTable(product));
-        pr.addAll( USERS_PRODUCTS_TABLE.readRawsWhere(productToTable(product,true)));
+        if(!originalOnly){
+        pr.addAll( USERS_PRODUCTS_TABLE.readRawsWhere(productToTable(product,true)));}
         for (List<String> l : pr) {
-            products.add(productFromTable(pr.poll()));
+            products.add(productFromTable(l));
         }
         return products;
     }

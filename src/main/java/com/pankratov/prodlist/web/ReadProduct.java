@@ -100,7 +100,7 @@ public class ReadProduct extends HttpServlet {
         }else product=Product.getInstanceFromRequest(request);
 
         try (ProductDAO pdao = DAOFactory.getProductDAOInstance(DAOFactory.DAOSource.JDBC, request.getServletContext());) {
-            request.setAttribute("products", pdao.readProducts(product));
+            request.setAttribute("products", pdao.readProducts(product,false));
                  
             request.getRequestDispatcher(response.encodeURL("newProduct.jsp")).forward(request, response);
         } catch (Exception e) { throw new ServletException(e);
