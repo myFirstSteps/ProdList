@@ -22,9 +22,8 @@ margin-bottom:auto; margin-top:10px; margin-left:auto; margin-right: auto; text-
 .SelectedTablet img{border: #dea000 groove 5px;}
 div.SelectedTablet {border: #dea000 solid 2px;}
 
-//#prodTableImg{max-width: 80px;}
-div.productTable {max-width: 90%;  overflow: auto; }
-.productTable td, .productTable th {border: solid 2px #303030; padding: 4px;  }
+
+
 form#newProduct{max-width: none; margin: 20px auto 20px auto; padding: 10px;   width: 85%;  }
 #newProduct > input {padding: 5px;}
 form#newProduct > div {margin: 5px; position: static; display: inline-block;}
@@ -33,6 +32,10 @@ form#newProduct > div {margin: 5px; position: static; display: inline-block;}
 .ui-autocomplete-loading {
     background: white url("resources/common_image/loading.gif") right center no-repeat;
 }
-#temp_prodholder{display: table; width: 85%;  border-collapse: collapse;}
-.temp_prodheader{display: table-row; }
-.temp_raw{display: table-cell; border: solid 1px #303030; border-collapse: collapse; margin: 0px; padding:5px; }
+
+.prodholder {max-width: 90%; overflow: auto;}
+#prodtable{display: table;  border-collapse: collapse;}
+.prodheader , .prodrow {display: table-row; }
+.prodheader {font-weight: bold;}
+.proddata {display: table-cell; vertical-align: middle; border: solid 1px #303030;  margin: 2px; padding:5px; }
+.proddata > img {border: solid 2px #303030; max-width: 200px;}

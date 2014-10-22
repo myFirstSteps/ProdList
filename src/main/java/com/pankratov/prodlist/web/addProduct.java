@@ -124,49 +124,7 @@ public class addProduct extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        try {
-            ConcurrentSkipListSet<String> list=new  ConcurrentSkipListSet<>();
-            TreeMap<String, String> prodInit = new TreeMap<>();
-            String key = "name";
-
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
-
-            JSONParser parser = new org.json.simple.parser.JSONParser();
-            Object reqJSONObj = parser.parse(request.getParameter("term"));
-            JSONArray array = (JSONArray) reqJSONObj;
-
-            JSONObject keyObj = (JSONObject) array.get(0);
-            for (Object ar : array) {
-                JSONObject obj = (JSONObject) ar;
-                if (obj == keyObj) {
-                    key = (String) obj.get("name");
-                }
-                    prodInit.put((String) obj.get("name"), (String) obj.get("value"));              
-            }
-            String userName=
-            request.getRemoteUser()!=null? request.getRemoteUser():(String)request.getSession().getAttribute("clid");
-            System.out.println(userName);
-            Product prod = new Product(prodInit);
-            try (ProductDAO pdao = DAOFactory.getProductDAOInstance(DAOFactory.DAOSource.JDBC, request.getServletContext());) {
-                switch(key){
-                    case "name": list = pdao.readProductNames(prod); 
-                                break;
-                    case "subName":  list = pdao.readProductSubNames(prod);
-                                break;
-                    case "producer":  list = pdao.readProductProducers(prod);
-                                break;
-                }
-            }
-            JSONObject resp = new JSONObject();
-            int i = 1;
-            for (String s : list) {
-                resp.put(i++, s);
-            }
-            response.getWriter().println(resp);
-        } catch (Exception ex) {
-            throw new IOException(ex);
-        }
+       response.sendError(405);
     }
 
     /**
@@ -189,6 +147,7 @@ public class addProduct extends HttpServlet {
                 response.getWriter().println("Использован ошибочный способ передачи данных формы. Данные должны передаваться в 'multipart/form-data'");
                 return;
             }
+
             DiskFileItemFactory factory = new DiskFileItemFactory(maxMemSize, absTempDir.toFile());
             ServletFileUpload upl = new ServletFileUpload(factory);
             upl.setFileSizeMax(maxImgSize);
@@ -196,29 +155,14 @@ public class addProduct extends HttpServlet {
             String fileName = "/" + request.getSession().getId() + "_" + creationTime + "_"
                     + String.valueOf(ThreadLocalRandom.current().nextInt(maxMemSize));
             f = (Paths.get(absImgDir + fileName)).toFile();
-
             List<FileItem> x = upl.parseRequest(request);
-            TreeMap<String, String> prodInit = new TreeMap<>();
+
             for (FileItem i : x) {
                 if (!i.isFormField()) {
                     if (i.getSize() > 0) {
                         f.createNewFile();
                         i.write(f);
                     }
-                } else {
-                    switch (i.getFieldName()) {
-                        case "group":
-                        case "name":
-                        case "subName":
-                        case "producer":
-                        case "value":
-                        case "units":
-                        case "price":
-                        case "comment":
-                            prodInit.put(i.getFieldName(), i.getString("UTF-8"));
-
-                    }
-
                 }
             }
             //Проверяем, что загруженный файл является gif,png или jpeg.          
@@ -227,17 +171,7 @@ public class addProduct extends HttpServlet {
                 sendError(Error.FILE_TYPE_ERROR, request, response);
                 return;
             };
-
-            Product product;
-            String creator = (String) request.getSession().getAttribute("clid");
-            if (request.getRemoteUser() != null) {
-                creator = request.getRemoteUser();
-            }
-            prodInit.put("author", creator);
-            if (request.isUserInRole("admin")) {
-                prodInit.put("origin", "");
-            }
-            product = new Product(prodInit);
+            Product product = Product.getInstanceFromFormFields(x, request);
             request.setAttribute("newProduct", product);
             try (ProductDAO pdao = DAOFactory.getProductDAOInstance(DAOFactory.DAOSource.JDBC, request.getServletContext())) {
 
@@ -245,6 +179,9 @@ public class addProduct extends HttpServlet {
                         : pdao.addProduct(product);
 
             }
+            ArrayList<Product> products = new ArrayList<>();
+            products.add(product);
+            request.setAttribute("products", products);
             request.setAttribute("addedProduct", product);
             request.getRequestDispatcher(response.encodeURL("newProduct.jsp")).forward(request, response);
         } catch (FileUploadException | SQLException | JDBCDAOException e) {

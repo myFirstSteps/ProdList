@@ -41,13 +41,15 @@
 
 
         <form  class="center_form" id="newProduct" method="post"  enctype="multipart/form-data" action= '<c:url value="addProduct"/>'>
-            <c:if test='${addedProduct ne null}'>
-                <div class="productTable">
+
+            <div class='prodholder'>
+                <c:if test='${products ne null}'>
                     <h4>Продукт успешно добавлен.</h4>
 
                     <c:import url="/WEB-INF/template/productinfo.jsp"/> 
-                </div>
-            </c:if>
+                </c:if>
+            </div>
+
 
             <h2>Добавить новый продукт в базу.</h2>
             <div id='error' class='error'>${error}</div><br>
@@ -109,6 +111,8 @@
                 <input type="file" id="a"   accept="image/jpeg,image/png,image/gif" name='imageFile'>
             </div><br>
             <input type="button" onclick="validate(this.form)" value="Добавить">
+            <button formaction="<c:url value='readproduct'/>">Найти</button>
+            
         </form>
 
 
@@ -136,7 +140,7 @@
                         $("#valueLabel").text(testUnits($("#valueUnit").val()));
                     });
                     $("#valueLabel").text(testUnits($("#valueUnit").val()));
-                    
+
                     $("input.mandatory").on('blur keyup', function() {
                         emptyCheck(this, "<span class='mandatory error'>Поле не может быть пустым</span><br class='mandatory error'>");
                     });
@@ -148,18 +152,22 @@
                         dataValidCheck(this, '^[0-9]+(?:[.|,])?[0-9]*$', "<span class='invalid error'>Значение поля должно быть целым или десятичным числом.\n\
                  </span><br class='invalid error'>");
                     });
-                    $.each($("input.autocompl"),function(k,v){ prodAutoComplete(v,$("input.autocomplDepended"));});
+                    $.each($("input.autocompl"), function(k, v) {
+                        prodAutoComplete(v, $("input.autocomplDepended"));
+                    });
+                    
+                    
                 });
-                
+
                 function prodAutoComplete(field, dependent) {
 
                     $(field).autocomplete({
                         minLength: 2,
                         source: function(request, response) {
                             var term = request.term;
-                            request.term = JSON.stringify($(field).serializeArray().concat($(dependent).filter("[name!="+ $(field).attr("name") +"]").serializeArray())); //$(".ter:input").serializeArray();              //[{category:"фрукты"},{name:"бананы"}];
+                            request.term = JSON.stringify($(field).serializeArray().concat($(dependent).filter("[name!=" + $(field).attr("name") + "]").serializeArray())); //$(".ter:input").serializeArray();              //[{category:"фрукты"},{name:"бананы"}];
 
-                            $.getJSON("addProduct", request, function(data, status, xhr) {
+                            $.getJSON("ProductAutocomplete", request, function(data, status, xhr) {
                                 response(data);
                             });
                         }

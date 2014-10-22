@@ -5,7 +5,14 @@
  */
 package com.pankratov.prodlist.model.products;
 
+import java.io.UnsupportedEncodingException;
+import java.security.Principal;
 import java.util.*;
+import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 /**
  *
@@ -23,16 +30,80 @@ public class Product {
     private Float price;
     private String comment;
     private String author;
+    private String authorRole;
     private ArrayList<String> imageLinks = new ArrayList<>();
     private boolean origin = false;
-    private Long originID; 
+    private Long originID;
+
+    /**
+     * @return the authorRole
+     */
+    public String getAuthorRole() {
+        return authorRole;
+    }
+
+    /**
+     * @param authorRole the authorRole to set
+     */
+    public void setAuthorRole(String authorRole) {
+        this.authorRole = authorRole;
+    }
+
+    private static class ProductFieldsRiper {
+
+        static TreeMap<String, String> ripFields(List<FileItem> f) throws UnsupportedEncodingException {
+            TreeMap<String, String> prodInitData = new TreeMap<>();
+            for (FileItem i : f) {
+                if (i.isFormField() && isProductField(i.getFieldName())) {
+                    prodInitData.put(i.getFieldName(), i.getString("UTF-8"));
+                }
+            }
+            return prodInitData;
+        }
+
+        static TreeMap<String, String> ripFields(Map<String, String[]> m) {
+            TreeMap<String, String> prodInitData = new TreeMap<>();
+            for (Map.Entry<String, String[]> i : m.entrySet()) {
+                if (isProductField(i.getKey())) {
+                    prodInitData.put(i.getKey(), i.getValue()[0]);
+                }
+            }
+            return prodInitData;
+        }
+
+        static boolean isProductField(String fieldName) {
+            switch (fieldName) {
+                case "group":
+                case "name":
+                case "subName":
+                case "producer":
+                case "value":
+                case "units":
+                case "price":
+                case "comment":
+                    return true;
+            }
+            return false;
+        }
+
+        static String readAuthor(HttpServletRequest req) {
+            String author = req.getRemoteUser() != null ? req.getRemoteUser() : (String) req.getSession().getAttribute("clid");
+            return author;
+        }
+
+        static String readAuthorRole(HttpServletRequest req) {
+            Principal pr;
+            return (pr = req.getUserPrincipal()) != null ? pr.getName() : null;
+
+        }
+    }
 
     public Product() {
 
     }
 
     public Product(String id, String name, String subName, String producer,
-            String value, String valueUnits, String group, String price, String comment, String author,String originID) {
+            String value, String valueUnits, String group, String price, String comment, String author, String originID) {
         this.id = new Long(id);
         this.name = name;
         this.subName = subName;
@@ -43,21 +114,22 @@ public class Product {
         this.price = new Float(price);
         this.comment = comment;
         this.author = author;
-        this.originID = originID!=null?new Long(originID):null;
+        this.originID = originID != null ? new Long(originID) : null;
     }
-    public Product(Product product,boolean uniqueOnly) {
+
+    public Product(Product product, boolean uniqueOnly) {
         this.id = product.id;
         this.name = product.name;
         this.subName = product.subName;
         this.producer = product.producer;
         this.value = product.value;
-        if(uniqueOnly){
-        this.valueUnits = product.valueUnits;
-        this.group = product.group;
-        this.price = product.price;
-        this.comment = product.comment;
-        this.author = product.author;
-        this.originID = product.originID;
+        if (uniqueOnly) {
+            this.valueUnits = product.valueUnits;
+            this.group = product.group;
+            this.price = product.price;
+            this.comment = product.comment;
+            this.author = product.author;
+            this.originID = product.originID;
         }
     }
 
@@ -76,15 +148,34 @@ public class Product {
         } catch (java.lang.NumberFormatException e) {
         }
 
-        this.name = (x = initData.get("name")) != null && !x.equals("") ? x : null;
-        this.subName = (x = initData.get("subName")) != null && !x.equals("") ? x : null;
-        this.producer = (x = initData.get("producer")) != null && !x.equals("") ? x : null;
-        this.value = (x = initData.get("value")) != null && !x.equals("") ? new Float(x) : null;
-        this.valueUnits = (x = initData.get("units")) != null && !x.equals("") ? x : null;
-        this.group = (x = initData.get("group")) != null && !x.equals("") ? x : null;
-        this.comment = (x = initData.get("comment")) != null && !x.equals("") ? x : null;
-        this.author = (x = initData.get("author")) != null && !x.equals("") ? x : null;
-        this.origin = (x = initData.get("origin")) != null? true : false;
+        this.name = (x = initData.get("name")) != null ? x : "";
+        this.subName = (x = initData.get("subName")) != null ? x : "";
+        this.producer = (x = initData.get("producer")) != null ? x : "";
+        this.value = (x = initData.get("value")) != null ? new Float(x) : 0;
+        this.valueUnits = (x = initData.get("units")) != null ? x : "";
+        this.group = (x = initData.get("group")) != null ? x : "";
+        this.comment = (x = initData.get("comment")) != null ? x : "";
+        this.author = (x = initData.get("author")) != null ? x : "";
+        this.authorRole = (x = initData.get("authorRole")) != null ? x : "";
+        this.price = (x = initData.get("price")) != null ? new Float(x) : 0;
+        this.origin = (x = initData.get("origin")) != null ? true : false;
+    }
+
+    public static Product getInstanceFromRequest(HttpServletRequest req) {
+        TreeMap<String, String> prodInit = new TreeMap<>();
+        prodInit = new ProductFieldsRiper().ripFields(req.getParameterMap());
+        prodInit.put("author", ProductFieldsRiper.readAuthor(req));
+        prodInit.put("authorRole", ProductFieldsRiper.readAuthorRole(req));
+
+        return new Product(prodInit);
+    }
+
+    public static Product getInstanceFromFormFields(List<FileItem> fields, HttpServletRequest req) throws UnsupportedEncodingException {
+        TreeMap<String, String> prodInit = new TreeMap<>();
+        prodInit = ProductFieldsRiper.ripFields(fields);
+        prodInit.put("author", ProductFieldsRiper.readAuthor(req));
+        prodInit.put("authorRole", ProductFieldsRiper.readAuthorRole(req));
+        return new Product(prodInit);
     }
 
     /**
@@ -175,7 +266,7 @@ public class Product {
      * @return the group
      */
     public String getGroup() {
-        return group!=null?group.toLowerCase():null;
+        return group != null ? group.toLowerCase() : null;
     }
 
     /**

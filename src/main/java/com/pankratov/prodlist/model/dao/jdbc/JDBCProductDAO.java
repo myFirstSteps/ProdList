@@ -167,6 +167,18 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
         if (product.getComment() != null) {
             s.put(9, product.getComment());
         }
+        if (product.getAuthor() != null) {
+            s.put(10, product.getAuthor());
+        }
+        return s;
+    }
+    private TreeMap<Integer, String> productToTable(Product product, boolean full) {
+        TreeMap<Integer, String> s = new TreeMap<>();
+        s=this.productToTable(product);
+        if (!full) return s; 
+        if (product.getAuthor() != null) {
+            s.put(10, product.getAuthor());
+        }
         return s;
     }
 
@@ -174,7 +186,8 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
     public Product addProduct(Product product) throws JDBCDAOException {
 
         ProductTable table = USERS_PRODUCTS_TABLE;
-        if (product.isOrigin()) {
+        boolean isAdmin=product.getAuthorRole().equals("admin");
+        if (isAdmin) {
             table = PRODUCTS_TABLE;
             if (!readProductGroups().contains(product.getGroup())) {
                 addGroup(product.getGroup());
@@ -183,9 +196,10 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
         if (readProducts(new Product(product, true)).size() > 0) {
             throw new JDBCDAOException("Данный продукт уже существует.");
         }
-        table.addRecord(productToTable(product));
+      
+        table.addRecord(productToTable(product,!isAdmin));
 
-        return readProduct(product);
+        return readProducts(product).get(0);
 
     }
 
@@ -207,7 +221,7 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
         return null;
     }
 
-    @Override
+   /* @Override
     public Product readProduct(Product product) throws JDBCDAOException {
         Table table = product.isOrigin() ? PRODUCTS_TABLE : USERS_PRODUCTS_TABLE;
         LinkedList<List<String>> pr = table.readRawsWhere(productToTable(product));
@@ -215,16 +229,15 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
             throw new JDBCDAOException("Во время чтения продукта, произошла ошибка.\n Объект не уникален.");
         }
         return productFromTable(pr.peek());
-    }
+    }*/
 
     @Override
     public List<Product> readProducts(Product product) throws JDBCDAOException {
         List<Product> products = new LinkedList<>();
-        Table table = product.isOrigin() ? PRODUCTS_TABLE : USERS_PRODUCTS_TABLE;
-        LinkedList<List<String>> pr = table.readRawsWhere(productToTable(product));
-        if (pr.size() > 1) {
-            throw new JDBCDAOException("Во время чтения продукта, произошла ошибка.\n Объект не уникален.");
-        }
+        
+      
+        LinkedList<List<String>> pr =  PRODUCTS_TABLE.readRawsWhere(productToTable(product));
+        pr.addAll( USERS_PRODUCTS_TABLE.readRawsWhere(productToTable(product,true)));
         for (List<String> l : pr) {
             products.add(productFromTable(pr.poll()));
         }

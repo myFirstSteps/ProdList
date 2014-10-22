@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.pankratov.prodlist.web;
 
+import com.pankratov.prodlist.model.dao.DAOFactory;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;
@@ -13,12 +13,25 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpServletResponse;
+import com.pankratov.prodlist.model.dao.*;
+import com.pankratov.prodlist.model.products.Product;
+import java.io.UnsupportedEncodingException;
+import java.nio.file.Paths;
+import java.text.DateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.TreeMap;
+import java.util.concurrent.ThreadLocalRandom;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 /**
  *
  * @author pankratov
  */
-public class IndexServ extends HttpServlet {
+public class ReadProduct extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -37,7 +50,7 @@ public class IndexServ extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet IndexServ</title>");            
+            out.println("<title>Servlet IndexServ</title>");
             out.println("</head>");
             out.println("<body>");
             out.println("<h1>Servlet IndexServ at " + request.getContextPath() + "</h1>");
@@ -58,13 +71,9 @@ public class IndexServ extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        System.out.println("Hello");
-        HttpSession session =request.getSession();
-        { System.out.println("This is" +session.isNew());}
-        response.getWriter().
-                println("This is" +session.isNew());
-        
-       // processRequest(request, response);
+       response.sendError(405);
+
+        // processRequest(request, response);
     }
 
     /**
@@ -78,7 +87,25 @@ public class IndexServ extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        Product product=null;
+        if (ServletFileUpload.isMultipartContent(request)) {
+            try {
+                DiskFileItemFactory factory = new DiskFileItemFactory();
+                ServletFileUpload upl = new ServletFileUpload(factory);
+                List<FileItem> x = upl.parseRequest(request);
+                TreeMap<String, String> prodInit = new TreeMap<>();
+                product=Product.getInstanceFromFormFields(x, request);
+            } catch (UnsupportedEncodingException | FileUploadException e) {
+            }
+        }else product=Product.getInstanceFromRequest(request);
+
+        try (ProductDAO pdao = DAOFactory.getProductDAOInstance(DAOFactory.DAOSource.JDBC, request.getServletContext());) {
+            request.setAttribute("products", pdao.readProducts(product));
+                 
+            request.getRequestDispatcher(response.encodeURL("newProduct.jsp")).forward(request, response);
+        } catch (Exception e) { throw new ServletException(e);
+        }
+
     }
 
     /**
