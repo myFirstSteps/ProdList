@@ -102,14 +102,14 @@ public class Product {
         this.originID = originID != null ? new Long(originID) : null;
     }
 
-    public Product(Product product, boolean uniqueOnly) {
+    public Product(Product product, boolean onlyKeyFields) {
         this.id = product.id;
         this.name = product.name;
         this.subName = product.subName;
         this.producer = product.producer;
         this.value = product.value;
         this.valueUnits = product.valueUnits;
-        if (uniqueOnly) {
+        if (!onlyKeyFields) {
             this.group = product.group;
             this.price = product.price;
             this.comment = product.comment;
@@ -142,6 +142,8 @@ public class Product {
         this.author = (x = initData.get("author")) != null ? x : "";
         this.authorRole = (x = initData.get("authorRole")) != null ? x : "";
         this.origin = (x = initData.get("origin")) != null ? true : false;
+        this.originID=(x = initData.get("originID")) != null ? new Long(x): -1;
+        this.origin=(originID!=-1);
     }
 
     public static Product getInstanceFromRequest(HttpServletRequest req) {

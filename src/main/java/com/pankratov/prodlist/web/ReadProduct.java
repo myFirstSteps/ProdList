@@ -5,16 +5,12 @@
  */
 package com.pankratov.prodlist.web;
 
+import com.pankratov.prodlist.model.dao.*;
 import com.pankratov.prodlist.model.dao.DAOFactory;
+import static com.pankratov.prodlist.model.dao.ProductDAO.KindOfProduct.BOTH;
+import com.pankratov.prodlist.model.products.Product;
 import java.io.IOException;
 import java.io.PrintWriter;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import javax.servlet.http.HttpServletResponse;
-import com.pankratov.prodlist.model.dao.*;
-import com.pankratov.prodlist.model.products.Product;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Paths;
 import java.text.DateFormat;
@@ -22,6 +18,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.concurrent.ThreadLocalRandom;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
@@ -100,7 +101,7 @@ public class ReadProduct extends HttpServlet {
         }else product=Product.getInstanceFromRequest(request);
 
         try (ProductDAO pdao = DAOFactory.getProductDAOInstance(DAOFactory.DAOSource.JDBC, request.getServletContext());) {
-            request.setAttribute("products", pdao.readProducts(product,false));
+            request.setAttribute("products", pdao.readProducts(product,BOTH));
                  
             request.getRequestDispatcher(response.encodeURL("newProduct.jsp")).forward(request, response);
         } catch (Exception e) { throw new ServletException(e);

@@ -113,6 +113,7 @@ public class Table {
         String query = String.format("select * from %s where %s", tableName, param);
         try (Statement st = connection.createStatement(); ResultSet rs = st.executeQuery(query)) {
             while (rs.next()) {
+                resultRow=new LinkedList();
                 for (int i = 1; i <= rs.getMetaData().getColumnCount(); i++) {
                     resultRow.add(rs.getString(i));
                 }

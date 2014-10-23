@@ -167,7 +167,7 @@
                             var term = request.term;
                             request.term = JSON.stringify($(field).serializeArray().concat($(dependent).filter("[name!=" + $(field).attr("name") + "]").serializeArray())); //$(".ter:input").serializeArray();              //[{category:"фрукты"},{name:"бананы"}];
 
-                            $.getJSON("productAutocomplete", request, function(data, status, xhr) {
+                            $.getJSON("ProductAutocomplete", request, function(data, status, xhr) {
                                 response(data);
                             });
                         }

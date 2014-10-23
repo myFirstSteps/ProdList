@@ -23,7 +23,7 @@
         <c:forEach items="${products}" var="prod" varStatus="stat">
             <div class="prodrow"> 
                 <div class="proddata"> 
-                    <c:if test="${prod.origin}"><img  height="16" width="16" src='resources/common_image/product_categories/icons/key.gif'></c:if>
+                    <c:if test="${prod.origin}"><img class="prodStatIcon"  height="16" width="16" src='resources/common_image/icons/Key.gif' alt="Ключевой"> <br></c:if>
                     <img  height="80" src='<c:choose> 
                              <c:when test="${prod.imageLinks[0] ne null}"><c:url value='${prod.imageLinks[0]}'/>
                              </c:when>

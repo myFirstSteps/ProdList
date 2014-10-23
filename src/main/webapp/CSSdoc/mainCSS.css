@@ -39,3 +39,4 @@ form#newProduct > div {margin: 5px; position: static; display: inline-block;}
 .prodheader {font-weight: bold;}
 .proddata {display: table-cell; vertical-align: middle; border: solid 1px #303030;  margin: 2px; padding:5px; }
 .proddata > img {border: solid 2px #303030; max-width: 200px;}
+img.prodStatIcon {border-style: none; float: left;}

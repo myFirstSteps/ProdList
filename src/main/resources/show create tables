@@ -26,15 +26,15 @@
   `agroup` varchar(254) NOT NULL DEFAULT 'другое',
   `price` decimal(8,2) NOT NULL DEFAULT '1.00',
   `comment` varchar(500) DEFAULT NULL,
-  `owner` varchar(254) DEFAULT NULL,
+  `owner` varchar(254) NOT NULL DEFAULT 'гость',
   `products_id` bigint(20) unsigned DEFAULT NULL,
   `stamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`),
-  UNIQUE KEY `name` (`name`,`products_id`),
+  UNIQUE KEY `name` (`name`,`products_id`,`owner`),
   KEY `products_id` (`products_id`),
   CONSTRAINT `users_products_ibfk_1` FOREIGN KEY (`products_id`) REFERENCES `products` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8            |
+) ENGINE=InnoDB AUTO_INCREMENT=104 DEFAULT CHARSET=utf8      |
  
 | images | CREATE TABLE `images` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
