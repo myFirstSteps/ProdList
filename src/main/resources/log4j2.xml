@@ -10,7 +10,7 @@
     </Appenders>
     <Loggers>
         <Logger name="com.pankratov.prodlist.model.dao.jdbc.JDBCUserDAO" level="DEBUG"/>
-        <Logger name="com.pankratov.prodlist.model.dao.jdbc.JDBCDAOPool" level="DEBUG"/>
+        <Logger name="com.pankratov.prodlist.model.dao.jdbc.JDBCDAOPool" level="error"/>
         <Root level="error">
             <AppenderRef ref="Console"/>
             <AppenderRef ref="File"/>

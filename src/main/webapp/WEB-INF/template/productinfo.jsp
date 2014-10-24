@@ -20,11 +20,12 @@
             <div class="proddata">Цена</div>
             <div class="proddata">Комментарий</div>
         </div>
+        <img  onerror="this.src = 'resources/common_image/product_categories/0.png'">
         <c:forEach items="${products}" var="prod" varStatus="stat">
             <div class="prodrow"> 
                 <div class="proddata"> 
                     <c:if test="${prod.origin}"><img class="prodStatIcon"  height="16" width="16" src='resources/common_image/icons/Key.gif' alt="Ключевой"> <br></c:if>
-                    <img  height="80" src='<c:choose> 
+                    <img  height="80" onerror="this.src = 'resources/common_image/product_categories/0.png'"   src='<c:choose> 
                              <c:when test="${prod.imageLinks[0] ne null}"><c:url value='${prod.imageLinks[0]}'/>
                              </c:when>
                              <c:otherwise>resources/common_image/product_categories/0.png

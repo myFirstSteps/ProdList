@@ -29,7 +29,7 @@ public class Product {
     private String author="";
     private String authorRole="";
     private ArrayList<String> imageLinks = new ArrayList<>();
-    private boolean origin;
+    private boolean origin=true;
     private Long originID=-1l;
 
    
@@ -141,9 +141,8 @@ public class Product {
         this.comment = (x = initData.get("comment")) != null ? x : "";
         this.author = (x = initData.get("author")) != null ? x : "";
         this.authorRole = (x = initData.get("authorRole")) != null ? x : "";
-        this.origin = (x = initData.get("origin")) != null ? true : false;
         this.originID=(x = initData.get("originID")) != null ? new Long(x): -1;
-        this.origin=(originID!=-1);
+        this.origin = (x = initData.get("origin")) != null && x.equalsIgnoreCase("false")||originID!=-1 ? true:false;
     }
 
     public static Product getInstanceFromRequest(HttpServletRequest req) {

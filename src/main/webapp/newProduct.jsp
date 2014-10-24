@@ -12,7 +12,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Добавить продукт.</title>
+        <title>Редактор продуктов.</title>
         <style><%@include file="/CSSdoc/mainCSS.css"%></style>
         <link rel="stylesheet" href="<c:url value='/CSSdoc/jquery-ui.min.css'/>">
     </head>
@@ -42,16 +42,10 @@
 
         <form  class="center_form" id="newProduct" method="post"  enctype="multipart/form-data" action= '<c:url value="addProduct"/>'>
 
-            <div class='prodholder'>
-                <c:if test='${products ne null}'>
-                    <h4>Продукт успешно добавлен.</h4>
-
-                    <c:import url="/WEB-INF/template/productinfo.jsp"/> 
-                </c:if>
-            </div>
+           
 
 
-            <h2>Добавить новый продукт в базу.</h2>
+            <h2>Редактор продуктов.</h2>
             <div id='error' class='error'>${error}</div><br>
             <c:set var="categoryValue" value="овощи" /> 
             <c:if test="${newProduct.group ne null}"><c:set var="categoryValue" value="${newProduct.group}"/></c:if>
@@ -112,10 +106,18 @@
             </div><br>
             <input type="button" onclick="validate(this.form)" value="Добавить">
             <button formaction="<c:url value='ReadProduct'/>">Найти</button>
-            
+          
         </form>
+            <c:if test='${products ne null}'>
+          <div class='prodholder center_form'>
+                
+              <c:if test="${status ne null}"><h4>${status}</h4></c:if>
 
-
+                    <c:import url="/WEB-INF/template/productinfo.jsp"/> 
+                    <input type="text">
+                    
+            </div> 
+           </c:if>
 
         <script src="scripts/jquery-1.11.1.min.js"></script>
         <script src="scripts/jquery-ui.js"></script>

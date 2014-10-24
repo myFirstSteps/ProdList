@@ -183,6 +183,7 @@ public class AddProduct extends HttpServlet {
             products.add(product);
             request.setAttribute("products", products);
             request.setAttribute("addedProduct", product);
+            request.setAttribute("status", "Продукт успешно добавлен.");
             request.getRequestDispatcher(response.encodeURL("newProduct.jsp")).forward(request, response);
         } catch (FileUploadException | SQLException | JDBCDAOException e) {
             if (f != null) {
