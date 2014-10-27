@@ -112,10 +112,7 @@
           <div class='prodholder center_form'>
                 
               <c:if test="${status ne null}"><h4>${status}</h4></c:if>
-
-                    <c:import url="/WEB-INF/template/productinfo.jsp"/> 
-                    <input type="text">
-                    
+                    <c:import url="/WEB-INF/template/productinfo.jsp"/>         
             </div> 
            </c:if>
 

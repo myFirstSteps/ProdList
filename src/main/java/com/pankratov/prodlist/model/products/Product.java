@@ -26,11 +26,26 @@ public class Product {
     private String group="";
     private Float price=-1f;
     private String comment="";
+    private String lastModify="";
     private String author="";
     private String authorRole="";
     private ArrayList<String> imageLinks = new ArrayList<>();
     private boolean origin=true;
     private Long originID=-1l;
+
+    /**
+     * @return the lastModify
+     */
+    public String getLastModify() {
+        return lastModify;
+    }
+
+    /**
+     * @param lastModify the lastModify to set
+     */
+    public void setLastModify(String lastModify) {
+        this.lastModify = lastModify;
+    }
 
    
 
@@ -142,7 +157,8 @@ public class Product {
         this.author = (x = initData.get("author")) != null ? x : "";
         this.authorRole = (x = initData.get("authorRole")) != null ? x : "";
         this.originID=(x = initData.get("originID")) != null ? new Long(x): -1;
-        this.origin = (x = initData.get("origin")) != null && x.equalsIgnoreCase("false")||originID!=-1 ? true:false;
+        this.origin = ((x = initData.get("origin")) != null && x.equalsIgnoreCase("false"))||originID!=-1 ? false:true;
+        this.lastModify=(x = initData.get("lastModify")) != null ? x : "";
     }
 
     public static Product getInstanceFromRequest(HttpServletRequest req) {

@@ -136,7 +136,7 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
 
     private Product productFromTable(List<String> fieldValues) {
         String[] fields = {"id", "name", "subName", "producer", "value", "valueUnits",
-            "group", "price", "comment", "author", "originID"};
+            "group", "price", "comment","lastModify", "author", "originID"};
         int i = 0;
         TreeMap<String, String> prodInit = new TreeMap<>();
         for (String value : fieldValues) {
@@ -145,6 +145,7 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
             }
             prodInit.put(fields[i++], value);
         }
+        if(fieldValues.size()>10) prodInit.put("origin", "false");
         return new Product(prodInit);
     }
 
@@ -179,10 +180,10 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
         }
         if (kind == USER_COPY || kind == BOTH) {
             if (!product.getAuthor().equals("")) {
-                s.put(10, product.getAuthor());
+                s.put(11, product.getAuthor());
             }
             if (product.getOriginID() != -1) {
-                s.put(11, product.getOriginID().toString());
+                s.put(12, product.getOriginID().toString());
             }
         }
 
@@ -222,7 +223,7 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
         Product p = this.addProduct(product);
         TreeMap<Integer, String> s = new TreeMap<>();
         s.put(2, imagePath);
-        s.put(product.isOrigin() ? 3 : 4, String.valueOf(p.getId()));
+        s.put(p.isOrigin() ? 3 : 4, String.valueOf(p.getId()));
         IMAGES_TABLE.addRecord(s);
         ArrayList<String> img = new ArrayList<>();
         img.add(imagePath);
@@ -261,7 +262,7 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
             case BOTH:
             case USER_COPY:
                 for (List<String> row : userRows) {
-                    String originId = row.get(10);
+                    String originId = row.get(11);
                     List<String> original = null;
                     if (originId != null) {
                         for (List<String> originFields : originRows) {
@@ -290,7 +291,7 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
         for (List<String> l : resultRows) {
             TreeMap <Integer, String> im= new TreeMap<>();
             Product localProduct= productFromTable(l);
-            im.put(localProduct.getAuthor().equals("") ? 3 : 4, String.valueOf(localProduct.getId()));            
+            im.put(localProduct.isOrigin() ? 3 : 4, String.valueOf(localProduct.getId()));            
             ArrayList<String> imgLinks=new  ArrayList<>();
             for(List<String> imgRes:IMAGES_TABLE.readRawsWhere(im)){
                 imgLinks.add(imgRes.get(1));

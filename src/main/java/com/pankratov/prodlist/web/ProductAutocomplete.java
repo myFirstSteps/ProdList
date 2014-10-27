@@ -60,7 +60,6 @@ public class ProductAutocomplete extends HttpServlet {
                 }
                 prodInit.put((String) obj.get("name"), (String) obj.get("value"));
             }
-         
             Product prod = new Product(prodInit);
             try (ProductDAO pdao = DAOFactory.getProductDAOInstance(DAOFactory.DAOSource.JDBC, request.getServletContext());) {
                 switch (key) {

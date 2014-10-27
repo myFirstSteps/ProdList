@@ -147,10 +147,10 @@ public class Table {
             }
             param += getColumnName(st.getKey()) + " like '%" + st.getValue().replace("'", "\\'") + "%'";
         }
-        System.out.println();
+      
         
         String query = String.format("select %s from %s where %s", this.columnNames.get(n - 1), this.tableName,param);
-         System.out.println(query);
+     
         try (Statement st = connection.createStatement(); ResultSet res = st.executeQuery(query);) {
             while (res.next()) {
                 result.add(res.getString(1));
