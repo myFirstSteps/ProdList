@@ -2,6 +2,7 @@ html{height: 100%; }
 body{ font-family: serif, Arial ;  font-size:small; margin:0; height: 100%;   padding: 0; }
 em{font-size: 120%}
 #HeadTemplate{ background-color:#303030; padding:0px; margin: 0px; width: 100%;  color:white; }
+
 table {border-collapse: collapse;  text-align: center; margin: 10px; }
 #HeadTemplate img{border-radius: 4px; }
 #HeadTemplate span{font-size:120%}

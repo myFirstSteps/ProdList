@@ -55,11 +55,12 @@
             $(a).css("color", "blue");
             a.text($(o).siblings("input").val());
             a.append("<button onclick='edit(this)'><img height='16' width='16' src='resources/common_image/icons/Modify.gif'></button>");
-            $(a).closest("div.prodrow").after("<button><img height='16' width='16' src='resources/common_image/icons/Sync.gif' >Изменить</button>");
+            if($(a).closest("div.prodrow").next(".SyncButton").length===0)
+            $(a).closest("div.prodrow").after("<button class='SyncButton'><img height='16' width='16' src='resources/common_image/icons/Sync.gif'>Изменить</button>");
             
         }
         function denyEdit(o) {
-            $(o).parent().replaceWith("<button onclick='edit(this)'><img height='16' width='16' src='resources/common_image/icons/Modify.gif'></button>");
+            $(o).parent().replaceWith("<button  onclick='edit(this)'><img height='16' width='16' src='resources/common_image/icons/Modify.gif'></button>");
         }
     </script>    
 </c:if>
