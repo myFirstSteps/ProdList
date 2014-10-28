@@ -11,12 +11,14 @@ import com.pankratov.prodlist.model.dao.ProductDAO;
 import com.pankratov.prodlist.model.products.Product;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.concurrent.ConcurrentSkipListSet;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -41,13 +43,13 @@ public class ProductAutocomplete extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-         try {
+         try { 
             ConcurrentSkipListSet<String> list = new ConcurrentSkipListSet<>();
             TreeMap<String, String> prodInit = new TreeMap<>();
             String key = "name";
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
-
+            System.out.println(request.getParameter("term"));
             JSONParser parser = new org.json.simple.parser.JSONParser();
             Object reqJSONObj = parser.parse(request.getParameter("term"));
             JSONArray array = (JSONArray) reqJSONObj;

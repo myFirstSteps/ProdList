@@ -25,6 +25,7 @@ public interface ProductDAO extends AutoCloseable {
     public ArrayList readProductValueUnits()throws Exception; 
     public boolean addGroup (String ...group)throws Exception;
     public Product deleteProduct(Product what) throws Exception;
+    public Product changeProduct(Product what)throws Exception;
     public ConcurrentSkipListSet<String> readProductNames() throws Exception;
     public ConcurrentSkipListSet<String> readProductSubNames() throws Exception;
     public ConcurrentSkipListSet<String> readProductProducers() throws Exception;

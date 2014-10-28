@@ -24,7 +24,7 @@
         </div>
         <img  onerror="this.src = 'resources/common_image/product_categories/0.png'">
         <c:forEach items="${products}" var="prod" varStatus="stat">
-            <div  id="${prod.id}_${prod.originID}" class="prodrow "> 
+            <div  id="${prod.id}_${prod.originID}<c:if test="${prod.origin}">_o</c:if>" class="prodrow "> 
                 <div class="proddata"> 
                     <c:if test="${prod.origin}"><img class="prodStatIcon"  height="16" width="16" src='resources/common_image/icons/Key.gif' alt="Ключевой"> <br></c:if>
                     <img  height="80" onerror="this.src = 'resources/common_image/product_categories/0.png'"   src='<c:choose> 
@@ -62,6 +62,7 @@
             var a = $(o).parent().parent();
             if (a.text().trim() !== $(o).siblings("input").val()) {
                 $(a).css("color", "blue");
+                $(a).addClass("edited");
                 $(a).text($(o).siblings("input").val());
                 if ($(a).closest("div.prodrow").next(".SyncButton").length === 0) {
                     $(a).closest("div.prodrow").after("<button class='SyncButton' onclick='sendChanges(this)'><img height='16' width='16' src='resources/common_image/icons/Sync.gif'>Изменить</button>");
@@ -74,22 +75,31 @@
         function denyEdit(o) {
             $(o).parent().replaceWith("<button  onclick='edit(this)'><img height='16' width='16' src='resources/common_image/icons/Modify.gif'></button>");
         }
-        function sendChanges(o){
-                //   JSON.stringify(["aname":"name"]);
-           /*     $.getJSON( "ProductAutocomplete", { name: "John", time: "2pm" } )
-                .done(function( json ) {
-                //console.log( "JSON Data: " + json.users[ 3 ].name );
-                })
-                .fail(function( jqxhr, textStatus, error ) {
-              //  var err = textStatus + ", " + error;
-                  //  console.log( "Request Failed: " + err );
-                });
-                */
-                    $.getJSON("ProductAutocomplete", "term", function(data, status, xhr) {
-                                alert("vv");
-                            });
-                   alert();
-        
-        }
+        function sendChanges(o) {
+             var idParts=$(o).prev(".prodrow").attr("id").split("_");
+             var id=idParts[0];
+             var originId=idParts[1];
+             var origin= idParts.length>2?"true":"false"; 
+             alert(idParts.length);
+            var req = JSON.stringify(
+                    [{
+                     "id":id,
+                     "originID":originId,
+                     "origin": origin,
+                     "name": $(o).prev(".prodrow").children("div.proddata.name.edited").text(),
+                     "producer": $(o).prev(".prodrow").children("div.proddata.producer.edited").text(),
+                     "group": $(o).prev(".prodrow").children("div.proddata.group.edited").text(),
+                     "subName": $(o).prev(".prodrow").children("div.proddata.subName.edited").text(),
+                     "price": $(o).prev(".prodrow").children("div.proddata.price.edited").text(),
+                     "valueUnits": $(o).prev(".prodrow").children("div.proddata.valueUnits.edited").text(),
+                     "value": $(o).prev(".prodrow").children("div.proddata.value.edited").text(),
+                     "comment": $(o).prev(".prodrow").children("div.proddata.comment.edited").text()
+                     }] 
+                    );
+                    $(o).append("<img src='resources/common_image/icons/loading.gif'>");
+                    $.getJSON("ChangeProducts", {product: req}, function(data, status, xhr) {
+                        alert("avv");
+                    });
+                }
     </script>    
 </c:if>

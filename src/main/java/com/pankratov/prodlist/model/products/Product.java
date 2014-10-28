@@ -10,6 +10,9 @@ import java.security.Principal;
 import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.fileupload.FileItem;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 /**
  *
@@ -159,6 +162,18 @@ public class Product {
         this.originID=(x = initData.get("originID")) != null ? new Long(x): -1;
         this.origin = ((x = initData.get("origin")) != null && x.equalsIgnoreCase("false"))||originID!=-1 ? false:true;
         this.lastModify=(x = initData.get("lastModify")) != null ? x : "";
+    }
+    public static Product getInstanceFromJSON(HttpServletRequest request)throws Exception{
+        JSONParser par=new JSONParser();
+       JSONArray a=(JSONArray)par.parse(request.getParameter("product"));
+       JSONObject o=(JSONObject)a.get(0);
+        TreeMap<String, String> prodInit = new TreeMap<>();
+        for(Map.Entry<String,String> m:(Set<Map.Entry<String,String>>)o.entrySet()){
+            prodInit.put(m.getKey(), m.getValue());
+        }
+        prodInit.put("author", ProductFieldsRiper.readAuthor(request));
+        prodInit.put("authorRole", ProductFieldsRiper.readAuthorRole(request));
+        return new Product(prodInit);
     }
 
     public static Product getInstanceFromRequest(HttpServletRequest req) {

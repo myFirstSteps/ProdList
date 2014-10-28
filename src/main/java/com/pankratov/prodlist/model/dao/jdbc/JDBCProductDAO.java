@@ -345,6 +345,10 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
     public ArrayList readProductGroups() throws JDBCDAOException {
         return PRODUCTS_TABLE.getEnumValues(7);
     }
+    @Override
+     public Product changeProduct(Product what)throws Exception{
+         return null;
+     }
 
     @Override
     public ArrayList readProductValueUnits() throws JDBCDAOException {
