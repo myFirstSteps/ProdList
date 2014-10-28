@@ -6,9 +6,13 @@ em{font-size: 120%}
 table {border-collapse: collapse;  text-align: center; margin: 10px; }
 #HeadTemplate img{border-radius: 4px; }
 #HeadTemplate span{font-size:120%}
-div.HeadTemplate { margin: 10px;  vertical-align: middle; display: inline-block; }
+div.HeadTemplate { margin: 0px 5px 0px 5px;  vertical-align: middle; display: inline-block; }
+
+img.UnActiveNavIco { display: inline-block; }
+img.ActiveNavIco { display: none; }
+.Navigation a {color: white;}
 #right{text-align: center;  float: right; display: inline-block; vertical-align: bottom; }
-#UserForm{ margin: 10px; padding: 5px; }
+#UserForm{ margin: 10px;  float: right;  padding: 5px; }
 #UserName em{color: #dea000;}
  .error{color:red;}
 

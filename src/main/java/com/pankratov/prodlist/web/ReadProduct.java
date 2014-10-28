@@ -73,7 +73,7 @@ public class ReadProduct extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
        response.sendError(405);
-
+      
         // processRequest(request, response);
     }
 

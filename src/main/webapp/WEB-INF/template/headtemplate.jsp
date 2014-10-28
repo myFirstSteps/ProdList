@@ -7,13 +7,23 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
 <c:set var="username" scope="page" value="${pageContext.request.getRemoteUser()}"/>
 <c:set var="path" value="${pageContext.request.getServletPath()}"/>
+<c:set var="ico1img" value='resources/common_image/icons/Home.png'/>
+<c:set var="ico2img" value='resources/common_image/icons/Sandbox.png'/>
+<c:choose>
+    <c:when test="${path eq '/index.jsp'}"> <c:set var="ico1img" value='resources/common_image/icons/Home_active.png'/> </c:when>
+    <c:when test="${path eq '/newProduct.jsp' or path eq '/registration.jsp'}"><c:set var="ico2img" value='resources/common_image/icons/Sandbox_active.png'/></c:when>
+</c:choose>
 <div id="HeadTemplate">
-
-
     <div  class="HeadTemplate"><span>Интерактивное резюме на<br>позицию Java Junior Developer.<br><em>Панкратов Михаил</em></span></div>
     <div   class="HeadTemplate" ><img src="<c:url value="/resources/common_image/OCP_JavaSE7Programmer.gif"/>"  width="140" height="71" alt="OCP_JavaSE7Programmer.gif"></div>
-    <div  class="HeadTemplate Navigation"><img class="ActiveNav" height='90' width='90' src='resources/common_image/icons/Home_active.png'><img class="UnActiveNav" height='90' width='90' src='resources/common_image/icons/Home.png'><br>Главная страница</div>
-    <div  class="HeadTemplate Navigation" onmouseout="this.className-='Acive'" onmouseover="this.className+='Acive'"><img height='90' width='90' onmouseout="this.src = 'resources/common_image/icons/Sandbox.png'"   onmouseover="this.src = 'resources/common_image/icons/Sandbox_active.png'" src='resources/common_image/icons/Sandbox.png'><br>Приложение</div>
+    <div  class="HeadTemplate Navigation"><a title="Главная" href="<c:url value="index.jsp"/>" ><img class="UnActiveNavIco"  height="80" width="80" src="${ico1img}"> 
+        <img class="ActiveNavIco" height="80" width="80" src="resources/common_image/icons/Home_active.png">
+        </a>
+        </div>
+    <div  class="HeadTemplate Navigation" >
+        <a title="Учебный проект" href="<c:url value="newProduct.jsp"/>" ><img class="UnActiveNavIco" height="100" width="100" src='${ico2img}' >
+        <img class="ActiveNavIco" height="100" width="100" src="resources/common_image/icons/Sandbox_active.png"></a>
+        </div>
     <div id="right" class='HeadTemplate'>
         <c:choose>
             <c:when test="${username==null}">
@@ -34,11 +44,12 @@
 
     </div>
 </div>
-    <script> 
-        alert("inscript");
-        $("div.Navigation").mouseout(function(){alert("leave");});
-        $("div.Navigation.HeadTemplate").mouseover(function(){$(this).addClass("active");});
-    </script>
-    <script src='scripts/jquery-1.11.1.min.js'></script>    
+<script src='scripts/jquery-1.11.1.min.js'></script> 
+<script>
+    $(".Navigation a").on("mouseover", function() {  $(this).children(".UnActiveNavIco").hide(); $(this).children(".ActiveNavIco").show(); } );
+    $(".Navigation a").on("mouseout", function() { $(this).children(".ActiveNavIco").hide();  $(this).children(".UnActiveNavIco").show(); });
+</script>
+
+
 
 
