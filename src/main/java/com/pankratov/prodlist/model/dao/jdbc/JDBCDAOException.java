@@ -17,6 +17,9 @@ public class JDBCDAOException extends Exception {
      public JDBCDAOException (String s){
          super(s);
      }
+       public JDBCDAOException (Throwable t){
+         super(t);
+     }
      
     
 }

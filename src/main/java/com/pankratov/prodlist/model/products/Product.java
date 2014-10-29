@@ -192,7 +192,29 @@ public class Product {
         prodInit.put("authorRole", ProductFieldsRiper.readAuthorRole(req));
         return new Product(prodInit);
     }
+    public JSONObject toJSON(){
+        JSONObject json=new JSONObject();
+        json.put("id", id);
+        json.put("name", name);
+        json.put("subName",subName);
+        json.put("producer", producer);
+        json.put("value", value);
+        json.put("valueUnits", valueUnits);
+        json.put("group",group);
+        json.put("price", price);
+        json.put("comment", comment);
+        json.put("lastModify", lastModify);
+        json.put("author", author);
+        json.put("authorRole", authorRole);
+        json.put("origin", origin);
+        json.put("originID", originID);
+        json.put("imageLinks", imageLinks);
+        return json;
+    } 
 
+    
+    
+    
     /**
      * @return the id
      */

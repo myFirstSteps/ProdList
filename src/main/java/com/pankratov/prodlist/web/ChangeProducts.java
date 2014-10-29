@@ -8,6 +8,7 @@ package com.pankratov.prodlist.web;
 
 import com.pankratov.prodlist.model.dao.DAOFactory;
 import com.pankratov.prodlist.model.dao.ProductDAO;
+import com.pankratov.prodlist.model.dao.jdbc.JDBCDAOException;
 import com.pankratov.prodlist.model.products.Product;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -41,20 +42,19 @@ public class ChangeProducts extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("application/json");
         try(ProductDAO pdao= DAOFactory.getProductDAOInstance(DAOFactory.DAOSource.JDBC, request.getServletContext())){
             Product p= Product.getInstanceFromJSON(request);
-            pdao.changeProduct(p);
-      /* JSONParser par=new JSONParser();
-       System.out.println(request.getParameter("term"));
-       JSONArray a=(JSONArray)par.parse(request.getParameter("term"));
-       JSONObject o=(JSONObject)a.get(0);
-       Set<Map.Entry> s=o.entrySet();
-        for(Map.Entry e:s){
-            System.out.println(String.format("name: %s \n value: %s",e.getKey(), e.getValue()));
-        }*/
-            
-        
-        }catch(Exception ex){}
+           p=pdao.changeProduct(p);
+           response.getWriter().println(p.toJSON());    
+        }catch(Exception ex){
+            JSONObject jsonerr=new JSONObject();
+            String couse=ex.getMessage();
+            if(ex.getMessage().contains("Data truncation: Out of range"))jsonerr.put("error", "Введено слишком большое число.");
+            if(ex.getMessage().contains("Ни одна запись не изменена"))jsonerr.put("error", "Запись не изменена");
+            if(jsonerr.size()==0)jsonerr.put("error", "Во время редактирования записи произошла ошибка");
+            response.getWriter().println(jsonerr); }
     }
 
     /**

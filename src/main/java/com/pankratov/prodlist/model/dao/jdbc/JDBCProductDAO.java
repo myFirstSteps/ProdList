@@ -136,7 +136,7 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
 
     private Product productFromTable(List<String> fieldValues) {
         String[] fields = {"id", "name", "subName", "producer", "value", "valueUnits",
-            "group", "price", "comment","lastModify", "author", "originID"};
+            "group", "price", "comment", "lastModify", "author", "originID"};
         int i = 0;
         TreeMap<String, String> prodInit = new TreeMap<>();
         for (String value : fieldValues) {
@@ -145,8 +145,18 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
             }
             prodInit.put(fields[i++], value);
         }
-        if(fieldValues.size()>10) prodInit.put("origin", "false");
+        if (fieldValues.size() > 10) {
+            prodInit.put("origin", "false");
+        }
         return new Product(prodInit);
+    }
+
+    private List<Product> productsFromTable(List<List<String>> fieldValues) {
+        List<Product> products = new LinkedList<>();
+        for (List<String> record : fieldValues) {
+            products.add((productFromTable(record)));
+        }
+        return products;
     }
 
     private TreeMap<Integer, String> productToTable(Product product, KindOfProduct kind) {
@@ -190,8 +200,6 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
         return s;
     }
 
-  
-
     @Override
     public Product addProduct(Product product) throws JDBCDAOException {
 
@@ -202,18 +210,19 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
             if (!readProductGroups().contains(product.getGroup())) {
                 addGroup(product.getGroup());
             }
-           
 
         }
-        if((isAdmin && isProductInTable(product, ORIGINAL)) || (!isAdmin && isProductInTable(product, USER_COPY))  ) throw new JDBCDAOException("Данный продукт уже существует.");
-       
+        if ((isAdmin && isProductInTable(product, ORIGINAL)) || (!isAdmin && isProductInTable(product, USER_COPY))) {
+            throw new JDBCDAOException("Данный продукт уже существует.");
+        }
+
         if (!isAdmin) {
             List<Product> origin = readProducts(new Product(product, true), ORIGINAL);
             if (origin.size() > 0) {
                 product.setOriginID(origin.get(0).getId());
             }
         }
-        table.addRecord(productToTable(product, isAdmin?ORIGINAL:USER_COPY));
+        table.addRecord(productToTable(product, isAdmin ? ORIGINAL : USER_COPY));
         return readProducts(product, isAdmin ? ORIGINAL : USER_COPY).get(0);
 
     }
@@ -248,11 +257,13 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
     @Override
     public List<Product> readProducts(Product product, KindOfProduct kind) throws JDBCDAOException {
         List<Product> products = new LinkedList<>();
-        LinkedList<List<String>> originRows = PRODUCTS_TABLE.readRawsWhere(productToTable(product,ORIGINAL));
+        LinkedList<List<String>> originRows = PRODUCTS_TABLE.readRawsWhere(productToTable(product, ORIGINAL));
         LinkedList<List<String>> userRows = new LinkedList<>();
         LinkedList<List<String>> resultRows = new LinkedList<>();
         if (kind == KindOfProduct.USER_COPY || kind == KindOfProduct.BOTH) {
-            if(product.getAuthorRole().equals("admin"))product.setAuthor("");
+            if (product.getAuthorRole().equals("admin")) {
+                product.setAuthor("");
+            }
             userRows = USERS_PRODUCTS_TABLE.readRawsWhere(productToTable(product, USER_COPY));
         }
         switch (kind) {
@@ -289,11 +300,11 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
         }
 
         for (List<String> l : resultRows) {
-            TreeMap <Integer, String> im= new TreeMap<>();
-            Product localProduct= productFromTable(l);
-            im.put(localProduct.isOrigin() ? 3 : 4, String.valueOf(localProduct.getId()));            
-            ArrayList<String> imgLinks=new  ArrayList<>();
-            for(List<String> imgRes:IMAGES_TABLE.readRawsWhere(im)){
+            TreeMap<Integer, String> im = new TreeMap<>();
+            Product localProduct = productFromTable(l);
+            im.put(localProduct.isOrigin() ? 3 : 4, String.valueOf(localProduct.getId()));
+            ArrayList<String> imgLinks = new ArrayList<>();
+            for (List<String> imgRes : IMAGES_TABLE.readRawsWhere(im)) {
                 imgLinks.add(imgRes.get(1));
             }
             localProduct.setImageLinks(imgLinks);
@@ -320,24 +331,24 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
     @Override
     public ConcurrentSkipListSet<String> readProductNames(Product forProduct) throws Exception {
         ConcurrentSkipListSet<String> res = new ConcurrentSkipListSet<>();
-        res.addAll(PRODUCTS_TABLE.readColumn(2, productToTable(forProduct,ORIGINAL)));
-        res.addAll(USERS_PRODUCTS_TABLE.readColumn(2, productToTable(forProduct,ORIGINAL)));
+        res.addAll(PRODUCTS_TABLE.readColumn(2, productToTable(forProduct, ORIGINAL)));
+        res.addAll(USERS_PRODUCTS_TABLE.readColumn(2, productToTable(forProduct, ORIGINAL)));
         return res;
     }
 
     @Override
     public ConcurrentSkipListSet<String> readProductSubNames(Product forProduct) throws Exception {
         ConcurrentSkipListSet<String> res = new ConcurrentSkipListSet<>();
-        res.addAll(PRODUCTS_TABLE.readColumn(3, productToTable(forProduct,ORIGINAL)));
-        res.addAll(USERS_PRODUCTS_TABLE.readColumn(3, productToTable(forProduct,ORIGINAL)));
+        res.addAll(PRODUCTS_TABLE.readColumn(3, productToTable(forProduct, ORIGINAL)));
+        res.addAll(USERS_PRODUCTS_TABLE.readColumn(3, productToTable(forProduct, ORIGINAL)));
         return res;
     }
 
     @Override
     public ConcurrentSkipListSet<String> readProductProducers(Product forProduct) throws Exception {
         ConcurrentSkipListSet<String> res = new ConcurrentSkipListSet<>();
-        res.addAll(PRODUCTS_TABLE.readColumn(4, productToTable(forProduct,ORIGINAL)));
-        res.addAll(USERS_PRODUCTS_TABLE.readColumn(4, productToTable(forProduct,ORIGINAL)));
+        res.addAll(PRODUCTS_TABLE.readColumn(4, productToTable(forProduct, ORIGINAL)));
+        res.addAll(USERS_PRODUCTS_TABLE.readColumn(4, productToTable(forProduct, ORIGINAL)));
         return res;
     }
 
@@ -345,10 +356,27 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
     public ArrayList readProductGroups() throws JDBCDAOException {
         return PRODUCTS_TABLE.getEnumValues(7);
     }
+
     @Override
-     public Product changeProduct(Product what)throws Exception{
-         return null;
-     }
+    public Product changeProduct(Product product) throws Exception {
+
+        String prodID = String.valueOf(product.getId());
+        Table t;
+        product.setId(-1l);
+       
+            Product res = new Product();
+            res.setId(new Long(prodID));
+            if (product.isOrigin()) {
+                PRODUCTS_TABLE.updateRowByID(productToTable(product, ORIGINAL), prodID);
+                res = this.productsFromTable(PRODUCTS_TABLE.readRawsWhere(productToTable(product, ORIGINAL))).get(0);
+            } else {
+                USERS_PRODUCTS_TABLE.updateRowByID(productToTable(product, USER_COPY), prodID);
+                res = this.productsFromTable(USERS_PRODUCTS_TABLE.readRawsWhere(productToTable(product, ORIGINAL))).get(0);
+            }
+
+            return res;
+        
+    }
 
     @Override
     public ArrayList readProductValueUnits() throws JDBCDAOException {
@@ -363,19 +391,22 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
         PRODUCTS_TABLE.addEnumValues(7, group);
         return true;
     }
-    boolean isProductInTable (Product product, KindOfProduct kind) throws JDBCDAOException{
-        Product identity= new Product();
+
+    boolean isProductInTable(Product product, KindOfProduct kind) throws JDBCDAOException {
+        Product identity = new Product();
         identity.setName(product.getName());
         identity.setSubName(product.getSubName());
         identity.setProducer(product.getProducer());
         identity.setValue(product.getValue());
-        
-        switch(kind){
-            case ORIGINAL: break;
-            case BOTH: 
-            case USER_COPY: identity.setAuthor(product.getAuthor());
+
+        switch (kind) {
+            case ORIGINAL:
+                break;
+            case BOTH:
+            case USER_COPY:
+                identity.setAuthor(product.getAuthor());
         }
-       
-        return readProducts(identity, kind).size()>0;
+
+        return readProducts(identity, kind).size() > 0;
     }
 }

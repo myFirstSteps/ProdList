@@ -69,6 +69,7 @@ public class Table {
         }
         return true;
     }
+    
 
     protected boolean addEnumValues(int col, String... newValues) throws JDBCDAOException {
         boolean result = false;
@@ -124,7 +125,25 @@ public class Table {
         }
         return result;
     }
+    protected int updateRowByID(TreeMap<Integer,String> values, String ID)throws JDBCDAOException{
+        LinkedList<List<String>> result = new LinkedList<>();
+        List<String> resultRow = new LinkedList<>();
+        int res=0;
 
+        String param = "";
+        for (Entry<Integer, String> st : values.entrySet()) {
+            param += ","+getColumnName(st.getKey()) + "= '" + st.getValue() + "'";
+        }
+        param=param.replaceFirst(",", "");
+        String query = String.format("update %s set %s where %s=%s", tableName, param,this.getColumnName(1),ID);
+        try (Statement st = connection.createStatement(); ) {
+             res = st.executeUpdate(query);
+            if (res==0) throw new JDBCDAOException(String.format("Ошибка при изменении данных в таблице %s. Ни одна запись не изменена", tableName));
+        } catch (SQLException e) {
+            throw new JDBCDAOException(String.format("Ошибка при изменении данных в таблице %s.%s", tableName,e.getMessage()), e);
+        }
+        return res;
+    }
     protected ConcurrentSkipListSet<String> readColumn(int n) throws JDBCDAOException {
         ConcurrentSkipListSet<String> result = new ConcurrentSkipListSet<>();
         String query = String.format("select %s from %s", this.columnNames.get(n - 1), this.tableName);
@@ -176,7 +195,6 @@ public class Table {
                     result.add(m.group(1));
                     start = m.end(1);
                 }
-
             }
         } catch (SQLException ex) {
 
