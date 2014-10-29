@@ -8,6 +8,8 @@ table {border-collapse: collapse;  text-align: center; margin: 10px; }
 #HeadTemplate span{font-size:120%}
 div.HeadTemplate { margin: 0px 5px 0px 5px;  vertical-align: middle; display: inline-block; }
 
+.centerDiv {margin: 10px auto 10px auto; width: 90%; text-align: center;}
+
 img.UnActiveNavIco { display: inline-block; }
 img.ActiveNavIco { display: none; }
 .Navigation a {color: white;}

@@ -13,8 +13,8 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Редактор продуктов.</title>
-        <style><%@include file="/CSSdoc/mainCSS.css"%></style>
-        <link rel="stylesheet" href="<c:url value='/CSSdoc/jquery-ui.min.css'/>">
+        <style><%@include file="CSSdoc/mainCSS.css"%></style>
+        <link rel="stylesheet" href="<c:url value='CSSdoc/jquery-ui.min.css'/>">
     </head>
     <body>
         <div id="header">

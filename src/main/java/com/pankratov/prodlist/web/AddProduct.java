@@ -140,7 +140,7 @@ public class AddProduct extends HttpServlet {
             throws ServletException, IOException {
         File f = null;
         try {
-
+          if(true)  throw new NullPointerException();
             if (!ServletFileUpload.isMultipartContent(request)) {
                 response.setCharacterEncoding("UTF-8");
                 response.setContentType("text/plain");
