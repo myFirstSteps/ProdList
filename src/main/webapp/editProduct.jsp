@@ -116,7 +116,6 @@
             </div> 
            </c:if>
 
-        <script src="scripts/jquery-1.11.1.min.js"></script>
         <script src="scripts/jquery-ui.js"></script>
         <script src="scripts/formValidation.js"></script>
         <script src="scripts/PopUpMenu.js"></script>

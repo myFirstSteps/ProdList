@@ -140,7 +140,6 @@ public class AddProduct extends HttpServlet {
             throws ServletException, IOException {
         File f = null;
         try {
-          if(true)  throw new NullPointerException();
             if (!ServletFileUpload.isMultipartContent(request)) {
                 response.setCharacterEncoding("UTF-8");
                 response.setContentType("text/plain");
@@ -184,7 +183,7 @@ public class AddProduct extends HttpServlet {
             request.setAttribute("products", products);
             request.setAttribute("addedProduct", product);
             request.setAttribute("status", "Продукт успешно добавлен.");
-            request.getRequestDispatcher(response.encodeURL("newProduct.jsp")).forward(request, response);
+            request.getRequestDispatcher(response.encodeURL("editProduct.jsp")).forward(request, response);
         } catch (FileUploadException | SQLException | JDBCDAOException e) {
             if (f != null) {
                 f.delete();
@@ -219,7 +218,7 @@ public class AddProduct extends HttpServlet {
                 break;
         }
         request.setAttribute("error", text);
-        request.getRequestDispatcher(response.encodeURL("newProduct.jsp")).forward(request, response);
+        request.getRequestDispatcher(response.encodeURL("editProduct.jsp")).forward(request, response);
     }
 
     /**

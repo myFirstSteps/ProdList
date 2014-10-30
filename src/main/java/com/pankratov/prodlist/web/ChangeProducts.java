@@ -46,6 +46,7 @@ public class ChangeProducts extends HttpServlet {
         response.setContentType("application/json");
         try(ProductDAO pdao= DAOFactory.getProductDAOInstance(DAOFactory.DAOSource.JDBC, request.getServletContext())){
             Product p= Product.getInstanceFromJSON(request);
+            if(p.isOrigin() && !request.isUserInRole("admin")) throw new JDBCDAOException("Нет прав");
            p=pdao.changeProduct(p);
            response.getWriter().println(p.toJSON());    
         }catch(Exception ex){
@@ -53,6 +54,7 @@ public class ChangeProducts extends HttpServlet {
             String couse=ex.getMessage();
             if(ex.getMessage().contains("Data truncation: Out of range"))jsonerr.put("error", "Введено слишком большое число.");
             if(ex.getMessage().contains("Ни одна запись не изменена"))jsonerr.put("error", "Запись не изменена");
+            if(ex.getMessage().contains("Нет прав"))jsonerr.put("error", "Нет прав на редактирование этого продукта");
             if(jsonerr.size()==0)jsonerr.put("error", "Во время редактирования записи произошла ошибка");
             response.getWriter().println(jsonerr); }
     }

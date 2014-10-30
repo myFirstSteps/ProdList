@@ -3,18 +3,14 @@ body{ font-family: serif, Arial ;  font-size:small; margin:0; height: 100%;   pa
 em{font-size: 120%}
 #HeadTemplate{ background-color:#303030; padding:0px; margin: 0px; width: 100%;  color:white; }
 
-table {border-collapse: collapse;  text-align: center; margin: 10px; }
-#HeadTemplate img{border-radius: 4px; }
-#HeadTemplate span{font-size:120%}
-div.HeadTemplate { margin: 0px 5px 0px 5px;  vertical-align: middle; display: inline-block; }
-
+#HeadTemplate div { margin: 0px 5px 0px 5px;  vertical-align: middle; display: inline-block; }
+#HeadTemplate div span{font-size:120% ;  text-align: center;}
+#HeadTemplate div img {border-radius: 5px; }
 .centerDiv {margin: 10px auto 10px auto; width: 90%; text-align: center;}
 
 img.UnActiveNavIco { display: inline-block; }
 img.ActiveNavIco { display: none; }
-.Navigation a {color: white;}
-#right{text-align: center;  float: right; display: inline-block; vertical-align: bottom; }
-#UserForm{ margin: 10px;  float: right;  padding: 5px; }
+#UserForm{ background-color:#303030;  float: right; display: inline-block; padding: 5px; vertical-align: middle; }
 #UserName em{color: #dea000;}
  .error{color:red;}
 

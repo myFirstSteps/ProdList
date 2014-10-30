@@ -7,7 +7,8 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
 <!DOCTYPE html>
-
+<c:set var="modifyButtonTemplate" value="<button onclick='edit(this)'><img height='16' width='16' alt='edit' src='resources/common_image/icons/Modify.gif'></button>"/>
+<c:if test="${isAdmin}"><c:set var="AdminModifyButton" value='${modifyButton}'/></c:if>
 <c:if test="${products[0] ne null}">
 
 
@@ -21,9 +22,16 @@
             <div class="proddata">Объем</div>
             <div class="proddata">Цена, руб</div>
             <div class="proddata">Комментарий</div>
+            <c:if test="${isAdmin}"><div class="proddata">Добавил</div></c:if>
         </div>
         <img  onerror="this.src = 'resources/common_image/product_categories/0.png'">
         <c:forEach items="${products}" var="prod" varStatus="stat">
+           <c:set var="ModifyButton" value=""/>
+           ${prod.originID eq -1}
+           ${(!prod.origin  and (prod.author eq username or prod.author eq cookie.clid.value) and prod.originID eq -1)or isAdmin}
+            <c:if test='${(!prod.origin  and (prod.author eq username or prod.author eq cookie.clid.value) and prod.originID eq -1) or isAdmin }'>
+                <c:set var="ModifyButton" value="${modifyButtonTemplate}"/>
+            </c:if>
             <div  id="${prod.id}_${prod.originID}<c:if test="${prod.origin}">_o</c:if>" class="prodrow "> 
                 <div class="proddata"> 
                     <c:if test="${prod.origin}"><img class="prodStatIcon"  height="16" width="16" src='resources/common_image/icons/Key.gif' alt="Ключевой"> <br></c:if>
@@ -34,19 +42,20 @@
                               </c:otherwise>
                           </c:choose>'>
                 </div>
-                <div class="proddata group">${prod.group}</div>
-                <div class="proddata name">${prod.name}</div>
-                <div class="proddata subName">${prod.subName}</div>
-                <div class="proddata producer">${prod.producer}</div>
+                        <div class="proddata group">${prod.group}</div>
+                <div class="proddata name">${prod.name}${ModifyButton}</div>
+                <div class="proddata subName">${prod.subName}${ModifyButton}</div>
+                <div class="proddata producer">${prod.producer}${ModifyButton}</div>
                 <div class="proddata valueUnits">${prod.value} ${prod.valueUnits}</div>
-                <div class="proddata price">${prod.price}  <button onclick="edit(this)"><img height="16" width="16" alt="edit" src='resources/common_image/icons/Modify.gif'></button></div>
-                <div class="proddata comment">${prod.comment}<button onclick="edit(this)"><img height="16" width="16"  alt="edit" src='resources/common_image/icons/Modify.gif' ></button></div>
+                <div class="proddata price">${prod.price}${ModifyButton}</div>
+                <div class="proddata comment">${prod.comment}${ModifyButton}</div>
+                <c:if test="${isAdmin}"><div class="proddata owner">${prod.author}</div></c:if>
             </div>
         </c:forEach>
     </div>
     <script>
-        var modifyButton="<button  onclick='edit(this)'><img height='16' width='16' alt='edit' src='resources/common_image/icons/Modify.gif'></button>";
-        var syncButton="<button class='SyncButton' onclick='sendChanges(this)'><img height='16' width='16' src='resources/common_image/icons/Sync.gif'>Изменить</button>"
+        var modifyButton="${modifyButton}";
+        var syncButton="<button class='SyncButton' onclick='sendChanges(this)'><img height='16' width='16' src='resources/common_image/icons/Sync.gif'>Изменить</button>";
         var errIco="<img class='error' height='20' width='20' src='resources/common_image/icons/Error.ico' alt='error' >";
     function edit(o) {
             $(o).replaceWith("<div class='editValues'><input  type='text' value='" + $(o).parent().text().trim() + "'><br><button class='accept' onclick='acceptEdit(this)'><img height='16' width='16'\n\
@@ -118,6 +127,7 @@
                           $(prodrow).next(".SyncButton").replaceWith(errIco);
                           $(prodrow).next(".error").attr("title",data.error);
                       }
+                      $(prodrow).children("div.proddata.edited").removeClass(".edited");
                     });
                 }
     </script>    

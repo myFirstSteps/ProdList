@@ -55,7 +55,7 @@ public class ReadProduct extends HttpServlet {
             out.println("</head>");
             out.println("<body>");
             out.println("<h1>Servlet IndexServ at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
+            out.println("</body>"); 
             out.println("</html>");
         }
     }
@@ -103,7 +103,7 @@ public class ReadProduct extends HttpServlet {
         try (ProductDAO pdao = DAOFactory.getProductDAOInstance(DAOFactory.DAOSource.JDBC, request.getServletContext());) {
             request.setAttribute("products", pdao.readProducts(product,BOTH));
                  
-            request.getRequestDispatcher(response.encodeURL("newProduct.jsp")).forward(request, response);
+            request.getRequestDispatcher(response.encodeURL("editProduct.jsp")).forward(request, response);
         } catch (Exception e) { throw new ServletException(e);
         }
 

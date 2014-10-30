@@ -95,8 +95,9 @@ public class Product {
         }
 
         static String readAuthorRole(HttpServletRequest req) {
-            Principal pr;
-            return (pr = req.getUserPrincipal()) != null ? pr.getName() : null;
+            if(req.isUserInRole("admin"))return "admin";
+            if(req.isUserInRole("level1"))return "level1";
+            return "";
 
         }
     }
