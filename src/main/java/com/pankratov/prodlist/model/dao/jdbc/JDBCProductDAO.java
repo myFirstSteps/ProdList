@@ -196,6 +196,9 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
                 s.put(12, product.getOriginID().toString());
             }
         }
+        for(Map.Entry<Integer,String> escape:s.entrySet()){
+            escape.setValue(escape.getValue().replace("'", "\\'"));
+        }
 
         return s;
     }

@@ -47,19 +47,19 @@
 
             <h2>Редактор продуктов.</h2>
             <div id='error' class='error'>${error}</div><br>
-            <c:set var="categoryValue" value="овощи" /> 
+            <c:set var="categoryValue" value="" /> 
             <c:if test="${newProduct.group ne null}"><c:set var="categoryValue" value="${newProduct.group}"/></c:if>
-            <c:set var="nameValue" value="помидоры" /> 
+            <c:set var="nameValue" value="" /> 
             <c:if test="${newProduct.name ne null}"><c:set var="nameValue" value="${newProduct.name}"/></c:if>
-            <c:set var="subNameValue" value="сливовидные" /> 
+            <c:set var="subNameValue" value="" /> 
             <c:if test="${newProduct.subName ne null}"><c:set var="subNameValue" value="${newProduct.subName}"/></c:if>
-            <c:set var="producerValue" value="любой" /> 
+            <c:set var="producerValue" value="" /> 
             <c:if test="${newProduct.producer ne null}"><c:set var="producerValue" value="${newProduct.producer}"/></c:if>
-            <c:set var="valueUnitsValue" value="кг" /> 
+            <c:set var="valueUnitsValue" value="" /> 
             <c:if test="${newProduct.valueUnits ne null}"><c:set var="valueUnitsValue" value="${newProduct.valueUnits}"/></c:if>
-            <c:set var="valueValue" value="1.0" /> 
+            <c:set var="valueValue" value="" /> 
             <c:if test="${newProduct.value ne null}"><c:set var="valueValue" value="${newProduct.value}"/></c:if>
-            <c:set var="priceValue" value="1.00" /> 
+            <c:set var="priceValue" value="" /> 
             <c:if test="${newProduct.price ne null}"><c:set var="priceValue" value="${newProduct.price}"/></c:if>
             <c:set var="commentValue" value="" /> 
             <c:if test="${newProduct.comment ne null}"><c:set var="commentValue" value="${newProduct.comment}"/></c:if>

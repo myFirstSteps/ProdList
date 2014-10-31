@@ -36,7 +36,7 @@
     </div>
         <c:if test="${path eq '/editProduct.jsp' or path eq '/newList.jsp' or path eq '/viewList.jsp'}">
     <div  class="Navigation" >
-        <a title="Редактор продуктов" href="<c:url value="newProduct.jsp"/>" ><img class="UnActiveNavIco" height="100" width="100" src='${ico3img}' >
+        <a title="Редактор продуктов" href="<c:url value="editProduct.jsp"/>" ><img class="UnActiveNavIco" height="100" width="100" src='${ico3img}' >
             <img class="ActiveNavIco" height="100" width="100" src="resources/common_image/icons/Editor_active.png">
         </a>
     </div>

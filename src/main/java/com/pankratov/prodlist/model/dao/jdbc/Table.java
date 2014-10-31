@@ -128,11 +128,12 @@ public class Table {
     protected int updateRowByID(TreeMap<Integer,String> values, String ID)throws JDBCDAOException{
         LinkedList<List<String>> result = new LinkedList<>();
         List<String> resultRow = new LinkedList<>();
+        String x="";
         int res=0;
 
         String param = "";
         for (Entry<Integer, String> st : values.entrySet()) {
-            param += ","+getColumnName(st.getKey()) + "= '" + st.getValue() + "'";
+            param += ","+getColumnName(st.getKey()) + "= '" + ((x=st.getValue()).equals("\u007F")?"":x) + "'";
         }
         param=param.replaceFirst(",", "");
         String query = String.format("update %s set %s where %s=%s", tableName, param,this.getColumnName(1),ID);
@@ -164,7 +165,7 @@ public class Table {
             if (param.length() > 0) {
                 param += " and ";
             }
-            param += getColumnName(st.getKey()) + " like '%" + st.getValue().replace("'", "\\'") + "%'";
+            param += getColumnName(st.getKey()) + " like '%" + st.getValue() + "%'";
         }
       
         
