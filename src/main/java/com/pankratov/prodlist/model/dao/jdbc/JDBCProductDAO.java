@@ -223,8 +223,10 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
             List<Product> origin = readProducts(new Product(product, true), ORIGINAL);
             if (origin.size() > 0) {
                 product.setOriginID(origin.get(0).getId());
+               
             }
         }
+        product.setId(-1l);
         table.addRecord(productToTable(product, isAdmin ? ORIGINAL : USER_COPY));
         return readProducts(product, isAdmin ? ORIGINAL : USER_COPY).get(0);
 
@@ -244,19 +246,11 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
     }
 
     @Override
-    public Product deleteProduct(Product what) throws JDBCDAOException {
-        return null;
+    public Product deleteProduct(Product product) throws JDBCDAOException {
+        Table table= product.isOrigin()?PRODUCTS_TABLE:USERS_PRODUCTS_TABLE;
+            table.deleteRowByID(product.getId().toString());
+        return product;
     }
-
-    /* @Override
-     public Product readProduct(Product product) throws JDBCDAOException {
-     Table table = product.isOrigin() ? PRODUCTS_TABLE : USERS_PRODUCTS_TABLE;
-     LinkedList<List<String>> pr = table.readRawsWhere(productToTable(product));
-     if (pr.size() > 1) {
-     throw new JDBCDAOException("Во время чтения продукта, произошла ошибка.\n Объект не уникален.");
-     }
-     return productFromTable(pr.peek());
-     }*/
     @Override
     public List<Product> readProducts(Product product, KindOfProduct kind) throws JDBCDAOException {
         List<Product> products = new LinkedList<>();
@@ -364,21 +358,20 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
     public Product changeProduct(Product product) throws Exception {
 
         String prodID = String.valueOf(product.getId());
-        Table t;
         product.setId(-1l);
        
             Product res = new Product();
             res.setId(new Long(prodID));
             if (product.isOrigin()) {
                 PRODUCTS_TABLE.updateRowByID(productToTable(product, ORIGINAL), prodID);
+                product=new Product();product.setId(new Long(prodID));
                 res = this.productsFromTable(PRODUCTS_TABLE.readRawsWhere(productToTable(product, ORIGINAL))).get(0);
             } else {
                 USERS_PRODUCTS_TABLE.updateRowByID(productToTable(product, USER_COPY), prodID);
+                product=new Product(); product.setId(new Long(prodID));
                 res = this.productsFromTable(USERS_PRODUCTS_TABLE.readRawsWhere(productToTable(product, ORIGINAL))).get(0);
             }
-
             return res;
-        
     }
 
     @Override

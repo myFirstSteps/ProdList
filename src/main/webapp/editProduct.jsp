@@ -42,7 +42,7 @@
 
         <form  class="center_form" id="newProduct" method="post"  enctype="multipart/form-data" action= '<c:url value="addProduct"/>'>
 
-           
+
 
 
             <h2>Редактор продуктов.</h2>
@@ -106,16 +106,16 @@
             </div><br>
             <input type="button" onclick="validate(this.form)" value="Добавить">
             <button formaction="<c:url value='ReadProduct'/>">Найти</button>
-          
-        </form>
-            <c:if test='${products ne null}'>
-          <div class='prodholder center_form'>
-                
-              <c:if test="${status ne null}"><h4>${status}</h4></c:if>
-                    <c:import url="/WEB-INF/template/productinfo.jsp"/>         
-            </div> 
-           </c:if>
 
+        </form>
+        <c:if test='${products ne null}'>
+            <div class='prodholder center_form'>
+
+                <c:if test="${status ne null}"><h4>${status}</h4></c:if>
+                <c:import url="/WEB-INF/template/productinfo.jsp"/>         
+            </div> 
+        </c:if>
+            
         <script src="scripts/jquery-ui.js"></script>
         <script src="scripts/formValidation.js"></script>
         <script src="scripts/PopUpMenu.js"></script>
@@ -153,12 +153,11 @@
                     $.each($("input.autocompl"), function(k, v) {
                         prodAutoComplete(v, $("input.autocomplDepended"));
                     });
-                    
-                    
+
+
                 });
 
                 function prodAutoComplete(field, dependent) {
-
                     $(field).autocomplete({
                         minLength: 2,
                         source: function(request, response) {

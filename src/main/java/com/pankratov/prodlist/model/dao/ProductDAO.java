@@ -17,7 +17,6 @@ import java.util.concurrent.ConcurrentSkipListSet;
  */
 public interface ProductDAO extends AutoCloseable {
     public enum KindOfProduct{ORIGINAL,USER_COPY,BOTH}
-   // public Product readProduct(Product what) throws Exception;
     public List<Product> readProducts(Product what, KindOfProduct kind) throws Exception;
     public Product addProduct(Product what) throws Exception;
     public Product addProduct(Product what,  String imagePath) throws Exception;

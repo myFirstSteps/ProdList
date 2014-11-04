@@ -38,10 +38,9 @@ form#newProduct > div {margin: 5px; position: static; display: inline-block;}
 }
 
 .prodholder {max-width: 90%; overflow: auto; }
-#prodtable{display: table;  border-collapse: collapse;}
-.prodheader , .prodrow {display: table-row; }
+#prodtable{;  border-collapse: collapse;}
 .prodheader {font-weight: bold;}
-.proddata {display: table-cell; vertical-align: middle; border: solid 1px #303030;  margin: 2px; padding:5px; }
-.proddata > img {border: solid 2px #303030; max-width: 200px;}
-img.prodStatIcon {border-style: none; float: left;}
+.proddata { vertical-align: middle; border: solid 1px #303030;  margin: 2px; padding:5px; }
+.prodImg {border: solid 2px #303030; max-width: 200px;}
+img.prodStatIcon { float: left;}
 

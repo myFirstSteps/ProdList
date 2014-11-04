@@ -145,6 +145,17 @@ public class Table {
         }
         return res;
     }
+    protected int deleteRowByID(String ID) throws JDBCDAOException{
+        int res=0;
+        String query = String.format("delete from %s where %s=%s", tableName, this.getColumnName(1),ID);
+        try (Statement st = connection.createStatement(); ) {
+             res = st.executeUpdate(query);
+            if (res==0) throw new JDBCDAOException(String.format("Ошибка при изменении данных в таблице %s. Ни одна запись не изменена", tableName));
+        } catch (SQLException e) {
+            throw new JDBCDAOException(String.format("Ошибка при изменении данных в таблице %s.%s", tableName,e.getMessage()), e);
+        }
+        return res;  
+    }
     protected ConcurrentSkipListSet<String> readColumn(int n) throws JDBCDAOException {
         ConcurrentSkipListSet<String> result = new ConcurrentSkipListSet<>();
         String query = String.format("select %s from %s", this.columnNames.get(n - 1), this.tableName);
@@ -166,9 +177,7 @@ public class Table {
                 param += " and ";
             }
             param += getColumnName(st.getKey()) + " like '%" + st.getValue() + "%'";
-        }
-      
-        
+        } 
         String query = String.format("select %s from %s where %s", this.columnNames.get(n - 1), this.tableName,param);
      
         try (Statement st = connection.createStatement(); ResultSet res = st.executeQuery(query);) {
@@ -210,7 +219,6 @@ public class Table {
 
     protected String getColumnName(int numb) throws JDBCDAOException {
         String res = null;
-
         try {
             res = columnNames.get(numb - 1);
         } catch (IndexOutOfBoundsException e) {

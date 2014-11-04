@@ -7,55 +7,68 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
 <!DOCTYPE html>
-<c:set var="modifyButtonTemplate" value="<button onclick='edit(this)'><img height='16' width='16' alt='edit' src='resources/common_image/icons/Modify.gif'></button>"/>
+<c:set var="modifyButtonTemplate" value="<button onclick='edit(this)' title='Редактировать'><img height='16' width='16' alt='edit' src='resources/common_image/icons/Modify.gif'></button>"/>
 <c:if test="${isAdmin}"><c:set var="AdminModifyButton" value='${modifyButton}'/></c:if>
 <c:if test="${products[0] ne null}">
 
 
-    <div id="prodtable">
-        <div class="prodheader"> 
-            <div class="proddata">Изображение</div>
-            <div class="proddata">Категория</div>
-            <div class="proddata">Название</div>
-            <div class="proddata">Уточняющее название</div>
-            <div class="proddata">Производитель</div>
-            <div class="proddata">Объем</div>
-            <div class="proddata">Цена, руб</div>
-            <div class="proddata">Комментарий</div>
-            <c:if test="${isAdmin}"><div class="proddata">Добавил</div></c:if>
-            </div>
-            <img  onerror="this.src = 'resources/common_image/product_categories/0.png'">
+    <table id="prodtable">
+        <tr  class="prodheader"> 
+            <th class="proddata">Изображение</th>
+            <th class="proddata">Категория</th>
+            <th class="proddata">Название</th>
+            <th class="proddata">Уточняющее название</th>
+            <th class="proddata">Производитель</th>
+            <th class="proddata">Кол-во единиц</th>
+            <th class="proddata">Единицы</th>
+            <th class="proddata">Цена, руб</th>
+            <th class="proddata">Комментарий</th>
+            <c:if test="${isAdmin}"><th class="proddata">Добавил</th></c:if>
+                <th class="proddata"></th>
+            </tr>
+        <%--!    <img  onerror="this.src = 'resources/common_image/product_categories/0.png'"> --%>
         <c:forEach items="${products}" var="prod" varStatus="stat">
             <c:set var="ModifyButton" value=""/>
-            <c:if test='${(!prod.origin  and (prod.author eq username or prod.author eq cookie.clid.value) and prod.originID eq -1) or isAdmin }'>
-                <c:set var="ModifyButton" value="${modifyButtonTemplate}"/>
+            <c:set var="DeleteButton" value=""/>
+            <c:if test='${(!prod.origin  and (prod.author eq username or prod.author eq cookie.clid.value) ) or isAdmin }'>
+                <c:set var="ModifyButton" value="${modifyButtonTemplate}"/><c:set var="DeleteButton" value='<button title="Удалить продукт" onclick="deleteProduct(this)">
+                                                                                  <img src="resources/common_image/icons/Delete.gif" alt="Удалить"></button>'/>         
             </c:if>
-            <div  id="${prod.id}_${prod.originID}<c:if test="${prod.origin}">_o</c:if>" class="prodrow "> 
-                    <div class="proddata"> 
-                    <c:if test="${prod.origin}"><img class="prodStatIcon"  height="16" width="16" src='resources/common_image/icons/Key.gif' alt="Ключевой"> <br></c:if>
-                    <img  height="80" onerror="this.src = 'resources/common_image/product_categories/0.png'"   src='<c:choose> 
+            <tr  id="${prod.id}_${prod.originID}<c:if test="${prod.origin}">_o</c:if>" class="prodrow "> 
+                    <td class="proddata"> 
+                    <c:if test="${prod.origin}"><img class="prodStatIcon" 
+                         title='Ключевой продукт.  Продукт из главной таблици, являющийся прообразом для пользовательских продуктов.' 
+                         height="16" width="16" src='resources/common_image/icons/Key.gif' alt="Ключевой"> <br></c:if>
+                    <img  class='prodImg' height="80" onerror="this.src = 'resources/common_image/product_categories/0.png'"   src='<c:choose> 
                               <c:when test="${prod.imageLinks[0] ne null}"><c:url value='${prod.imageLinks[0]}'/>
                               </c:when>
                               <c:otherwise>resources/common_image/product_categories/0.png
                               </c:otherwise>
                           </c:choose>'>
-                </div>
-                <div class="proddata group">${prod.group}</div>
-                <div class="proddata name">${prod.name}${ModifyButton}</div>
-                <div class="proddata subName">${prod.subName}${ModifyButton}</div>
-                <div class="proddata producer">${prod.producer}${ModifyButton}</div>
-                <div class="proddata valueUnits">${prod.value} ${prod.valueUnits}</div>
-                <div class="proddata price">${prod.price}${ModifyButton}</div>
-                <div class="proddata comment">${prod.comment}${ModifyButton}</div>
-                <c:if test="${isAdmin}"><div class="proddata author">${prod.author}</div></c:if>
-                </div>
-                <div  class="buttons">ttt</div>
+                </td>
+                <td class="proddata group">${prod.group}</td>
+                <td class="proddata name">${prod.name}${ModifyButton}</td>
+                <td class="proddata subName">${prod.subName}${ModifyButton}</td>
+                <td class="proddata producer">${prod.producer}${ModifyButton}</td>
+                <td class="proddata value">${prod.value}${ModifyButton} </td>
+                 <td class="proddata valueUnits">${prod.valueUnits}</td>
+                <td class="proddata price">${prod.price}${ModifyButton}</td>
+                <td class="proddata comment">${prod.comment}${ModifyButton}</td>
+                <c:if test="${isAdmin}"><td class="proddata author">${prod.author}</td></c:if>
+                <td class="proddata">${DeleteButton}
+                    <c:if test="${prod.origin and not isAdmin}">
+                        <button title="Создать пользовательскую копию." onclick="clone(this)">
+                        <img src="resources/common_image/icons/Copy.gif" alt="Клонировать"></button>
+                    </c:if>
+                </td>
+            </tr>
+
         </c:forEach>
-    </div>
-          
+    </table>
+    <script src="scripts/myDialog.js"></script>
     <script>
-        $(document).ready(function(){
-            $(".test").css("max-width", window.screen.width*0.10);
+        $(document).ready(function() {
+            $(".proddata").css("max-width", $("#prodtable").parent().innerWidth() * 0.25);
         });
         var modifyButton = "${modifyButtonTemplate}";
         var syncButton = "<button class='SyncButton' onclick='sendChanges(this)'><img height='16' width='16' src='resources/common_image/icons/Sync.gif'>Изменить</button>";
@@ -64,7 +77,7 @@
             $(o).replaceWith("<div class='editValues'><input  type='text' value='" + $(o).parent().text().trim() + "'><br><button class='accept' onclick='acceptEdit(this)'><img height='16' width='16'\n\
       src='resources/common_image/icons/Yes.gif'></button>\n\
      <button onclick='denyEdit(this)'><img height='16' width='16' src='resources/common_image/icons/No.gif'></button></div>");
-            $(".price .editValues input").on("change blur keyup", function() {
+            $(".price .editValues input, .value .editValues input").on("change blur keyup", function() {
                 dataValidCheck(this, '^[0-9]+(?:[.|,])?[0-9]*$', "<span class='invalid error'>Значение поля должно быть целым или десятичным числом.\n\
                  </span><br class='invalid error'>");
                 if ($('.editValues .error').length !== 0)
@@ -76,12 +89,18 @@
         }
         function acceptEdit(o) {
             var cell = $(o).parent().parent();
-            var buttons = $(cell).closest("div.prodrow").next(".buttons")
+
+            var x = $(cell).closest("tr.prodrow");
+
+            var buttons = $(cell).closest("tr.prodrow").next(".buttons").children("td");
             if (cell.text().trim() !== $(o).siblings("input").val()) {
                 $(cell).css("color", "blue");
                 $(cell).addClass("edited");
                 $(cell).text($(o).siblings("input").val());
                 $(buttons).children(".error").remove();
+                if ($(x).next(".buttons").length === 0) {
+                    $(x).after('<tr  style="text-align: left" class="buttons"><td colspan="8">' + syncButton + '</td></tr>');
+                }
                 if ($(buttons).children(".SyncButton").length === 0) {
                     $(buttons).append(syncButton);
                 }
@@ -93,12 +112,12 @@
         function denyEdit(o) {
             $(o).parent().replaceWith(modifyButton);
         }
+
         function sendChanges(o) {
             if ($(o).hasClass("pressed"))
                 return;
             $(o).addClass("pressed");
-            var prodrow = $(o).parent().prev(".prodrow");
-
+            var prodrow = $(o).parents('.buttons').prev(".prodrow");
             var idParts = prodrow.attr("id").split("_");
             var id = idParts[0];
             var originId = idParts[1];
@@ -111,7 +130,7 @@
 
             $.each(classes, function(i, e) {
                 var x;
-                x = $(prodrow).children("div.proddata.edited." + e).length > 0 ? $(prodrow).children("div.proddata.edited." + e).text() : null;
+                x = $(prodrow).children("td.proddata.edited." + e).length > 0 ? $(prodrow).children("td.proddata.edited." + e).text() : null;
                 if (x !== null)
                     ajson[e] = x !== '' ? x : '\u007F';
             });
@@ -119,18 +138,58 @@
 
             var req = JSON.stringify([ajson]);
             $(o).append("<img src='resources/common_image/icons/loading.gif'>");
-            $.getJSON("ChangeProducts", {product: req}, function(data, status, xhr) {
-                if (data.error !== null) {
+            $.getJSON("ChangeProducts", {product: req, action: "change"}, function(data, status, xhr) {
+                if (data.error === undefined) {
                     $.each(data, function(i, e) {
-                        prodrow.children("div.proddata." + i + ".edited").text(e).css("color", "green").removeClass("edited").append(modifyButton);
+                        prodrow.children("td.proddata." + i + ".edited").text(e).css("color","green").removeClass("edited").append(modifyButton);
                     });
-                    $(prodrow).next(".buttons").children(".SyncButton").remove();
+                    $(prodrow).next(".buttons").children("td").children(".SyncButton").remove();
+                    if ($(prodrow).next(".buttons").children("td").children().length === 0)
+                        $(prodrow).next(".buttons").remove();
                 }
                 else {
-                    $(prodrow).next(".buttons").children(".SyncButton").replaceWith(errIco);
-                    $(prodrow).next(".buttons").children(".error").attr("title", data.error);
+
+                    $(prodrow).next(".buttons").children("td").children(".SyncButton").replaceWith(errIco);
+                    $(prodrow).next(".buttons").children("td").children(".error").attr("title", data.error);
                 }
-                $(prodrow).children("div.proddata.edited").removeClass(".edited");
+                $(prodrow).children("td.proddata.edited").removeClass(".edited");
+            });
+        }
+        function clone(o){
+             var ajson = {"id": $(o).parents(".prodrow").attr("id").split("_")[0],
+                "origin": $(o).parents(".prodrow").attr("id").split("_")[2] === "o" ? "true" : "false"
+            };
+            var req = JSON.stringify([ajson]);
+            $.getJSON("ChangeProducts", {product: req, action: "clone"}, function(data, status, xhr) {
+                if (data.error === undefined) {
+                    $(o).parents(".prodrow").next(".buttons").remove();
+                    var prodClone=$(o).parents(".prodrow").clone();
+                            //     $(prodClone).children("*").css("color","green");
+                     $(o).parents(".prodrow").after(prodClone);
+                }
+                else {
+                    var par = $(o).parent();
+                    $(o).replaceWith(errIco);
+                    $(par).children('.error').attr("title", data.error);
+                }
+            });
+            
+        }
+        function deleteProduct(o) {
+            var ajson = {"id": $(o).parents(".prodrow").attr("id").split("_")[0],
+                "origin": $(o).parents(".prodrow").attr("id").split("_")[2] === "o" ? "true" : "false"
+            };
+            var req = JSON.stringify([ajson]);
+            $.getJSON("ChangeProducts", {product: req, action: "delete"}, function(data, status, xhr) {
+                if (data.error === undefined) {
+                    $(o).parents(".prodrow").next(".buttons").remove();
+                    $(o).parents(".prodrow").remove();
+                }
+                else {
+                    var par = $(o).parent();
+                    $(o).replaceWith(errIco);
+                    $(par).children('.error').attr("title", data.error);
+                }
             });
         }
     </script>    

@@ -6,6 +6,12 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
 <c:set var="username" scope="session" value="${pageContext.request.getRemoteUser()}"/>
+<c:set var="client" scope="session">
+<c:choose>
+    <c:when test="${username ne null}">${username}</c:when>
+    <c:otherwise>${clid}</c:otherwise>    
+</c:choose>
+</c:set>
 <c:set var="path" value="${pageContext.request.getServletPath()}"/>
 <c:set scope="session" var="isAdmin" value="${pageContext.request.isUserInRole('admin')}"/>
 <c:set var="ico1img" value='resources/common_image/icons/Home.png'/>
