@@ -196,7 +196,7 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
                 s.put(12, product.getOriginID().toString());
             }
         }
-        for(Map.Entry<Integer,String> escape:s.entrySet()){
+        for (Map.Entry<Integer, String> escape : s.entrySet()) {
             escape.setValue(escape.getValue().replace("'", "\\'"));
         }
 
@@ -223,7 +223,7 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
             List<Product> origin = readProducts(new Product(product, true), ORIGINAL);
             if (origin.size() > 0) {
                 product.setOriginID(origin.get(0).getId());
-               
+
             }
         }
         product.setId(-1l);
@@ -233,24 +233,28 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
     }
 
     @Override
-    public Product addProduct(Product product, String imagePath) throws JDBCDAOException {
+    public Product addProduct(Product product, LinkedList<String> imagesPath) throws JDBCDAOException {
         Product p = this.addProduct(product);
+        LinkedList<String> img = new LinkedList<>();
+ 
         TreeMap<Integer, String> s = new TreeMap<>();
-        s.put(2, imagePath);
+        for(String image: imagesPath){
+        s.put(2, image);
         s.put(p.isOrigin() ? 3 : 4, String.valueOf(p.getId()));
         IMAGES_TABLE.addRecord(s);
-        ArrayList<String> img = new ArrayList<>();
-        img.add(imagePath);
+         img.add(image);
+        }
         p.setImageLinks(img);
         return p;
     }
 
     @Override
     public Product deleteProduct(Product product) throws JDBCDAOException {
-        Table table= product.isOrigin()?PRODUCTS_TABLE:USERS_PRODUCTS_TABLE;
-            table.deleteRowByID(product.getId().toString());
+        Table table = product.isOrigin() ? PRODUCTS_TABLE : USERS_PRODUCTS_TABLE;
+        table.deleteRowByID(product.getId().toString());
         return product;
     }
+
     @Override
     public List<Product> readProducts(Product product, KindOfProduct kind) throws JDBCDAOException {
         List<Product> products = new LinkedList<>();
@@ -285,8 +289,8 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
                         for (String originalValue : original) {
                             if (row.get(j) == null) {
                                 row.set(j, original.get(j));
-                                j++;
                             }
+                            j++;
                         }
                     }
                 }
@@ -300,7 +304,7 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
             TreeMap<Integer, String> im = new TreeMap<>();
             Product localProduct = productFromTable(l);
             im.put(localProduct.isOrigin() ? 3 : 4, String.valueOf(localProduct.getId()));
-            ArrayList<String> imgLinks = new ArrayList<>();
+            LinkedList<String> imgLinks = new  LinkedList<>();
             for (List<String> imgRes : IMAGES_TABLE.readRawsWhere(im)) {
                 imgLinks.add(imgRes.get(1));
             }
@@ -359,19 +363,21 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
 
         String prodID = String.valueOf(product.getId());
         product.setId(-1l);
-       
-            Product res = new Product();
-            res.setId(new Long(prodID));
-            if (product.isOrigin()) {
-                PRODUCTS_TABLE.updateRowByID(productToTable(product, ORIGINAL), prodID);
-                product=new Product();product.setId(new Long(prodID));
-                res = this.productsFromTable(PRODUCTS_TABLE.readRawsWhere(productToTable(product, ORIGINAL))).get(0);
-            } else {
-                USERS_PRODUCTS_TABLE.updateRowByID(productToTable(product, USER_COPY), prodID);
-                product=new Product(); product.setId(new Long(prodID));
-                res = this.productsFromTable(USERS_PRODUCTS_TABLE.readRawsWhere(productToTable(product, ORIGINAL))).get(0);
-            }
-            return res;
+
+        Product res = new Product();
+        res.setId(new Long(prodID));
+        if (product.isOrigin()) {
+            PRODUCTS_TABLE.updateRowByID(productToTable(product, ORIGINAL), prodID);
+            product = new Product();
+            product.setId(new Long(prodID));
+            res = this.productsFromTable(PRODUCTS_TABLE.readRawsWhere(productToTable(product, ORIGINAL))).get(0);
+        } else {
+            USERS_PRODUCTS_TABLE.updateRowByID(productToTable(product, USER_COPY), prodID);
+            product = new Product();
+            product.setId(new Long(prodID));
+            res = this.productsFromTable(USERS_PRODUCTS_TABLE.readRawsWhere(productToTable(product, ORIGINAL))).get(0);
+        }
+        return res;
     }
 
     @Override

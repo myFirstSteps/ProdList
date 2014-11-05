@@ -39,7 +39,7 @@ public class ChangeProducts extends HttpServlet {
         response.setContentType("application/json");
         try (ProductDAO pdao = DAOFactory.getProductDAOInstance(DAOFactory.DAOSource.JDBC, request.getServletContext())) {
             Product temp, p = Product.getInstanceFromJSON(request);
-            String action,client=(String) request.getSession().getAttribute("client");
+            String action, client = (String) request.getSession().getAttribute("client");
             switch (action = (String) (request.getParameter("action"))) {
                 case "change":
                 case "delete":
@@ -58,16 +58,32 @@ public class ChangeProducts extends HttpServlet {
                     } else {
                         p = pdao.deleteProduct(p);
                     }
-                break;
+                    break;
                 case "clone":
-                    p=pdao.readProducts(p, ORIGINAL).get(0);
-                    temp=new Product();
+                    p = pdao.readProducts(p, ORIGINAL).get(0);
+                    temp = new Product();
                     temp.setOriginID(p.getId());
                     temp.setName(p.getName());
                     temp.setGroup(p.getGroup());
                     temp.setAuthor(client);
-                    if(pdao.readProducts(temp, USER_COPY).size()>0)throw new JDBCDAOException("Пользовательский вариант уже существует.");
-                    pdao.addProduct(temp, p.getImageLinks().get(0));
+                    if (pdao.readProducts(temp, USER_COPY).size() > 0) {
+                        throw new JDBCDAOException("Пользовательский вариант уже существует.");
+                    }
+                    p = pdao.addProduct(temp, p.getImageLinks());
+                    break;
+                case "legalize":
+                    if (!request.isUserInRole("admin")) {
+                        throw new JDBCDAOException("Нет прав.");
+                    }
+                    p = pdao.readProducts(p, USER_COPY).get(0);
+                    p.setOrigin(true);
+                    p.setAuthorRole("admin");
+                    temp = new Product();
+                    temp.setId(p.getId());
+                    p = pdao.addProduct(p, p.getImageLinks());
+                    temp.setOriginID(p.getId());
+                    temp.setOrigin(false);
+                    pdao.changeProduct(temp);
             }
             response.getWriter().println(p.toJSON());
         } catch (Exception ex) {
@@ -88,7 +104,8 @@ public class ChangeProducts extends HttpServlet {
             if (jsonerr.size() == 0) {
                 jsonerr.put("error", "Во время редактирования записи произошла ошибка");
             }
-            response.getWriter().println(jsonerr); throw new ServletException(ex);
+            System.out.println(ex);
+            response.getWriter().println(jsonerr);
         }
     }
 

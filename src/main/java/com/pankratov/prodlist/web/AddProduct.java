@@ -173,8 +173,9 @@ public class AddProduct extends HttpServlet {
             Product product = Product.getInstanceFromFormFields(x, request);
             request.setAttribute("newProduct", product);
             try (ProductDAO pdao = DAOFactory.getProductDAOInstance(DAOFactory.DAOSource.JDBC, request.getServletContext())) {
-
-                product = f.length() > 0 ? pdao.addProduct(product, relImgDir + fileName)
+                LinkedList<String>img=new LinkedList<>();  
+                if(f.length() > 0)img.add(relImgDir + fileName);
+                product = f.length() > 0 ? pdao.addProduct(product, img )
                         : pdao.addProduct(product);
 
             }

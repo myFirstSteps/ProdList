@@ -32,7 +32,7 @@ public class Product {
     private String lastModify="";
     private String author="";
     private String authorRole="";
-    private ArrayList<String> imageLinks = new ArrayList<>();
+    private LinkedList<String> imageLinks = new LinkedList<>();
     private boolean origin=true;
     private Long originID=-1l;
 
@@ -367,14 +367,14 @@ public class Product {
     /**
      * @return the imageLinks
      */
-    public ArrayList<String> getImageLinks() {
+    public LinkedList<String> getImageLinks() {
         return imageLinks;
     }
 
     /**
      * @param imageLinks the imageLinks to set
      */
-    public void setImageLinks(ArrayList<String> imageLinks) {
+    public void setImageLinks(LinkedList<String> imageLinks) {
         this.imageLinks = imageLinks;
     }
 

@@ -7,8 +7,12 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
 <!DOCTYPE html>
+<c:set var="OriginProdIco" value="<img class='prodStatIcon' title='Ключевой продукт. Продукт, являющийся прообразом для пользовательских продуктов.' height='16' width='16' src='resources/common_image/icons/Key.gif' alt='Ключевой'>"/>
 <c:set var="modifyButtonTemplate" value="<button onclick='edit(this)' title='Редактировать'><img height='16' width='16' alt='edit' src='resources/common_image/icons/Modify.gif'></button>"/>
-<c:if test="${isAdmin}"><c:set var="AdminModifyButton" value='${modifyButton}'/></c:if>
+<c:set var="UsersProdIco" value="<img class='prodStatIcon' title='Пользовательская копия продукта. Вы можете изменить некоторые свойства продукта (задать свою цену, комментарий и т.д.). При этом не тронутые свойства будут соответствовать ключевому продукту.' height='16' width='16' src='resources/common_image/icons/Users.gif' alt='Пользовательский'>"/>
+<c:set var="newProdIco" value="<img class='prodStatIcon' 
+                         title='Новый продукт. Этот продукт еще не прошел проверку и не добавлен в общую базу, но вы можете с ним работать, добавлять его в списки и редактировать.' 
+                         height='16' width='16' src='resources/common_image/icons/New.gif' alt='Новый'>"/>
 <c:if test="${products[0] ne null}">
 
 
@@ -35,10 +39,13 @@
                                                                                   <img src="resources/common_image/icons/Delete.gif" alt="Удалить"></button>'/>         
             </c:if>
             <tr  id="${prod.id}_${prod.originID}<c:if test="${prod.origin}">_o</c:if>" class="prodrow "> 
-                    <td class="proddata"> 
-                    <c:if test="${prod.origin}"><img class="prodStatIcon" 
-                         title='Ключевой продукт.  Продукт из главной таблици, являющийся прообразом для пользовательских продуктов.' 
-                         height="16" width="16" src='resources/common_image/icons/Key.gif' alt="Ключевой"> <br></c:if>
+                    <td class="proddata">
+                    <c:choose>
+                        <c:when test="${prod.origin}">${OriginProdIco}</c:when>
+                        <c:when test="${not prod.origin and prod.originID eq -1}">${newProdIco}</c:when>
+                        <c:when test="${not prod.origin and prod.originID ne -1}">${UsersProdIco}</c:when>
+                    </c:choose>    
+                        <br>    
                     <img  class='prodImg' height="80" onerror="this.src = 'resources/common_image/product_categories/0.png'"   src='<c:choose> 
                               <c:when test="${prod.imageLinks[0] ne null}"><c:url value='${prod.imageLinks[0]}'/>
                               </c:when>
@@ -57,20 +64,24 @@
                 <c:if test="${isAdmin}"><td class="proddata author">${prod.author}</td></c:if>
                 <td class="proddata">${DeleteButton}
                     <c:if test="${prod.origin and not isAdmin}">
-                        <button title="Создать пользовательскую копию." onclick="clone(this)">
+                        <button class='cloneButton' title="Создать пользовательскую копию." onclick="clone(this)">
                         <img src="resources/common_image/icons/Copy.gif" alt="Клонировать"></button>
                     </c:if>
+                    <c:if test="${not prod.origin and isAdmin and prod.originID eq -1}"><button class='legalizeButton' title="Добавить в основную базу." onclick="legalize(this)">
+                        <img src="resources/common_image/icons/Yes.gif" alt="Легализовать"></button></c:if>
                 </td>
             </tr>
 
         </c:forEach>
     </table>
-    <script src="scripts/myDialog.js"></script>
     <script>
+        /*Здесь очень много крмвого, избыточного, безобразного javascript кода. Его обязательно нужно переработать, но пока, у этой задачи низкий приоритет.*/
         $(document).ready(function() {
             $(".proddata").css("max-width", $("#prodtable").parent().innerWidth() * 0.25);
         });
-        var modifyButton = "${modifyButtonTemplate}";
+        var modifyButton =  "${modifyButtonTemplate}";
+        var userProdIco="${UsersProdIco}";
+        var originProdIco="${OriginProdIco}";
         var syncButton = "<button class='SyncButton' onclick='sendChanges(this)'><img height='16' width='16' src='resources/common_image/icons/Sync.gif'>Изменить</button>";
         var errIco = "<img class='error' height='20' width='20' src='resources/common_image/icons/Error.ico' alt='error' >";
         function edit(o) {
@@ -164,8 +175,43 @@
                 if (data.error === undefined) {
                     $(o).parents(".prodrow").next(".buttons").remove();
                     var prodClone=$(o).parents(".prodrow").clone();
-                            //     $(prodClone).children("*").css("color","green");
                      $(o).parents(".prodrow").after(prodClone);
+                     $(prodClone).children("*").css("color","green");
+                     $(prodClone).attr("id",data.id+"_"+data.originID);
+                     $(prodClone).children("td").children(".prodStatIcon").replaceWith(userProdIco);
+                     var modFields=["name", "producer",  "subName", "price", "value", "comment"];
+                     $.each(modFields, function(i, e) {
+                       $(prodClone).children("td.proddata." + e ).text(data.e).append(modifyButton);
+                    });
+                     $(prodClone).find(".cloneButton").replaceWith("<button title='Удалить продукт' onclick='deleteProduct(this)'>\n\
+         <img src='resources/common_image/icons/Delete.gif' alt='Удалить'></button>");
+                    
+                }
+                else {
+                    var x=$(o).parents(".prodrow");
+                    $(o).replaceWith(errIco);
+                    $(x).find('.error').attr("title", data.error);
+                }
+            });
+            
+        }
+        function legalize(o){
+            var ajson = {"id": $(o).parents(".prodrow").attr("id").split("_")[0]     
+            };
+              var req = JSON.stringify([ajson]);
+            $.getJSON("ChangeProducts", {product: req, action: "legalize"}, function(data, status, xhr) {
+                if (data.error === undefined) {
+                    $(o).parents(".prodrow").next(".buttons").remove();
+                    var prodLegalize=$(o).parents(".prodrow").clone();
+                     $(o).parents(".prodrow").after(prodLegalize);
+                     $(prodLegalize).children("*").css("color","green");
+                     $(prodLegalize).attr("id",data.id+"_"+data.originID+"_o");
+                     $(prodLegalize).children("td").children(".prodStatIcon").replaceWith(originProdIco);
+                     var modFields=["name", "producer",  "subName", "price", "value", "comment"];
+                     $.each(modFields, function(i, e) {
+                       $(prodLegalize).children("td.proddata." + e ).text(data.e);
+                    });
+                     $(prodLegalize).find(".legalizeButton").remove();           
                 }
                 else {
                     var par = $(o).parent();
