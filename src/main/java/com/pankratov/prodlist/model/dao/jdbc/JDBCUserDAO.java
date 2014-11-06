@@ -42,37 +42,31 @@ public class JDBCUserDAO extends JDBCDAOObject implements UserDAO {
     private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(JDBCUserDAO.class);
     private static JDBCDAOPool<JDBCUserDAO> pool;
     private static final String DAO_NAME = "USER";
-    private final String DB_NAME;
-    private final String DB_LOGIN;
-    private final String DB_PASSWORD;
+
     private final UserTable LOGINS_TABLE;
     private final UserTable ROLES_TABLE;
     private final UserTable USER_INFO_TABLE;
-    private final Connection connection;
     private static ServletContext context;
 
     @Override
     protected void finalize() throws Throwable {
         super.finalize();
         try {
-            connection.close();
+            getConnection().close();
             log.debug(String.format("Connection of %s normally closed", this));
         } finally {
             log.debug("Ripped" + this);
         }
     }
 
-    @Override
-    Connection getConnection() {
-        return connection;
-    }
+   
 
     @Override
     public void close() throws SQLException {
         LOGINS_TABLE.getRowSet().release();
         ROLES_TABLE.getRowSet().release();
         USER_INFO_TABLE.getRowSet().release();
-        connection.setAutoCommit(true);
+        getConnection().setAutoCommit(true);
         pool.put(this);
     }
 
@@ -101,31 +95,16 @@ public class JDBCUserDAO extends JDBCDAOObject implements UserDAO {
     }
 
     private JDBCUserDAO(ServletContext context) throws JDBCDAOException {
-        DB_NAME = context.getInitParameter("DB_NAME");
-        DB_LOGIN = context.getInitParameter("DB_LOGIN");
-        DB_PASSWORD = context.getInitParameter("DB_PASSWORD");
+        super(context,DAO_NAME);
         String loginsTableName = context.getInitParameter("LOGINS_TABLE");
         String rolesTableName = context.getInitParameter("ROLES_TABLE");
         String userInfoTableName = context.getInitParameter("USER_INFO_TABLE");
         try {
-            connection = DriverManager.getConnection(DB_NAME, DB_LOGIN, DB_PASSWORD);
-            connection.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
-            try (ResultSet colMetaData = connection.getMetaData().getColumns(null, null, null, null);) {
-                String lastTableName = "", columnName = "", currentTableName = "";
-                ConcurrentHashMap<String, List<String>> m = new ConcurrentHashMap<>();
-                while (colMetaData.next()) {
-                    currentTableName = colMetaData.getString(3);
-                    columnName = colMetaData.getString(4);
-                    if (!lastTableName.equals(currentTableName)) {
-                        m.putIfAbsent(currentTableName, new ArrayList<String>());
-                        lastTableName = currentTableName;
-                    }
-                    m.get(currentTableName).add(columnName);
-                }
-                LOGINS_TABLE = new UserTable(loginsTableName, connection, m.get(loginsTableName));
-                ROLES_TABLE = new UserTable(rolesTableName, connection, m.get(rolesTableName));
-                USER_INFO_TABLE = new UserTable(userInfoTableName, connection, m.get(userInfoTableName));
-            }
+                ConcurrentHashMap<String, List<String>> tablesMetaData=this.initTables();
+                LOGINS_TABLE = new UserTable(loginsTableName, getConnection(), tablesMetaData.get(loginsTableName));
+                ROLES_TABLE = new UserTable(rolesTableName, getConnection(), tablesMetaData.get(rolesTableName));
+                USER_INFO_TABLE = new UserTable(userInfoTableName,  getConnection(), tablesMetaData.get(userInfoTableName));
+            
             log.debug("UserDAO created");
         } catch (Exception e) {
             log.error("JDBCUsDAO creation error", e);
@@ -143,7 +122,7 @@ public class JDBCUserDAO extends JDBCDAOObject implements UserDAO {
     public User registerUser(User user) throws JDBCDAOException,SQLException {
         try {
             TreeMap<Integer,String> pairs=new TreeMap<>();
-            connection.setAutoCommit(false);
+            getConnection().setAutoCommit(false);
             pairs.put(1, user.getLogin());
             pairs.put(2, user.getPassword());
             LOGINS_TABLE.addRecord(pairs);
@@ -153,10 +132,10 @@ public class JDBCUserDAO extends JDBCDAOObject implements UserDAO {
             pairs.put(3, user.getLastName());
             pairs.put(4, user.getEmail());
             USER_INFO_TABLE.addRecord(pairs);
-            connection.setAutoCommit(true);
+            getConnection().setAutoCommit(true);
 
         } catch (Exception e) {
-             connection.rollback();
+            getConnection().rollback();
             if (e.toString().matches(".*Duplicate entry.*for key 'PRIMARY'.*")) {
                 
                 throw new JDBCDAOException(String.format("Пользователь с loginom: %s уже сушествует.", user.getLogin()));
@@ -164,7 +143,7 @@ public class JDBCUserDAO extends JDBCDAOObject implements UserDAO {
                 throw new JDBCDAOException("Ошибка регистрации пользователя.", e);
             }
         }
-        finally{connection.setAutoCommit(true);}
+        finally{getConnection().setAutoCommit(true);}
         return user;
     }
 

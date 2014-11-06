@@ -7,7 +7,6 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib prefix="product" uri="ProductsEL" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
-
 <!DOCTYPE html>
 <html>
     <head>
@@ -17,9 +16,8 @@
         <link rel="stylesheet" href="<c:url value='CSSdoc/jquery-ui.min.css'/>">
     </head>
     <body>
-        <div id="header">
-            <c:import url="/WEB-INF/template/headtemplate.jsp" charEncoding="UTF-8"/>
-        </div>
+       
+            <c:import url="/WEB-INF/template/headtemplate.jsp"/>
 
         <c:set var="imgRoot" value="/resources/common_image/product_categories/"/>
         <c:set var="imgDir" value="${pageContext.servletContext.getRealPath(imgRoot)}"/>
@@ -41,9 +39,6 @@
 
 
         <form  class="center_form" id="newProduct" method="post"  enctype="multipart/form-data" action= '<c:url value="addProduct"/>'>
-
-
-
 
             <h2>Редактор продуктов.</h2>
             <div id='error' class='error'>${error}</div><br>
@@ -110,16 +105,13 @@
         </form>
         <c:if test='${products ne null}'>
             <div class='prodholder center_form'>
-
                 <c:if test="${status ne null}"><h4>${status}</h4></c:if>
                 <c:import url="/WEB-INF/template/productinfo.jsp"/>         
             </div> 
-        </c:if>
-            
+        </c:if> 
         <script src="scripts/jquery-ui.js"></script>
         <script src="scripts/formValidation.js"></script>
         <script src="scripts/PopUpMenu.js"></script>
-
         <script>
 
                 var testUnits = function(s) {

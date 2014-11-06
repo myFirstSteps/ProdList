@@ -88,7 +88,7 @@ public class ReadProduct extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        Product product=null;
+        Product product=null;  
         if (ServletFileUpload.isMultipartContent(request)) {
             try {
                 DiskFileItemFactory factory = new DiskFileItemFactory();
@@ -101,8 +101,7 @@ public class ReadProduct extends HttpServlet {
         }else product=Product.getInstanceFromRequest(request);
 
         try (ProductDAO pdao = DAOFactory.getProductDAOInstance(DAOFactory.DAOSource.JDBC, request.getServletContext());) {
-            request.setAttribute("products", pdao.readProducts(product,BOTH));
-                 
+            request.setAttribute("products", pdao.readProducts(product,BOTH));   
             request.getRequestDispatcher(response.encodeURL("editProduct.jsp")).forward(request, response);
         } catch (Exception e) { throw new ServletException(e);
         }

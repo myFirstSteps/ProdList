@@ -125,38 +125,7 @@ public class Table {
         }
         return result;
     }
-    protected int updateRowByID(TreeMap<Integer,String> values, String ID)throws JDBCDAOException{
-        LinkedList<List<String>> result = new LinkedList<>();
-        List<String> resultRow = new LinkedList<>();
-        String x="";
-        int res=0;
-
-        String param = "";
-        for (Entry<Integer, String> st : values.entrySet()) {
-            param += ","+getColumnName(st.getKey()) + "= '" + ((x=st.getValue()).equals("\u007F")?"":x) + "'";
-        }
-        param=param.replaceFirst(",", "");
-        String query = String.format("update %s set %s where %s=%s", tableName, param,this.getColumnName(1),ID);
-        try (Statement st = connection.createStatement(); ) {
-             res = st.executeUpdate(query);
-            if (res==0) throw new JDBCDAOException(String.format("Ошибка при изменении данных в таблице %s. Ни одна запись не изменена", tableName));
-        } catch (SQLException e) {
-            throw new JDBCDAOException(String.format("Ошибка при изменении данных в таблице %s.%s", tableName,e.getMessage()), e);
-        }
-        return res;
-    }
-    protected int deleteRowByID(String ID) throws JDBCDAOException{
-        int res=0;
-        String query = String.format("delete from %s where %s=%s", tableName, this.getColumnName(1),ID);
-        try (Statement st = connection.createStatement(); ) {
-             res = st.executeUpdate(query);
-            if (res==0) throw new JDBCDAOException(String.format("Ошибка при изменении данных в таблице %s. Ни одна запись не изменена", tableName));
-        } catch (SQLException e) {
-            throw new JDBCDAOException(String.format("Ошибка при изменении данных в таблице %s.%s", tableName,e.getMessage()), e);
-        }
-        return res;  
-    }
-    protected ConcurrentSkipListSet<String> readColumn(int n) throws JDBCDAOException {
+     protected ConcurrentSkipListSet<String> readColumn(int n) throws JDBCDAOException {
         ConcurrentSkipListSet<String> result = new ConcurrentSkipListSet<>();
         String query = String.format("select %s from %s", this.columnNames.get(n - 1), this.tableName);
         try (Statement st = connection.createStatement(); ResultSet res = st.executeQuery(query);) {
@@ -190,6 +159,38 @@ public class Table {
         }
         return result;
     }
+    protected int updateRowByID(TreeMap<Integer,String> values, String ID)throws JDBCDAOException{
+        LinkedList<List<String>> result = new LinkedList<>();
+        List<String> resultRow = new LinkedList<>();
+        String x="";
+        int res=0;
+
+        String param = "";
+        for (Entry<Integer, String> st : values.entrySet()) {
+            param += ","+getColumnName(st.getKey()) + "= '" + ((x=st.getValue()).equals("\u007F")?"":x) + "'";
+        }
+        param=param.replaceFirst(",", "");
+        String query = String.format("update %s set %s where %s=%s", tableName, param,this.getColumnName(1),ID);
+        try (Statement st = connection.createStatement(); ) {
+             res = st.executeUpdate(query);
+            if (res==0) throw new JDBCDAOException(String.format("Ошибка при изменении данных в таблице %s. Ни одна запись не изменена", tableName));
+        } catch (SQLException e) {
+            throw new JDBCDAOException(String.format("Ошибка при изменении данных в таблице %s.%s", tableName,e.getMessage()), e);
+        }
+        return res;
+    }
+    protected int deleteRowByID(String ID) throws JDBCDAOException{
+        int res=0;
+        String query = String.format("delete from %s where %s=%s", tableName, this.getColumnName(1),ID);
+        try (Statement st = connection.createStatement(); ) {
+             res = st.executeUpdate(query);
+            if (res==0) throw new JDBCDAOException(String.format("Ошибка при изменении данных в таблице %s. Ни одна запись не изменена", tableName));
+        } catch (SQLException e) {
+            throw new JDBCDAOException(String.format("Ошибка при изменении данных в таблице %s.%s", tableName,e.getMessage()), e);
+        }
+        return res;  
+    }
+   
 
     protected ArrayList getEnumValues(int col) throws JDBCDAOException {
         ArrayList<String> result = new ArrayList<>();

@@ -27,36 +27,22 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
     private static JDBCDAOPool<JDBCProductDAO> pool;
     private static final String DAO_NAME = "PRODUCT";
     private static ServletContext context;
-    private final String DB_NAME;
-    private final String DB_LOGIN;
-    private final String DB_PASSWORD;
-    private final ProductTable PRODUCTS_TABLE;
-    private final ProductTable USERS_PRODUCTS_TABLE;
-    private final ProductTable IMAGES_TABLE;
-    private final Connection connection;
-
-    private class ProductTable extends Table {
-
-        protected ProductTable(String tableName, Connection con, List<String> colNames) throws JDBCDAOException {
-            super(tableName, con, colNames);
-        }
-    }
+    private final Table PRODUCTS_TABLE;
+    private final Table USERS_PRODUCTS_TABLE;
+    private final Table IMAGES_TABLE;
 
     @Override
     protected void finalize() throws Throwable {
         super.finalize();
         try {
-            connection.close();
+            getConnection().close();
             log.debug(String.format("Connection of %s normally closed", this));
         } finally {
             log.debug("Ripped" + this);
         }
     }
 
-    @Override
-    Connection getConnection() {
-        return connection;
-    }
+  
 
     @Override
     public String getDAOName() {
@@ -68,7 +54,7 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
         USERS_PRODUCTS_TABLE.getRowSet().release();
         PRODUCTS_TABLE.getRowSet().release();
         IMAGES_TABLE.getRowSet().release();
-        connection.setAutoCommit(true);
+        getConnection().setAutoCommit(true);
         pool.put(this);
     }
 
@@ -97,31 +83,18 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
     }
 
     private JDBCProductDAO(ServletContext context) throws JDBCDAOException {
-        DB_NAME = context.getInitParameter("DB_PROD_NAME");
-        DB_LOGIN = context.getInitParameter("DB_PROD_LOGIN");
-        DB_PASSWORD = context.getInitParameter("DB_PROD_PASSWORD");
+        super(context, DAO_NAME);
+        try {
+        ConcurrentHashMap<String, List<String>> tablesMetaData=this.initTables();
         String productsTableName = context.getInitParameter("PRODUCTS_TABLE");
         String usersProductsTableName = context.getInitParameter("USERS_PRODUCTS_TABLE");
         String imagesTableName = context.getInitParameter("IMAGES_TABLE");
-        try {
-            connection = DriverManager.getConnection(DB_NAME, DB_LOGIN, DB_PASSWORD);
-            connection.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
-            try (ResultSet colMetaData = connection.getMetaData().getColumns(null, null, null, null);) {
-                String lastTableName = "", columnName = "", currentTableName = "";
-                ConcurrentHashMap<String, List<String>> m = new ConcurrentHashMap<>();
-                while (colMetaData.next()) {
-                    currentTableName = colMetaData.getString(3);
-                    columnName = colMetaData.getString(4);
-                    if (!lastTableName.equals(currentTableName)) {
-                        m.putIfAbsent(currentTableName, new ArrayList<String>());
-                        lastTableName = currentTableName;
-                    }
-                    m.get(currentTableName).add(columnName);
-                }
-                PRODUCTS_TABLE = new JDBCProductDAO.ProductTable(productsTableName, connection, m.get(productsTableName));
-                USERS_PRODUCTS_TABLE = new JDBCProductDAO.ProductTable(usersProductsTableName, connection, m.get(usersProductsTableName));
-                IMAGES_TABLE = new JDBCProductDAO.ProductTable(imagesTableName, connection, m.get(imagesTableName));
-            }
+        
+           
+                PRODUCTS_TABLE = new Table(productsTableName, getConnection(), tablesMetaData.get(productsTableName));
+                USERS_PRODUCTS_TABLE = new Table(usersProductsTableName,  getConnection(), tablesMetaData.get(usersProductsTableName));
+                IMAGES_TABLE = new Table(imagesTableName,  getConnection(), tablesMetaData.get(imagesTableName));
+            
             log.debug("ProductDAO created");
         } catch (Exception e) {
             log.error("JDBCProductDAO creation error", e);
@@ -206,7 +179,7 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
     @Override
     public Product addProduct(Product product) throws JDBCDAOException {
 
-        ProductTable table = USERS_PRODUCTS_TABLE;
+        Table table = USERS_PRODUCTS_TABLE;
         boolean isAdmin = product.getAuthorRole().equals("admin");
         if (isAdmin) {
             table = PRODUCTS_TABLE;
