@@ -2,6 +2,7 @@ html{height: 100%; word-wrap: break-word;
 }
 body{ font-family: serif, Arial ;  font-size:small; margin:0; height: 100%;   padding: 0; }
 em{font-size: 120%}
+button {cursor: pointer;}
 #HeadTemplate{ background-color:#303030; padding:0px; margin: 0px; width: 100%;  color:white; }
 
 #HeadTemplate div { margin: 0px 5px 0px 5px;  vertical-align: middle; display: inline-block; }
@@ -44,3 +45,11 @@ form#newProduct > div {margin: 5px; position: static; display: inline-block;}
 .prodImg {border: solid 2px #303030; max-width: 200px;}
 img.prodStatIcon { float: left;}
 
+#newList {text-align: left;}
+#newListHead {width: 100%; text-align: center; display: inline-block;}
+#newListHead div {float: left;}
+#newListHead h2{clear: both;}
+#newListHead span {font-weight: bold;}
+#newList ol{left: 0px; }
+#newListButtons {width:100%; text-align: center;}
+#list li {font-size: 16px;  cursor: move;}
