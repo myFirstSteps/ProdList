@@ -53,3 +53,5 @@ img.prodStatIcon { float: left;}
 #newList ol{left: 0px; }
 #newListButtons {width:100%; text-align: center;}
 #list li {font-size: 16px;  cursor: move;}
+
+#prodSelect div {display: inline-block; text-align: left;}

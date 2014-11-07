@@ -16,8 +16,8 @@
         <link rel="stylesheet" href="<c:url value='CSSdoc/jquery-ui.min.css'/>">
     </head>
     <body>
-       
-            <c:import url="/WEB-INF/template/headtemplate.jsp"/>
+
+        <c:import url="/WEB-INF/template/headtemplate.jsp"/>
 
         <c:set var="imgRoot" value="/resources/common_image/product_categories/"/>
         <c:set var="imgDir" value="${pageContext.servletContext.getRealPath(imgRoot)}"/>
@@ -59,7 +59,7 @@
             <c:set var="commentValue" value="" /> 
             <c:if test="${newProduct.comment ne null}"><c:set var="commentValue" value="${newProduct.comment}"/></c:if>
 
-                <div>
+            <div>
                     <span>Категория:</span><br>
                     <input   size="15" type="text" name="group" class="validCheck autocomplDepended" value='${categoryValue}' id="CategorySelect" >
             </div>

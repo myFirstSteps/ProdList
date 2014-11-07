@@ -49,7 +49,6 @@ public class ProductAutocomplete extends HttpServlet {
             String key = "name";
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
-            System.out.println(request.getParameter("term"));
             JSONParser parser = new org.json.simple.parser.JSONParser();
             Object reqJSONObj = parser.parse(request.getParameter("term"));
             JSONArray array = (JSONArray) reqJSONObj;
