@@ -72,7 +72,12 @@ public class ReadProduct extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-       response.sendError(405);
+        try{
+            Product product=Product.getInstanceFromJSON(request);
+        }
+        catch (Exception e){
+            
+        }
       
         // processRequest(request, response);
     }

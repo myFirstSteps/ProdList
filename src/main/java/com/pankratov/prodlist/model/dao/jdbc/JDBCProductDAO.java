@@ -306,7 +306,7 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
     public ConcurrentSkipListSet<String> readProductNames(Product forProduct) throws Exception {
         ConcurrentSkipListSet<String> res = new ConcurrentSkipListSet<>();
         res.addAll(PRODUCTS_TABLE.readColumn(2, productToTable(forProduct, ORIGINAL)));
-        res.addAll(USERS_PRODUCTS_TABLE.readColumn(2, productToTable(forProduct, ORIGINAL)));
+        res.addAll(USERS_PRODUCTS_TABLE.readColumn(2, productToTable(forProduct, USER_COPY)));
         return res;
     }
 
@@ -314,7 +314,7 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
     public ConcurrentSkipListSet<String> readProductSubNames(Product forProduct) throws Exception {
         ConcurrentSkipListSet<String> res = new ConcurrentSkipListSet<>();
         res.addAll(PRODUCTS_TABLE.readColumn(3, productToTable(forProduct, ORIGINAL)));
-        res.addAll(USERS_PRODUCTS_TABLE.readColumn(3, productToTable(forProduct, ORIGINAL)));
+        res.addAll(USERS_PRODUCTS_TABLE.readColumn(3, productToTable(forProduct,  USER_COPY)));
         return res;
     }
 
@@ -322,7 +322,7 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
     public ConcurrentSkipListSet<String> readProductProducers(Product forProduct) throws Exception {
         ConcurrentSkipListSet<String> res = new ConcurrentSkipListSet<>();
         res.addAll(PRODUCTS_TABLE.readColumn(4, productToTable(forProduct, ORIGINAL)));
-        res.addAll(USERS_PRODUCTS_TABLE.readColumn(4, productToTable(forProduct, ORIGINAL)));
+        res.addAll(USERS_PRODUCTS_TABLE.readColumn(4, productToTable(forProduct,  USER_COPY)));
         return res;
     }
 

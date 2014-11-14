@@ -41,32 +41,40 @@
         </div>
 
         <div id="prodSelect" class="prodholder center_form">
-            <div>
+            <div class='AddEllement main'>
                 <span>Категория:</span><br>
-                <select class="autocompl group autocomplDepended" size="1"> 
+                <select name="group" size="1"> 
                     <option>Выберите категорию</option> 
                     <c:forEach var="group" items="${categories}">
                         <option>${group}</option> 
                     </c:forEach>
                 </select>
             </div>
-            <div>
+            <div class="AddEllement">
                 <span>Название:</span><br>
-                <select class="autocompl name autocomplDepended" size="1"> 
+                <select name="name" size="1"> 
+                  <option></option> 
+                </select>
+            </div >
+            <div class="AddEllement">
+                <span>Уточняющее название:</span><br>
+                <select name="subNname" size="1"> 
+                     <option>11</option> 
+                     <option>12</option> 
+                </select>
+            </div>
+           
+            <div class="AddEllement">
+                <span>Производитель:</span><br>
+                 <select name="producer" size="1"> 
                     <option></option> 
                 </select>
             </div>
-            <div>
-                <span>Уточняющее название:</span><br>
-                <input  type="text" value='${subNameValue}' class='autocompl autocomplDepended' name="subName"  >
-            </div>
-            <div>
-                <span>Производитель:</span><br>
-                <input  type="text" name="producer"  value='${producerValue}' class="autocompl autocomplDepended" id="Name" >
-            </div>
-            <div>
-                <span id='valueLabel'>Объем:</span><br>
-                <input  type="text" size="5" maxlength="8" class="validNumberCheck"  value='${valueValue}' name="value" >
+             <div class="AddEllement">
+                <span>Объем:</span><br>
+                 <select name="value" size="1"> 
+                    <option></option> 
+                </select>
             </div>
             <div>
             </div>
@@ -100,12 +108,22 @@
                         $(function() {
                            $("#list").sortable();
                            $("#list").disableSelection();
-                           $(".autocompl").on("change",function(){ alert("data");
-                            var term = JSON.stringify($(this).serializeArray().concat($(".autocomplDepended").filter("[name!=" + $(this).attr("name") + "]").serializeArray())); //$(".ter:input").serializeArray();              //[{category:"фрукты"},{name:"бананы"}];
-
+                           $('.AddEllement.main').siblings('.AddEllement').css('visibility','hidden');
+                           $(".AddEllement select").on("change",function(){ 
+                               var searchable=$(this).parents('div.AddEllement').next(".AddEllement").children("select");
+                              $(this).parents('div.AddEllement').nextAll('div.AddEllement').find('option').remove(); 
+                              $(searchable).html('<option></option>');
+                            //   $(this).parents('div.AddEllement').nextAll(".AddEllement").children('select').children().remove();
+                               if (searchable.length>0){
+                            var term = JSON.stringify($(searchable).serializeArray().concat($(searchable).parents(".AddEllement").prevAll(".AddEllement").children("select").serializeArray())); //$(".ter:input").serializeArray();              //[{category:"фрукты"},{name:"бананы"}];
+                                         alert("data>0");
                             $.getJSON("ProductAutocomplete", {term:term}, function(data, status, xhr) {
-                                alert("1");
-                            });
+                               $(searchable).children('option').replaceWith(function(){var values; $.each(data,function(i,e){values+='<option>'+e+'</option>';}); return values;});
+                                $(searchable).parents(".AddEllement").css('visibility','visible');
+                            });}
+                            else{   alert("data<0");
+                                
+                            }
                            });
                         });
             </script>

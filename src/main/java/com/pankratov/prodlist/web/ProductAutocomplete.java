@@ -50,6 +50,7 @@ public class ProductAutocomplete extends HttpServlet {
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             JSONParser parser = new org.json.simple.parser.JSONParser();
+          
             Object reqJSONObj = parser.parse(request.getParameter("term"));
             JSONArray array = (JSONArray) reqJSONObj;
 
@@ -62,6 +63,8 @@ public class ProductAutocomplete extends HttpServlet {
                 prodInit.put((String) obj.get("name"), (String) obj.get("value"));
             }
             Product prod = new Product(prodInit);
+            for(Map.Entry<String,String>s:prodInit.entrySet())System.out.println(s.getKey()+"|||"+s.getValue());
+            prod.setAuthor(request.getRemoteUser() != null ? request.getRemoteUser() : (String) request.getSession().getAttribute("clid"));
             try (ProductDAO pdao = DAOFactory.getProductDAOInstance(DAOFactory.DAOSource.JDBC, request.getServletContext());) {
                 switch (key) {
                     case "name":
@@ -80,6 +83,7 @@ public class ProductAutocomplete extends HttpServlet {
             for (String s : list) {
                 resp.put(i++, s);
             }
+            System.out.println(resp);
             response.getWriter().println(resp);
         } catch (Exception ex) {
             throw new IOException(ex);
