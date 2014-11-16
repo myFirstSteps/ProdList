@@ -6,7 +6,6 @@
 package com.pankratov.prodlist.model.products;
 
 import java.io.UnsupportedEncodingException;
-import java.security.Principal;
 import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.fileupload.FileItem;
@@ -178,8 +177,7 @@ public class Product {
     }
 
     public static Product getInstanceFromRequest(HttpServletRequest req) {
-        TreeMap<String, String> prodInit = new TreeMap<>();
-        prodInit =  ProductFieldsRiper.ripFields(req.getParameterMap());
+        TreeMap<String, String> prodInit  =  ProductFieldsRiper.ripFields(req.getParameterMap());
         prodInit.put("author", ProductFieldsRiper.readAuthor(req));
         prodInit.put("authorRole", ProductFieldsRiper.readAuthorRole(req));
 
@@ -187,8 +185,7 @@ public class Product {
     }
 
     public static Product getInstanceFromFormFields(List<FileItem> fields, HttpServletRequest req) throws UnsupportedEncodingException {
-        TreeMap<String, String> prodInit = new TreeMap<>();
-        prodInit = ProductFieldsRiper.ripFields(fields);
+        TreeMap<String, String> prodInit  = ProductFieldsRiper.ripFields(fields);
         prodInit.put("author", ProductFieldsRiper.readAuthor(req));
         prodInit.put("authorRole", ProductFieldsRiper.readAuthorRole(req));
         return new Product(prodInit);

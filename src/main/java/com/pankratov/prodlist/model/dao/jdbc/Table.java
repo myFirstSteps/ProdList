@@ -151,7 +151,7 @@ public class Table {
      
         try (Statement st = connection.createStatement(); ResultSet res = st.executeQuery(query);) {
             while (res.next()) {
-                result.add(res.getString(1));
+                result.add(res.getString(1)!=null?res.getString(1):"");
             }
         } catch (SQLException ex) {
 

@@ -7,12 +7,13 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
 <!DOCTYPE html>
+<c:set var="icons" value='${pageContext.servletContext.getInitParameter("icons")}'/>
 <c:set var="OriginProdIco" value="<img class='prodStatIcon' title='Ключевой продукт. Продукт, являющийся прообразом для пользовательских продуктов.' height='16' width='16' src='resources/common_image/icons/Key.gif' alt='Ключевой'>"/>
-<c:set var="modifyButtonTemplate" value="<button onclick='edit(this)' title='Редактировать'><img height='16' width='16' alt='edit' src='resources/common_image/icons/Modify.gif'></button>"/>
+<c:set var="modifyButtonTemplate" value="<button onclick='edit(this)' title='Редактировать'><img height='16' width='16' alt='edit' src='${icons}Modify.gif'></button>"/>
 <c:set var="UsersProdIco" value="<img class='prodStatIcon' title='Пользовательская копия продукта. Вы можете изменить некоторые свойства продукта (задать свою цену, комментарий и т.д.). При этом не тронутые свойства будут соответствовать ключевому продукту.' height='16' width='16' src='resources/common_image/icons/Users.gif' alt='Пользовательский'>"/>
 <c:set var="newProdIco" value="<img class='prodStatIcon' 
                          title='Новый продукт. Этот продукт еще не прошел проверку и не добавлен в общую базу, но вы можете с ним работать, добавлять его в списки и редактировать.' 
-                         height='16' width='16' src='resources/common_image/icons/New.gif' alt='Новый'>"/>
+                         height='16' width='16' src='${icons}New.gif' alt='Новый'>"/>
 <c:if test="${products[0] ne null}">
 
 
@@ -36,7 +37,7 @@
             <c:set var="DeleteButton" value=""/>
             <c:if test='${(!prod.origin  and (prod.author eq username or prod.author eq cookie.clid.value) ) or isAdmin }'>
                 <c:set var="ModifyButton" value="${modifyButtonTemplate}"/><c:set var="DeleteButton" value='<button title="Удалить продукт" onclick="deleteProduct(this)">
-                                                                                  <img src="resources/common_image/icons/Delete.gif" alt="Удалить"></button>'/>         
+                                                                                  <img src="${icons}Delete.gif" alt="Удалить"></button>'/>         
             </c:if>
             <tr  id="${prod.id}_${prod.originID}<c:if test="${prod.origin}">_o</c:if>" class="prodrow "> 
                     <td class="proddata">
@@ -65,7 +66,7 @@
                 <td class="proddata">${DeleteButton}
                     <c:if test="${prod.origin and not isAdmin}">
                         <button class='cloneButton' title="Создать пользовательскую копию." onclick="clone(this)">
-                        <img src="resources/common_image/icons/Copy.gif" alt="Клонировать"></button>
+                        <img src="${icons}Copy.gif" alt="Клонировать"></button>
                     </c:if>
                     <c:if test="${not prod.origin and isAdmin and prod.originID eq -1}"><button class='legalizeButton' title="Добавить в основную базу." onclick="legalize(this)">
                         <img src="resources/common_image/icons/Yes.gif" alt="Легализовать"></button></c:if>
@@ -82,12 +83,12 @@
         var modifyButton =  "${modifyButtonTemplate}";
         var userProdIco="${UsersProdIco}";
         var originProdIco="${OriginProdIco}";
-        var syncButton = "<button class='SyncButton' onclick='sendChanges(this)'><img height='16' width='16' src='resources/common_image/icons/Sync.gif'>Изменить</button>";
-        var errIco = "<img class='error' height='20' width='20' src='resources/common_image/icons/Error.ico' alt='error' >";
+        var syncButton = "<button class='SyncButton' onclick='sendChanges(this)'><img height='16' width='16' src='${icons}Sync.gif'>Изменить</button>";
+        var errIco = "<img class='error' height='20' width='20' src='${icons}Error.ico' alt='error' >";
         function edit(o) {
             $(o).replaceWith("<div class='editValues'><input  type='text' value='" + $(o).parent().text().trim() + "'><br><button class='accept' onclick='acceptEdit(this)'><img height='16' width='16'\n\
-      src='resources/common_image/icons/Yes.gif'></button>\n\
-     <button onclick='denyEdit(this)'><img height='16' width='16' src='resources/common_image/icons/No.gif'></button></div>");
+      src='${icons}Yes.gif'></button>\n\
+     <button onclick='denyEdit(this)'><img height='16' width='16' src='${icons}No.gif'></button></div>");
             $(".price .editValues input, .value .editValues input").on("change blur keyup", function() {
                 dataValidCheck(this, '^[0-9]+(?:[.|,])?[0-9]*$', "<span class='invalid error'>Значение поля должно быть целым или десятичным числом.\n\
                  </span><br class='invalid error'>");
@@ -148,7 +149,7 @@
 
 
             var req = JSON.stringify([ajson]);
-            $(o).append("<img src='resources/common_image/icons/loading.gif'>");
+            $(o).append("<img src='${icons}loading.gif'>");
             $.getJSON("ChangeProducts", {product: req, action: "change"}, function(data, status, xhr) {
                 if (data.error === undefined) {
                     $.each(data, function(i, e) {
@@ -184,7 +185,7 @@
                        $(prodClone).children("td.proddata." + e ).text(data.e).append(modifyButton);
                     });
                      $(prodClone).find(".cloneButton").replaceWith("<button title='Удалить продукт' onclick='deleteProduct(this)'>\n\
-         <img src='resources/common_image/icons/Delete.gif' alt='Удалить'></button>");
+         <img src='${icons}Delete.gif' alt='Удалить'></button>");
                     
                 }
                 else {

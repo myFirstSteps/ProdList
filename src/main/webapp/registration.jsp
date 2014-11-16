@@ -11,7 +11,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Регистрация</title>
-        <style><%@include file="/CSSdoc/mainCSS.css"%></style>
+        <link href='CSSdoc/mainCSS.css' rel='stylesheet' type="text/css">
     </head>
     <body>
         <div id="header">

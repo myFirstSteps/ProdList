@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.pankratov.prodlist.model.dao.jdbc;
 
 import com.pankratov.prodlist.model.dao.ProductDAO;
@@ -17,10 +12,7 @@ import javax.servlet.ServletContext;
 import javax.sql.rowset.CachedRowSet;
 import org.apache.logging.log4j.Logger;
 
-/**
- *
- * @author pankratov
- */
+
 public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
 
     private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(JDBCProductDAO.class);
@@ -317,14 +309,24 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
         res.addAll(USERS_PRODUCTS_TABLE.readColumn(3, productToTable(forProduct,  USER_COPY)));
         return res;
     }
-
+      
     @Override
     public ConcurrentSkipListSet<String> readProductProducers(Product forProduct) throws Exception {
         ConcurrentSkipListSet<String> res = new ConcurrentSkipListSet<>();
+      //  try{
         res.addAll(PRODUCTS_TABLE.readColumn(4, productToTable(forProduct, ORIGINAL)));
-        res.addAll(USERS_PRODUCTS_TABLE.readColumn(4, productToTable(forProduct,  USER_COPY)));
+        res.addAll(USERS_PRODUCTS_TABLE.readColumn(4, productToTable(forProduct,  USER_COPY)));//}
+       // catch(Exception e){System.out.println(e);}
         return res;
     }
+    
+    @Override
+    public ConcurrentSkipListSet<String> readProductValues(Product forProduct) throws Exception{
+        ConcurrentSkipListSet<String> res = new ConcurrentSkipListSet<>();
+        res.addAll(PRODUCTS_TABLE.readColumn(5, productToTable(forProduct, ORIGINAL)));
+        res.addAll(USERS_PRODUCTS_TABLE.readColumn(5, productToTable(forProduct,  USER_COPY)));
+        return res;
+    } 
 
     @Override
     public ArrayList readProductGroups() throws JDBCDAOException {
