@@ -32,28 +32,28 @@
     <div id="HeadTemplate">
         <div><span>Интерактивное резюме на<br>позицию Java Junior Developer.<br><em>Панкратов Михаил</em></span></div>
         <div><img  src="<c:url value="/resources/common_image/OCP_JavaSE7Programmer.gif"/>"  width="140" height="71" alt="OCP_JavaSE7Programmer.gif"></div>
-    <div  class="Navigation"><a title="Главная" href="<c:url value="index.jsp"/>" ><img class="UnActiveNavIco"  height="80" width="80" src="${ico1img}"> 
+    <div  class="Navigation"><a title="Главная" href="<c:url value="index.jsp"/>" ><img class="UnActiveNavIco" alt="Главная" height="80" width="80" src="${ico1img}"> 
             <img class="ActiveNavIco" height="80" width="80" src="${icons}Home_active.png">
         </a>
     </div>
     <div  class="Navigation" >
-        <a title="Учебный проект" href="<c:url value="editProduct.jsp"/>" ><img class="UnActiveNavIco" height="100" width="100" src='${ico2img}' >
+        <a title="Учебный проект" href="<c:url value="editProduct.jsp"/>" ><img class="UnActiveNavIco" alt="Учебный проект" height="100" width="100" src='${ico2img}' >
             <img class="ActiveNavIco" height="100" width="100" src="${icons}Sandbox_active.png">
         </a>
     </div>
         <c:if test="${path eq '/editProduct.jsp' or path eq '/newList.jsp' or path eq '/viewList.jsp'}">
     <div  class="Navigation" >
-        <a title="Редактор продуктов" href="<c:url value="editProduct.jsp"/>" ><img class="UnActiveNavIco" height="100" width="100" src='${ico3img}' >
+        <a title="Редактор продуктов" href="<c:url value="editProduct.jsp"/>" ><img class="UnActiveNavIco" alt="Учебный проект" height="100" width="100" src='${ico3img}' >
             <img class="ActiveNavIco" height="100" width="100" src="${icons}Editor_active.png">
         </a>
     </div>
     <div  class="Navigation" >
-        <a title="Создать список покупок" href="<c:url value="newList.jsp"/>" ><img class="UnActiveNavIco" height="100" width="100" src='${ico4img}' >
+        <a title="Создать список покупок" href="<c:url value="newList.jsp"/>" ><img class="UnActiveNavIco" alt="Создать список" height="100" width="100" src='${ico4img}' >
             <img class="ActiveNavIco" height="100" width="100" src="${icons}New_list_active.png">
         </a>
     </div>
       <div  class="Navigation" >
-        <a title="Просмотреть списки покупок" href="<c:url value="viewList.jsp"/>" ><img class="UnActiveNavIco" height="100" width="100" src='${ico5img}' >
+        <a title="Просмотреть списки покупок" href="<c:url value="viewList.jsp"/>" ><img class="UnActiveNavIco" alt="Просмотреть списки" height="100" width="100" src='${ico5img}' >
             <img class="ActiveNavIco" height="100" width="100" src="${icons}View_list_active.png">
         </a>
     </div>

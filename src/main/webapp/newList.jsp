@@ -38,11 +38,11 @@
                     <img height="16" width="16" src="${icons}Add.gif" 
                          alt='Добавить'>
                 </button>
-                <button title="Сохранить список">
+                <button onclick="saveList()" title="Сохранить список">
                     <img height="16" width="16" src="${icons}Save.gif" 
                          alt='Сохранить'>
                 </button>
-                         <button title="Удалить из списка все позиции" onclick="$('#list').children().remove()">
+                <button title="Удалить из списка все позиции" onclick="$('#list').children().remove()">
                     <img height="16" width="16" src="${icons}Delete.gif"
                          alt='Очистить'>
                 </button>
@@ -170,7 +170,19 @@
                         }
                     });
                 });
-
+                function saveList() {
+                    var items='' ;
+                    $("#list li").each(function(i, e) {
+                        var idParts = $(e).attr("id").split("_");
+                        items+=String(idParts[0]);
+                        items+=String(idParts.length > 2?"o ":" ");
+                    });
+                    var list=JSON.stringify({name:$("#listName").text(),items:items});
+                    $.post("List",{action:"save",list:list},function(data,status,xhr){
+                      if(data.error===undefined)alert("Список успешно сохранен.");else alert("Не удалось сохранить список.\n"+data.error);
+                    });
+                   
+                }
         </script>
     </body>
 

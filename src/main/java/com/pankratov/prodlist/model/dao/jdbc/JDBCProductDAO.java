@@ -60,7 +60,7 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
             JDBCProductDAO instance = null;
             JDBCProductDAO.context = context;
             if (pool == null) {
-                synchronized (JDBCUserDAO.class) {
+                synchronized (JDBCProductDAO.class) {
                     if (pool == null) {
                         pool = new JDBCDAOPool<>(new JDBCProductDAO(context));
                     }

@@ -76,18 +76,4 @@ user_info | CREATE TABLE `user_info` (
   PRIMARY KEY (`login`),
   CONSTRAINT `user_info_ibfk_1` FOREIGN KEY (`login`) REFERENCES `logins` (`login`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-Списки продуктов
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-| lists | CREATE TABLE `lists` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(254) DEFAULT NULL,
-  `products` mediumtext,
-  `owner` varchar(254) DEFAULT NULL,
-  `checked` mediumtext,
-  `stamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `id` (`id`),
-  UNIQUE KEY `name` (`name`,`owner`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 
 

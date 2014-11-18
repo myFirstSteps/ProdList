@@ -6,6 +6,7 @@
 
 package com.pankratov.prodlist.model.dao;
 
+import com.pankratov.prodlist.model.dao.jdbc.JDBCProdListDAO;
 import com.pankratov.prodlist.model.dao.jdbc.JDBCProductDAO;
 import com.pankratov.prodlist.model.dao.jdbc.JDBCUserDAO;
 import javax.servlet.ServletContext;
@@ -31,6 +32,12 @@ public class DAOFactory {
         }
         return null;
     }
-    
+    public static ProdListDAO getProdListDAOInstance(DAOSource source, ServletContext context) throws Exception{
+         switch(source){
+            case JDBC: 
+                return JDBCProdListDAO.getInstance(context);//
+        }
+        return null;
+    }
 
 }
