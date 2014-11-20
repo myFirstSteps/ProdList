@@ -100,7 +100,9 @@ public class AddProduct extends HttpServlet {
         if (!absImgDir.isAbsolute()) {
             absImgDir = Paths.get(appRoot + "/" + absImgDir);
         }
-        relImgDir = Paths.get(context.getRealPath(context.getContextPath())).getParent();
+        relImgDir = Paths.get(context.getRealPath(context.getContextPath())).getParent(); 
+        if(relImgDir.endsWith("ROOT"))relImgDir=relImgDir.getParent();
+        System.out.println(relImgDir);
         relImgDir = Paths.get(relImgDir.getRoot().toString() + absImgDir.subpath(relImgDir.getNameCount(), absImgDir.getNameCount()));
         System.out.println(relImgDir);
         try {
