@@ -32,11 +32,14 @@ public class ProdList {
         } catch (java.lang.NumberFormatException e) {
             this.id = -1l;
         }
-
+        this.products = (x = initData.get("products")) != null ? x : "";
         this.name = (x = initData.get("name")) != null ? x : "";
         this.timeStamp = (x = initData.get("timeStamp")) != null ? x : "";
         this.ownerName = (x = initData.get("ownerName")) != null ? x : "";
 
+    }
+    public ProdList(){
+        
     }
 
     public static ProdList getInstanceFromJSON(HttpServletRequest request) throws Exception {

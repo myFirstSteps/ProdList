@@ -6,8 +6,10 @@
 package com.pankratov.prodlist.web.el;
 
 import com.pankratov.prodlist.model.dao.DAOFactory;
+import com.pankratov.prodlist.model.dao.ProdListDAO;
 import com.pankratov.prodlist.model.dao.ProductDAO;
 import com.pankratov.prodlist.model.dao.jdbc.JDBCProductDAO;
+import com.pankratov.prodlist.model.list.ProdList;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
@@ -30,6 +32,13 @@ public class ProductEL {
     public static ArrayList getUnits(ServletContext context) throws Exception {
         try (ProductDAO pdao = DAOFactory.getProductDAOInstance(DAOFactory.DAOSource.JDBC, context)) {
             return ((JDBCProductDAO) pdao).readProductValueUnits();
+        }
+    }
+    public static ArrayList getListNames(ServletContext context, String owner) throws Exception {
+        try (ProdListDAO pdao = DAOFactory.getProdListDAOInstance(DAOFactory.DAOSource.JDBC, context)) {
+            ProdList pl=new ProdList();
+            pl.setOwnerName(owner);
+            return  pdao.readListNames(pl);
         }
     }
 

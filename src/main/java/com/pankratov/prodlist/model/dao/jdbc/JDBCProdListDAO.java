@@ -148,5 +148,10 @@ public class JDBCProdListDAO extends JDBCDAOObject implements ProdListDAO {
      public ProdList changeProdList(ProdList list) throws Exception{
          return null;
      }
+        @Override
+      public ArrayList readListNames(ProdList list)throws Exception{
+          return new ArrayList(LISTS_TABLE.readColumn(2,ListToTable(list)));
+          
+      } 
     
 }

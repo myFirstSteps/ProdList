@@ -64,7 +64,7 @@ public class ListServlet extends HttpServlet {
         }
         }
         
-        catch (Exception e){System.out.println("cc"+e); json.put("error", e.toString()); response.getWriter().println(json);}
+        catch (Exception e){System.out.println("cc"+e); json.put("error", e.getMessage()); response.getWriter().println(json);}
     }
 
     /**
