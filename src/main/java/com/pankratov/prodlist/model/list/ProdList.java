@@ -5,6 +5,8 @@
  */
 package com.pankratov.prodlist.model.list;
 
+import com.pankratov.prodlist.model.dao.ProductDAO;
+import com.pankratov.prodlist.model.dao.ProductDAO.KindOfProduct;
 import com.pankratov.prodlist.model.products.Product;
 import java.util.*;
 import java.util.List;
@@ -24,6 +26,7 @@ public class ProdList {
     private String products = "";
     private String timeStamp = "";
     private String ownerName = "";
+    private String checked="";
 
     public ProdList(TreeMap<String, String> initData) {
         String x;
@@ -36,6 +39,7 @@ public class ProdList {
         this.name = (x = initData.get("name")) != null ? x : "";
         this.timeStamp = (x = initData.get("timeStamp")) != null ? x : "";
         this.ownerName = (x = initData.get("ownerName")) != null ? x : "";
+        this.checked = (x = initData.get("checked")) != null ? x : "";
 
     }
     public ProdList(){
@@ -51,6 +55,35 @@ public class ProdList {
         listInit.put("ownerName",
                 request.getRemoteUser() != null ? request.getRemoteUser() : (String) request.getSession().getAttribute("clid"));
         return new ProdList(listInit);
+    }
+    public JSONObject toJSON(ProductDAO productSource)throws Exception{
+        JSONObject prodlist=new JSONObject();
+        prodlist.put("name", name);
+        prodlist.put("id", id);
+        prodlist.put("ownerName", ownerName);
+        prodlist.put("timeStamp",timeStamp);
+        JSONArray prods=new JSONArray();
+        String[] products=this.products.split(" ");
+        int i=1;
+        for(String p:products){
+            String item[]=p.split("_");
+            KindOfProduct kind=item[0].contains("o")?ProductDAO.KindOfProduct.ORIGINAL:ProductDAO.KindOfProduct.USER_COPY;
+            Product product=new Product();
+            product.setId(new Long(item[0].replaceAll("o", "")));
+            List<Product> pl=productSource.readProducts(product, kind);
+            if(pl.size()<1) continue ;
+                 product= pl.get(0);
+                 String temp;
+                 prods.add(String.format("%d. %s %s %s %.2fруб.   %dшт.",
+                         i,product.getName(),
+                         (temp=product.getSubName()).equals("любой")?"":temp,
+                         (temp=product.getProducer()).equals("любой")?"":temp,
+                  new Integer(item[1])       
+                 ));
+                 i++;
+        }
+        prodlist.put("products",prods);
+        return prodlist;
     }
 
     /**
@@ -121,6 +154,25 @@ public class ProdList {
      */
     public void setID(Long id) {
         this.id = id;
+    }
+    
+    @Override
+    public String toString(){
+        return String.format("Prodlist:%s\nid:%s\nproducts:%s\nowner:%s\ncreated:%s", name,id.toString(),products,ownerName,timeStamp);
+    }
+
+    /**
+     * @return the checked
+     */
+    public String getChecked() {
+        return checked;
+    }
+
+    /**
+     * @param checked the checked to set
+     */
+    public void setChecked(String checked) {
+        this.checked = checked;
     }
 
 }

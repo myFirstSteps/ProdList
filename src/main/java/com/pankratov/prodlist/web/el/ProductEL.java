@@ -38,7 +38,10 @@ public class ProductEL {
         try (ProdListDAO pdao = DAOFactory.getProdListDAOInstance(DAOFactory.DAOSource.JDBC, context)) {
             ProdList pl=new ProdList();
             pl.setOwnerName(owner);
+             System.out.println("items"+ pdao.readListNames(pl).size());
+             System.out.println("items"+ pdao.readListNames(pl));
             return  pdao.readListNames(pl);
+           
         }
     }
 

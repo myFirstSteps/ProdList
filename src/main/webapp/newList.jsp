@@ -175,7 +175,9 @@
                     $("#list li").each(function(i, e) {
                         var idParts = $(e).attr("id").split("_");
                         items+=String(idParts[0]);
-                        items+=String(idParts.length > 2?"o ":" ");
+                        items+=String(idParts.length > 2?"o":"");
+                        alert($(e).children("input").val());
+                        items+="_"+$(e).children("input").val()+" ";
                     });
                     var list=JSON.stringify({name:$("#listName").text(),items:items});
                     $.post("List",{action:"save",list:list},function(data,status,xhr){

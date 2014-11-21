@@ -105,25 +105,21 @@ public class JDBCProdListDAO extends JDBCDAOObject implements ProdListDAO {
         if (!list.getName().equals("")) {
             l.put(2, list.getName());
         }
-        if (!list.getName().equals("")) {
+        if (!list.getProducts().equals("")) {
             l.put(3, list.getProducts());
         }
         if (!list.getOwnerName().equals("")) {
             l.put(4, list.getOwnerName());
         }
-        if (list.getTimeStamp().equals("")) {
-            l.put(5, list.getTimeStamp().toString());
-        }
+       
         return l;
        
     }
     private ProdList ListFromTable(List<String> fieldValues)throws Exception {
         ProdList pl;
-        String[] fields = {"id", "name", "products","ownerName", "timeStamp"};
+        String[] fields = {"id", "name", "products","ownerName","checked","timeStamp"};
         int i = 0;
-        TreeMap<String, String> listInit = new TreeMap<>();
-        
-        
+        TreeMap<String, String> listInit = new TreeMap<>();    
         for (String value : fieldValues) {
              listInit.put(fields[i++], value);
         }
