@@ -42,14 +42,21 @@
                showButton(); 
             });
             function showList(){
-                alert($("#listName").val());
-                $.post("List",{action:'show',listName:$("#listName").val()},function(status,response,xhr){
+                $.post("List",{action:'show',listName:$("#listName").val()},function(response){
                   var alist=response.list;
-                  $.each(response,function(i,e){
-                    alert(i+"|"+e);});
-                    /*$("#list").append($.each(list.products,function(){
-                        
+                  if(response.error!==undefined){
+                      alert(response.error);
+                      return;
+                  }   
+                  var listhtml="<h2>Список: "+alist.name+" от "+alist.timeStamp+"</h2>";
+             
+                  $.each(alist.products,function(i,e){
+                    listhtml+="<div>"+e+"<button><img height='16' width='16' alt='Показать' src='${icons}View.gif'></button></div>";
+                });
+                alert(listhtml);
+                    /*$("#list").append($.each(list.products,function(){      
                     }));*/
+                    $("#list").html(listhtml).show();
                 });
             }
         </script>

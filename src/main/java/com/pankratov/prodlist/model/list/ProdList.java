@@ -77,7 +77,8 @@ public class ProdList {
                  prods.add(String.format("%d. %s %s %s %.2fруб.   %dшт.",
                          i,product.getName(),
                          (temp=product.getSubName()).equals("любой")?"":temp,
-                         (temp=product.getProducer()).equals("любой")?"":temp,
+                         (temp=product.getProducer()).equals("любой")?"":temp, 
+                         product.getPrice(),
                   new Integer(item[1])       
                  ));
                  i++;
