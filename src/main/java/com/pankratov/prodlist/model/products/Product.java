@@ -105,20 +105,6 @@ public class Product {
 
     }
 
-    public Product(String id, String name, String subName, String producer,
-            String value, String valueUnits, String group, String price, String comment, String author, String originID) {
-        this.id = new Long(id);
-        this.name = name;
-        this.subName = subName;
-        this.producer = producer;
-        this.value = new Float(value);
-        this.valueUnits = valueUnits;
-        this.group = group;
-        this.price = new Float(price);
-        this.comment = comment;
-        this.author = author;
-        this.originID = originID != null ? new Long(originID) : null;
-    }
 
     public Product(Product product, boolean onlyKeyFields) {
         this.id = product.id;

@@ -6,8 +6,7 @@
 
 package com.pankratov.prodlist.model.dao.jdbc;
 
-import com.pankratov.prodlist.model.dao.ProdListDAO;
-import com.pankratov.prodlist.model.dao.ProductDAO;
+import com.pankratov.prodlist.model.dao.*;
 import com.pankratov.prodlist.model.list.ProdList;
 import com.pankratov.prodlist.model.products.Product;
 import java.sql.SQLException;

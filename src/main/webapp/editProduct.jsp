@@ -113,7 +113,7 @@
         <script src="scripts/formValidation.js"></script>
         <script src="scripts/PopUpMenu.js"></script>
         <script>
-
+                imgMenu=null;
                 var testUnits = function(s) {
                     switch (s) {
                         case "кг":
@@ -125,7 +125,7 @@
                     }
                 };
                 $(document).ready(function() {
-                    new ImgMenu($('.TabletMenu'), $("#CategorySelect"));
+                    if(imgMenu===null){imgMenu=new ImgMenu($('.TabletMenu'), $("#CategorySelect"))};
                     $("#valueUnits").change(function() {
                         $("#valueLabel").text(testUnits($("#valueUnits").val()));
                     });

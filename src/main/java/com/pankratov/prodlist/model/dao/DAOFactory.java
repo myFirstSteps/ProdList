@@ -6,9 +6,8 @@
 
 package com.pankratov.prodlist.model.dao;
 
-import com.pankratov.prodlist.model.dao.jdbc.JDBCProdListDAO;
-import com.pankratov.prodlist.model.dao.jdbc.JDBCProductDAO;
-import com.pankratov.prodlist.model.dao.jdbc.JDBCUserDAO;
+import com.pankratov.prodlist.model.dao.jdbc.*;
+
 import javax.servlet.ServletContext;
 
 /**
