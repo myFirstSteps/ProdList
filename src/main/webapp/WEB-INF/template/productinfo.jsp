@@ -31,7 +31,6 @@
             <c:if test="${isAdmin}"><th class="proddata">Добавил</th></c:if>
                 <th class="proddata"></th>
             </tr>
-        <%--!    <img  onerror="this.src = 'resources/common_image/product_categories/0.png'"> --%>
         <c:forEach items="${products}" var="prod" varStatus="stat">
             <c:set var="ModifyButton" value=""/>
             <c:set var="DeleteButton" value=""/>
@@ -47,10 +46,10 @@
                         <c:when test="${not prod.origin and prod.originID ne -1}">${UsersProdIco}</c:when>
                     </c:choose>    
                         <br>    
-                    <img  class='prodImg' height="80" onerror="this.src = 'resources/common_image/product_categories/0.png'"   src='<c:choose> 
+                    <img  class='prodImg' height="80" onerror="this.src = '${icons}No_Image.gif'"   src='<c:choose> 
                               <c:when test="${prod.imageLinks[0] ne null}"><c:url value='${prod.imageLinks[0]}'/>
                               </c:when>
-                              <c:otherwise>resources/common_image/product_categories/0.png
+                              <c:otherwise>${icons}No_Image.gif
                               </c:otherwise>
                           </c:choose>'>
                 </td>

@@ -3,13 +3,10 @@ package com.pankratov.prodlist.model.dao.jdbc;
 import com.pankratov.prodlist.model.dao.ProductDAO;
 import static com.pankratov.prodlist.model.dao.ProductDAO.KindOfProduct.*;
 import com.pankratov.prodlist.model.products.Product;
-import java.io.File;
 import java.sql.*;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.regex.*;
 import javax.servlet.ServletContext;
-import javax.sql.rowset.CachedRowSet;
 import org.apache.logging.log4j.Logger;
 
 
@@ -80,9 +77,7 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
         ConcurrentHashMap<String, List<String>> tablesMetaData=this.initTables();
         String productsTableName = context.getInitParameter("PRODUCTS_TABLE");
         String usersProductsTableName = context.getInitParameter("USERS_PRODUCTS_TABLE");
-        String imagesTableName = context.getInitParameter("IMAGES_TABLE");
-        
-           
+        String imagesTableName = context.getInitParameter("IMAGES_TABLE");           
                 PRODUCTS_TABLE = new Table(productsTableName, getConnection(), tablesMetaData.get(productsTableName));
                 USERS_PRODUCTS_TABLE = new Table(usersProductsTableName,  getConnection(), tablesMetaData.get(usersProductsTableName));
                 IMAGES_TABLE = new Table(imagesTableName,  getConnection(), tablesMetaData.get(imagesTableName));
@@ -98,7 +93,8 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
     ServletContext getContext() {
         return context;
     }
-
+      
+    //Преобразование прочитанных записей в продукт. 
     private Product productFromTable(List<String> fieldValues) {
         String[] fields = {"id", "name", "subName", "producer", "value", "valueUnits",
             "group", "price", "comment", "lastModify", "author", "originID"};
@@ -115,7 +111,7 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
         }
         return new Product(prodInit);
     }
-
+  
     private List<Product> productsFromTable(List<List<String>> fieldValues) {
         List<Product> products = new LinkedList<>();
         for (List<String> record : fieldValues) {
@@ -124,6 +120,7 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
         return products;
     }
 
+    //Разложение продукта на пары ключ-значение для обращения к таблице.
     private TreeMap<Integer, String> productToTable(Product product, KindOfProduct kind) {
         TreeMap<Integer, String> s = new TreeMap<>();
         if (product.getId() != -1) {
@@ -219,6 +216,10 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
         table.deleteRowByID(product.getId().toString());
         return product;
     }
+     @Override
+    public Product readProduct(Product product, KindOfProduct kind) throws JDBCDAOException {
+        return readProducts(product,kind).get(0);
+    }
 
     @Override
     public List<Product> readProducts(Product product, KindOfProduct kind) throws JDBCDAOException {
@@ -313,10 +314,8 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
     @Override
     public ConcurrentSkipListSet<String> readProductProducers(Product forProduct) throws Exception {
         ConcurrentSkipListSet<String> res = new ConcurrentSkipListSet<>();
-      //  try{
         res.addAll(PRODUCTS_TABLE.readColumn(4, productToTable(forProduct, ORIGINAL)));
-        res.addAll(USERS_PRODUCTS_TABLE.readColumn(4, productToTable(forProduct,  USER_COPY)));//}
-       // catch(Exception e){System.out.println(e);}
+        res.addAll(USERS_PRODUCTS_TABLE.readColumn(4, productToTable(forProduct,  USER_COPY)));
         return res;
     }
     
@@ -335,10 +334,8 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
 
     @Override
     public Product changeProduct(Product product) throws Exception {
-
         String prodID = String.valueOf(product.getId());
         product.setId(-1l);
-
         Product res = new Product();
         res.setId(new Long(prodID));
         if (product.isOrigin()) {
@@ -383,7 +380,6 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
             case USER_COPY:
                 identity.setAuthor(product.getAuthor());
         }
-
         return readProducts(identity, kind).size() > 0;
     }
 }

@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+/*Добавление нового продукта в БД*/
 package com.pankratov.prodlist.web;
 
 import com.pankratov.prodlist.model.dao.*;
@@ -13,26 +9,23 @@ import java.nio.file.*;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.util.*;
-import java.util.concurrent.ConcurrentSkipListSet;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.*;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.json.simple.*;
-import org.json.simple.parser.*;
+
 
 /**
  *
  * @author pankratov
  */
 public class AddProduct extends HttpServlet {
-
+    //Ошибки 
     private enum Error {
 
-        FILE_SIZE_ERROR, FILE_TYPE_ERROR, DUBLICATE;
+        FILE_SIZE_ERROR, FILE_TYPE_ERROR, DUBLICATE, OTHER;
 
     }
     private long maxImgSize;
@@ -40,7 +33,6 @@ public class AddProduct extends HttpServlet {
     private Path absTempDir; //абсолютный путь к директории временных файлов ServletFileUpload
     private Path absImgDir; //абсолютный путь к директории изображений продуктов
     private Path relImgDir; //путь к директории изображений продуктов от корня проекта
-    //private Path appRoot
     private static final org.apache.logging.log4j.Logger log = org.apache.logging.log4j.LogManager.getLogger(AddProduct.class);
 
     /*Не получилось быстро найти готовый класс для проверки сигнатуры файла на соответствие заявленному типу,
@@ -80,7 +72,7 @@ public class AddProduct extends HttpServlet {
             return result;
         }
     }
-
+    //Получение из дескриптора пути к директории изображений продуктов и временных файлов, максимального объема загружаемых изображений. 
     @Override
     public void init(ServletConfig config) {
         String param = null;
@@ -115,28 +107,14 @@ public class AddProduct extends HttpServlet {
                 maxImgSize, maxMemSize, absTempDir, absImgDir));
     }
 
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
+   
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
        response.sendError(405);
     }
 
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
+  
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -172,8 +150,10 @@ public class AddProduct extends HttpServlet {
                 sendError(Error.FILE_TYPE_ERROR, request, response);
                 return;
             };
+            //Чтение продукта и запроса
             Product product = Product.getInstanceFromFormFields(x, request);
             request.setAttribute("newProduct", product);
+            //Добавление продукта в БД c фото или без.
             try (ProductDAO pdao = DAOFactory.getProductDAOInstance(DAOFactory.DAOSource.JDBC, request.getServletContext())) {
                 LinkedList<String>img=new LinkedList<>();  
                 if(f.length() > 0)img.add(relImgDir + fileName);
@@ -201,7 +181,8 @@ public class AddProduct extends HttpServlet {
             }
             throw new ServletException(e);
         } catch (Exception ex) {
-            throw new ServletException(ex);
+            log.error(ex);
+            sendError(Error.OTHER, request, response);
         }
     }
 
@@ -214,10 +195,13 @@ public class AddProduct extends HttpServlet {
                         maxImgSize / Math.round(Math.pow(2, 10)));
                 break;
             case FILE_TYPE_ERROR:
-                text = "Ошибка формата прикрепленного файла. Прикрепляемые файлы должны быть jpeg, png или gif.";
+                text = "Ошибка формата прикрепленного файла. Прикрепляемые файлы должны быть jpeg, png или gif.\n";
                 break;
             case DUBLICATE:
-                text = "Данный продукт уже существует";
+                text = "Данный продукт уже существует.\n";
+                break;
+             case OTHER:
+                text = "Во время добавления продукта произошла ошибка.\n";
                 break;
         }
         request.setAttribute("error", text);

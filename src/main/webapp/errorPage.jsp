@@ -6,6 +6,7 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
+<%@taglib prefix="product" uri="ProductsEL" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -21,7 +22,7 @@
               <c:choose>               
                   <c:when test="${pageContext.errorData.statusCode eq 404}">
                       <img class="errorImg" src=" resources/common_image/error_pics/error_404.png">
-                      <h4> Мы всюду искали "${pageContext.errorData.requestURI}", но похоже его у нас просто нет.</h4>
+                      <h4> Мы всюду искали "${product:decodeURL(pageContext.errorData.requestURI,'UTF-8')}", но похоже, его у нас просто нет.</h4>
                   </c:when>
                   <c:when test="${pageContext.errorData.throwable ne null}">
                       <img class="errorImg" src=" resources/common_image/error_pics/exeption.png">

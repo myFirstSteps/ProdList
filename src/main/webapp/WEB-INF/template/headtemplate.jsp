@@ -62,12 +62,13 @@
     <c:choose>
         <c:when test="${username==null}">
 
-            <c:if test="${path ne'/loginPage.jsp' and path ne '/loginError.jsp'}">
+            <c:if test="${path ne'/loginPage.jsp' and path ne '/loginError.jsp'  and path ne '/registration.jsp' }">
                 <form id="UserForm" action="<c:url value='loginPage.jsp'/>"  method="get">  
                     Вход не выполнен.<br>
-                    <input type="submit" value="Войти">                  
+                    <input type="submit" value="Войти"><br>
+                    <a style='color:#dea000;' href='<c:url value="registration.jsp"/>'>регистрация</a>
                 </form> 
-                <c:set var="lastpage" scope="session" value="${path}"/>
+                <c:set var="lastPage" scope="session" value="${path}"/>
             </c:if> 
 
         </c:when>
@@ -105,7 +106,7 @@
         $("body").html( $("body").html()+this.ahtml);   
         this.splash=$('div#processing');
     }
-    $(document).ready(function(){if (loading===null){ loading=new  LoadingSplash(); $(window).resize(function(){loading.show();});} });
+    $(document).ready(function(){if (loading===null){ loading=new  LoadingSplash(); $(window).resize(function(){loading.calcSizePos();});} });
 </script>
 
 

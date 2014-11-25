@@ -7,20 +7,17 @@ package com.pankratov.prodlist.web;
 
 import com.pankratov.prodlist.model.dao.DAOFactory;
 import com.pankratov.prodlist.model.dao.DAOFactory.DAOSource;
-import com.pankratov.prodlist.model.mail.MailAgent;
 import com.pankratov.prodlist.model.dao.jdbc.JDBCDAOException;
 import com.pankratov.prodlist.model.users.User;
 import com.pankratov.prodlist.model.dao.UserDAO;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.concurrent.*;
 import javax.servlet.*;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletResponseWrapper;
-import org.apache.commons.mail.*;
+
 import org.apache.logging.log4j.*;
 
 
@@ -33,31 +30,8 @@ public class Registration extends HttpServlet {
     private static final Logger log = LogManager.getLogger(Registration.class);
     private static ConcurrentSkipListSet<String> logins;
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet Registration</title>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet Registration at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        }
-    }
+
+   
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**

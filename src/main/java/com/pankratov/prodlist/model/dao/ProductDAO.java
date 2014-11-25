@@ -16,15 +16,16 @@ import java.util.concurrent.ConcurrentSkipListSet;
  * @author pankratov
  */
 public interface ProductDAO extends AutoCloseable {
-    public enum KindOfProduct{ORIGINAL,USER_COPY,BOTH}
-    public List<Product> readProducts(Product what, KindOfProduct kind) throws Exception;
-    public Product addProduct(Product what) throws Exception;
-    public Product addProduct(Product what, LinkedList<String> imagesPath) throws Exception;
+    public enum KindOfProduct{ORIGINAL,USER_COPY,BOTH} //Перечисление определяющее из какой группы необходимо считывать продукт(общие, пользовательские, оба).
+    public List<Product> readProducts(Product product, KindOfProduct kind) throws Exception;
+    public Product readProduct(Product product, KindOfProduct kind) throws Exception;
+    public Product addProduct(Product product) throws Exception;
+    public Product addProduct(Product product, LinkedList<String> imagesPath) throws Exception;
     public ArrayList readProductGroups()throws Exception; 
     public ArrayList readProductValueUnits()throws Exception; 
     public boolean addGroup (String ...group)throws Exception;
-    public Product deleteProduct(Product what) throws Exception;
-    public Product changeProduct(Product what)throws Exception;
+    public Product deleteProduct(Product product) throws Exception;
+    public Product changeProduct(Product product)throws Exception;
     public ConcurrentSkipListSet<String> readProductNames() throws Exception;
     public ConcurrentSkipListSet<String> readProductSubNames() throws Exception;
     public ConcurrentSkipListSet<String> readProductProducers() throws Exception;

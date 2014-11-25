@@ -6,6 +6,7 @@
 package com.pankratov.prodlist.web.filters;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import javax.servlet.http.*;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -13,6 +14,7 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -24,19 +26,10 @@ public class LoginCookieCreator implements Filter {
     // this value is null, this filter instance is not currently
     // configured. 
     private FilterConfig filterConfig = null;
-
+    private final static Logger log= org.apache.logging.log4j.LogManager.getLogger(LoginCookieCreator.class);
     public LoginCookieCreator() {
     }
 
-    /**
-     *
-     * @param request The servlet request we are processing
-     * @param response The servlet response we are creating
-     * @param chain The filter chain we are processing
-     *
-     * @exception IOException if an input/output error occurs
-     * @exception ServletException if a servlet error occurs
-     */
     //Если пользователь авторизован, устанавливаем cookie с его login
     @Override
     public void doFilter(ServletRequest request, ServletResponse response,
@@ -47,14 +40,15 @@ public class LoginCookieCreator implements Filter {
             HttpServletRequest req =(HttpServletRequest) request;
             String login = ((HttpServletRequest) request).getRemoteUser();
              if (login != null) {
-                Cookie c = new Cookie("login", login);
+                Cookie c = new Cookie("login", URLEncoder.encode(login, "UTF-8"));
                 c.setMaxAge(60 * 60 * 24 * 365 * 1);
                 req.getSession().setAttribute("login", login);
                 ((HttpServletResponse)response).addCookie(c);
             }
             chain.doFilter(request,response);      
         } catch (Throwable t) {
-
+            log.error(t);
+           throw new ServletException(t);
         }
 
     }

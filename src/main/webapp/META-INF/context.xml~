@@ -2,5 +2,5 @@
 <Context antiJARLocking="true" path="/ProdList">
 
 <Valve className="org.apache.catalina.authenticator.FormAuthenticator"
-         characterEncoding="UTF-8"/>
+         characterEncoding="UTF-16"/>
 </Context>

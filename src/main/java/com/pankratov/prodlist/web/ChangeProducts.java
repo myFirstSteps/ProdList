@@ -49,7 +49,7 @@ public class ChangeProducts extends HttpServlet {
                     temp = new Product();
                     temp.setOrigin(p.isOrigin());
                     temp.setId(p.getId());
-                    if (!(pdao.readProducts(temp, temp.isOrigin() ? ORIGINAL : USER_COPY).get(0).getAuthor().equals(client)
+                    if (!(pdao.readProduct(temp, temp.isOrigin() ? ORIGINAL : USER_COPY).getAuthor().equals(client)
                             || request.isUserInRole("admin"))) {
                         throw new JDBCDAOException("Нет прав.");
                     }
@@ -60,7 +60,7 @@ public class ChangeProducts extends HttpServlet {
                     }
                     break;
                 case "clone":
-                    p = pdao.readProducts(p, ORIGINAL).get(0);
+                    p = pdao.readProduct(p, ORIGINAL);
                     temp = new Product();
                     temp.setOriginID(p.getId());
                     temp.setName(p.getName());
@@ -75,7 +75,7 @@ public class ChangeProducts extends HttpServlet {
                     if (!request.isUserInRole("admin")) {
                         throw new JDBCDAOException("Нет прав.");
                     }
-                    p = pdao.readProducts(p, USER_COPY).get(0);
+                    p = pdao.readProduct(p, USER_COPY);
                     p.setOrigin(true);
                     p.setAuthorRole("admin");
                     temp = new Product();

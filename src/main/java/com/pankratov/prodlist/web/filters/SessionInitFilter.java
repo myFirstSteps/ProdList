@@ -7,38 +7,20 @@ package com.pankratov.prodlist.web.filters;
 
 import java.io.IOException;
 import java.util.*;
-import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import javax.servlet.*;
 import javax.servlet.http.*;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
  * @author pankratov
  */
 public class SessionInitFilter implements Filter {
-
-    // The filter configuration object we are associated with.  If
-    // this value is null, this filter instance is not currently
-    // configured. 
+    private final static Logger log= org.apache.logging.log4j.LogManager.getLogger(SessionInitFilter.class);
     private FilterConfig filterConfig = null;
 
-    /**
-     *
-     * @param request The servlet request we are processing
-     * @param response The servlet response we are creating
-     * @param chain The filter chain we are processing
-     *
-     * @exception IOException if an input/output error occurs
-     * @exception ServletException if a servlet error occurs
-     */
     @SuppressWarnings("empty-statement")
+    @Override
     public void doFilter(ServletRequest request, ServletResponse response,
             FilterChain chain)
             throws IOException, ServletException {
@@ -65,46 +47,39 @@ public class SessionInitFilter implements Filter {
                  }
                 resp.sendRedirect(resp.encodeRedirectURL(req.getRequestURL().toString()));
             } else {
+                Object tempVar;
+                TreeMap<Long,String> visited;
+                try{
+                visited=(tempVar=ses.getAttribute("visited"))!=null?
+                        (TreeMap<Long,String>)tempVar:new TreeMap<Long,String>();
+                visited.put(System.currentTimeMillis(), req.getServletPath());
+                ses.setAttribute("visited", visited);}
+                catch (Exception e){log.error(e);}
                 chain.doFilter(request, response);
+               
             }
-        } catch (Throwable t) { System.out.println(t);
-            
-	    // If an exception is thrown somewhere down the filter chain,
-            // we still want to execute our after processing, and then
-            // rethrow the problem after that.
+        } catch (Throwable t) { log.error(t);
+            throw new ServletException(t);
         }
         ;
 
     }
 
-    /**
-     * Return the filter configuration object for this filter.
-     *
-     * @return
-     */
+  
     public FilterConfig getFilterConfig() {
         return (this.filterConfig);
     }
 
-    /**
-     * Set the filter configuration object for this filter.
-     *
-     * @param filterConfig The filter configuration object
-     */
     public void setFilterConfig(FilterConfig filterConfig) {
         this.filterConfig = filterConfig;
     }
 
-    /**
-     * Destroy method for this filter
-     */
+ 
     @Override
     public void destroy() {
     }
 
-    /**
-     * Init method for this filter
-     */
+   
     @Override
     public void init(FilterConfig filterConfig) {
         this.filterConfig = filterConfig;

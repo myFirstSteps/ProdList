@@ -11,6 +11,8 @@ import com.pankratov.prodlist.model.dao.ProductDAO;
 import com.pankratov.prodlist.model.dao.jdbc.JDBCProductDAO;
 import com.pankratov.prodlist.model.list.ProdList;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
@@ -48,5 +50,8 @@ public class ProductEL {
     public static boolean isImageExist(String path) {
         Path p = java.nio.file.Paths.get(path);
             return Files.exists(p);
+    }
+    public static String decodeURL(String url,String characterSet)throws UnsupportedEncodingException{
+        return URLDecoder.decode(url,  characterSet);
     }
 }

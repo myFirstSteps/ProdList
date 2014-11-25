@@ -4,25 +4,15 @@ import com.pankratov.prodlist.model.dao.DAOFactory;
 import com.pankratov.prodlist.model.dao.ProductDAO;
 import com.pankratov.prodlist.model.products.Product;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListSet;
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import javax.servlet.http.*;
+import org.json.simple.*;
 import org.json.simple.parser.JSONParser;
 
-
-public class ProductAutocomplete extends HttpServlet {
-
-   
-   
-    
+//Автодополнение полей формы редактора продуктов
+public class ProductAutocomplete extends HttpServlet { 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {

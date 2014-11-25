@@ -23,10 +23,11 @@
         <c:set var="imgDir" value="${pageContext.servletContext.getRealPath(imgRoot)}"/>
         <c:set var="categories" value="${product:getCategories(pageContext.servletContext)}"/>
         <div class='TabletMenu'>
+            <img id="closeMenu" title="Закрыть" height="16" width="16" alt="закрыть" src="${icons}Close.gif">
             <c:forEach  items="${categories}" varStatus="step" var="category">
                 <div class='Tablet'>
                     <c:set var="imgPath" value="${imgDir}/${step.count}.png"></c:set>
-                        <img src="
+                    <img height="100" width="100" src="
                         <c:choose> 
                             <c:when test='${product:isImageExist(imgPath)}'> <c:url value="${imgRoot}${step.count}.png"/></c:when>
                             <c:otherwise> <c:url value="${imgRoot}0.png"/></c:otherwise> 
@@ -52,10 +53,8 @@
             <c:if test="${newProduct.producer ne null}"><c:set var="producerValue" value="${newProduct.producer}"/></c:if>
             <c:set var="valueUnitsValue" value="" /> 
             <c:if test="${newProduct.valueUnits ne null}"><c:set var="valueUnitsValue" value="${newProduct.valueUnits}"/></c:if>
-            <c:set var="valueValue" value="" /> 
-            <c:if test="${newProduct.value ne null}"><c:set var="valueValue" value="${newProduct.value}"/></c:if>
             <c:set var="priceValue" value="" /> 
-            <c:if test="${newProduct.price ne null}"><c:set var="priceValue" value="${newProduct.price}"/></c:if>
+            <c:if test="${newProduct.price ne -1.0 }"><c:set var="priceValue" value="${newProduct.price}"/></c:if>
             <c:set var="commentValue" value="" /> 
             <c:if test="${newProduct.comment ne null}"><c:set var="commentValue" value="${newProduct.comment}"/></c:if>
 

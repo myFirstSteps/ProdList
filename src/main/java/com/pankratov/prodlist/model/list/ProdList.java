@@ -70,9 +70,8 @@ public class ProdList {
             KindOfProduct kind=item[0].contains("o")?ProductDAO.KindOfProduct.ORIGINAL:ProductDAO.KindOfProduct.USER_COPY;
             Product product=new Product();
             product.setId(new Long(item[0].replaceAll("o", "")));
-            List<Product> pl=productSource.readProducts(product, kind);
-            if(pl.size()<1) continue ;
-                 product= pl.get(0);
+             product=productSource.readProduct(product, kind);
+            if( product==null) continue ;
                  String temp;
                  prods.add(String.format("%d. %s %s %s %.2fруб.   %dшт.",
                          i,product.getName(),

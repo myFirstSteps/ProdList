@@ -53,9 +53,6 @@
                   $.each(alist.products,function(i,e){
                     listhtml+="<div>"+e+"<button><img height='16' width='16' alt='Показать' src='${icons}View.gif'></button></div>";
                 });
-                alert(listhtml);
-                    /*$("#list").append($.each(list.products,function(){      
-                    }));*/
                     $("#list").html(listhtml).show();
                 });
             }

@@ -8,7 +8,6 @@
         <link href='CSSdoc/mainCSS.css' rel='stylesheet' type="text/css">
     </head>
     <body>
-        
         <div id="header">
             <c:import url="/WEB-INF/template/headtemplate.jsp" charEncoding="UTF-8"/>
         </div>
@@ -18,8 +17,7 @@
                 <c:import url="/WEB-INF/template/loginF.jsp" charEncoding="UTF-8"/>
             </c:when>
             <c:otherwise>
-                <c:if test="${!empty sessionScope.Attribute.lastpage}"> <jsp:forward page="index.jsp"/></c:if>
-                <jsp:forward page="index.jsp"/>                           
+                <jsp:forward page="${lastPage}"/>                           
             </c:otherwise>
         </c:choose>
         </div>
