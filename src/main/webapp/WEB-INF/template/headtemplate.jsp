@@ -65,7 +65,7 @@
             <c:if test="${path ne'/loginPage.jsp' and path ne '/loginError.jsp'  and path ne '/registration.jsp' }">
                 <form id="UserForm" action="<c:url value='loginPage.jsp'/>"  method="get">  
                     Вход не выполнен.<br>
-                    <input type="submit" value="Войти"><br>
+                    <input class="pointer" type="submit" value="Войти"><br>
                     <a style='color:#dea000;' href='<c:url value="registration.jsp"/>'>регистрация</a>
                 </form> 
                 <c:set var="lastPage" scope="session" value="${path}"/>

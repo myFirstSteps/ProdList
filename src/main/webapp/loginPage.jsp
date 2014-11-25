@@ -11,7 +11,7 @@
         <div id="header">
             <c:import url="/WEB-INF/template/headtemplate.jsp" charEncoding="UTF-8"/>
         </div>
-        <div class="center_form">
+        <div class="center_form panel">
         <c:choose>
             <c:when test="${pageContext.request.getRemoteUser()==null}">
                 <c:import url="/WEB-INF/template/loginF.jsp" charEncoding="UTF-8"/>

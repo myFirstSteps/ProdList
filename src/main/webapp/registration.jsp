@@ -18,9 +18,9 @@
             <c:import url="/WEB-INF/template/headtemplate.jsp" charEncoding="UTF-8"/>
         </div>
         <%--Форма регистрации --%>
-        <div class="center_form" id="registration">
+        <div class="center_form panel" id="registration">
             <c:choose> <c:when test="${registration ne 'done'}">
-                    <form id="registration" class="center_form" method="post" action="<c:url value='Registration'/>" >
+                    <form id="registration"  method="post" action="<c:url value='Registration'/>" >
                         <div id='error' class='error'>${error}</div> 
                         <h3>Добро пожаловать на страницу регистрации.</h3>
                         <p>

@@ -23,7 +23,7 @@
         <c:set var="imgDir" value="${pageContext.servletContext.getRealPath(imgRoot)}"/>
         <c:set var="categories" value="${product:getCategories(pageContext.servletContext)}"/>
         <div class='TabletMenu'>
-            <img id="closeMenu" title="Закрыть" height="16" width="16" alt="закрыть" src="${icons}Close.gif">
+            <img id="closeMenu" class="pointer" title="Закрыть" height="16" width="16" alt="закрыть" src="${icons}Close.gif">
             <c:forEach  items="${categories}" varStatus="step" var="category">
                 <div class='Tablet'>
                     <c:set var="imgPath" value="${imgDir}/${step.count}.png"></c:set>
@@ -39,7 +39,7 @@
         </div>
 
 
-        <form  class="center_form" id="newProduct" method="post"  enctype="multipart/form-data" action= '<c:url value="addProduct"/>'>
+        <form  class="panel" id="newProduct" method="post"  enctype="multipart/form-data" action= '<c:url value="addProduct"/>'>
 
             <h2>Редактор продуктов.</h2>
             <div id='error' class='error'>${error}</div><br>
@@ -96,14 +96,13 @@
             </div><br>
             <div>
                 <span>Прикрепить изображение:</span><br>
-                <input type="file" id="a"   accept="image/jpeg,image/png,image/gif" name='imageFile'>
+                <input class="pointer" type="file" id="a"   accept="image/jpeg,image/png,image/gif" name='imageFile'>
             </div><br>
-            <input type="button" onclick="validate(this.form)" value="Добавить">
-            <button formaction="<c:url value='ReadProduct'/>">Найти</button>
-
+            <button type="button" onclick="validate(this.form)" title="Добавить продукт в базу."><img alt="Добавить" height="16" width="16" src="${icons}Add.gif"></button>
+            <button formaction="<c:url value='ReadProduct'/>" title="Показать продукты."><img alt="Показать" height="16" width="16" src="${icons}View.gif"></button>
         </form>
         <c:if test='${products ne null}'>
-            <div class='prodholder center_form'>
+            <div class='prodholder panel'>
                 <c:if test="${status ne null}"><h4>${status}</h4></c:if>
                 <c:import url="/WEB-INF/template/productinfo.jsp"/>         
             </div> 

@@ -18,7 +18,7 @@
     <body>
         <c:set var="categories" value="${product:getCategories(pageContext.servletContext)}"/>
         <c:import url="WEB-INF/template/headtemplate.jsp"/>
-        <div id='newList' class='center_form prodholder'>
+        <div id='newList' class=' prodholder panel'>
             <div id='newListHead'>
                 <div>
                     Имя списка:<span id='listName'>Имя списка</span>
@@ -49,8 +49,8 @@
             </div>
         </div>
 
-        <div id="prodSelect" hidden="hidden" class="prodholder center_form">
-            <img height="16" width="16" style="float: right; cursor: pointer" title='Закрыть форму.' src="${icons}Close.gif" alt="Закрыть" onclick="$('#prodSelect').hide()" >
+        <div id="prodSelect" hidden="hidden" class="prodholder  panel">
+            <img class="pointer" height="16" width="16" style="float: right;" title='Закрыть форму.' src="${icons}Close.gif" alt="Закрыть" onclick="$('#prodSelect').hide()" >
             <div class='AddEllement main'>
                 <span>Категория:</span><br>
                 <select name="group" size="1"> 

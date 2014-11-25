@@ -1,23 +1,30 @@
-html{height: 100%; word-wrap: break-word;
-}
-body{ font-family: serif, Arial ;  font-size:small; margin:0; height: 100%;   padding: 0; }
-em{font-size: 120%;}
-button {cursor: pointer;}
-#HeadTemplate{ background-color:#303030; padding:0px; margin: 0px; width: 100%;  color:white; }
+html{height: 100%;}
+body{ font-family: serif, Arial ; text-align: center;  font-size:small; margin:0; height: 100%;   padding: 0; word-wrap: break-word;}
+em{font-size: 110%; font-weight: bold;}
+button, .pointer, select {cursor: pointer;}
+#HeadTemplate{ background-color:#303030; padding:0px; text-align: left; margin: 0px; width: 100%;  color:white; }
 
-#HeadTemplate div { margin: 0px 5px 0px 5px;  vertical-align: middle; display: inline-block; }
+#HeadTemplate > div { margin: 0px 5px 0px 5px;  vertical-align: middle; display: inline-block; }
 #HeadTemplate div span{font-size:120% ;  text-align: center;}
 #HeadTemplate div img {border-radius: 5px; }
-.centerDiv {margin: 10px auto 10px auto; width: 90%; text-align: center;}
 
 img.UnActiveNavIco { display: inline-block; }
 img.ActiveNavIco { display: none; }
-#UserForm{ background-color:#303030;  float: right; display: inline-block; padding: 5px; vertical-align: middle; }
-#UserName em{color: #dea000;}
- .error{color:red;}
 
- form.center_form, .center_form{ background-color:#f0f0f0; border-radius:8px; max-width: 400px;
-margin-bottom:auto; margin-top:10px; margin-left:auto; margin-right: auto; text-align: center;  vertical-align: middle; padding: 10px;}
+#UserForm{ background-color:#303030;  float: right; display: inline-block; padding: 5px;  }
+#UserName em{color: #dea000;}
+ 
+.error{color:red;}
+
+.panel {background-color:#f0f0f0; border-radius:10px;   vertical-align: middle; padding: 10px; margin:10px auto 10px auto;}
+
+
+ .center_form{  max-width: 400px; margin-top: 40px;}
+ 
+ #aboutme, #aboutproj {display: inline-block; overflow: auto; text-align: left; padding: 20px; text-indent: 40px; font-size: 14px;}
+ #aboutme em, #aboutproj em {font-size: 100%;}
+ #aboutme {width: 40% ; }
+ #aboutproj {width: 55%;}
  
 .TabletMenu{ border-radius: 10px; position: absolute; left: -5000px;   border: #303030 solid 2px;     background-color: #f0f0f0;  }
 .Tablet {text-align: center; border-radius: 6px; vertical-align: middle;  width:100px; margin: 2px;  padding: 3px;  border: #303030 solid 1px; display: inline-block;  }
@@ -39,7 +46,7 @@ form#newProduct > div {margin: 5px; position: static; display: inline-block;}
 }
 
 .prodholder {max-width: 90%; overflow: auto; }
-#prodtable{;  border-collapse: collapse;}
+#prodtable{  border-collapse: collapse;}
 .prodheader {font-weight: bold;}
 .proddata { vertical-align: middle; border: solid 1px #303030;  margin: 2px; padding:5px; }
 .prodImg {border: solid 2px #303030; max-width: 200px;}

@@ -16,7 +16,7 @@
     </head>
     <body>
         <c:import url="WEB-INF/template/headtemplate.jsp"/>
-        <div  class='center_form prodholder'> 
+        <div  class='panel prodholder'> 
             <h2>Просмотр списков.</h2>
             <div>
                 <span>Имя списка:</span><br>
@@ -31,7 +31,7 @@
                 <button id="show" title="Показать список" style="display: none;" onclick="showList()"><img height="16" width="16" src="${icons}View.gif" alt="Показать"></button>
             </div>
         </div>
-            <div id="list" style="display:none;"  class='center_form prodholder'>
+            <div id="list" style="display:none;"  class='panel prodholder'>
                 
             </div>
         <script src="scripts/formValidation.js"></script>
