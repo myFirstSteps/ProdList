@@ -1,7 +1,8 @@
 html{height: 100%;}
-body{ font-family: serif, Arial ; text-align: center;  font-size:small; margin:0; height: 100%;   padding: 0; word-wrap: break-word;}
-em{font-size: 110%; font-weight: bold;}
+body{ font-family: serif, Arial ; text-align: center;  font-size:14px; margin:0; height: 100%;   padding: 0; word-wrap: break-word;}
+em{font-weight: bold;}
 button, .pointer, select {cursor: pointer;}
+h1,h2,h3,h4{margin-bottom: 0px;}
 #HeadTemplate{ background-color:#303030; padding:0px; text-align: left; margin: 0px; width: 100%;  color:white; }
 
 #HeadTemplate > div { margin: 0px 5px 0px 5px;  vertical-align: middle; display: inline-block; }
@@ -16,18 +17,23 @@ img.ActiveNavIco { display: none; }
  
 .error{color:red;}
 
-.panel {background-color:#f0f0f0; border-radius:10px;   vertical-align: middle; padding: 10px; margin:10px auto 10px auto;}
+.panel {background-color:#f0f0f0; border-radius:10px;   vertical-align: middle; padding: 10px; margin:5px auto 10px auto; clear: both;}
 
 
  .center_form{  max-width: 400px; margin-top: 40px;}
  
- #aboutme, #aboutproj {display: inline-block; overflow: auto; text-align: left; padding: 20px; text-indent: 40px; font-size: 14px;}
- #aboutme em, #aboutproj em {font-size: 100%;}
- #aboutme {width: 40% ; }
- #aboutproj {width: 55%;}
+ #about {width: 90%; margin: 0 auto 0 auto;}
+ #about img{ border-radius: 10px; float:left; margin: 5px 10px 5px 0px;}
+ img#springimg{max-width: 80%; margin: 10px 0px 0px 0px; float: none;}
+ #about ul  {margin: 10px 20px; text-indent: 0px; line-height: 1.5;}
+ #about > div{display: inline-block; overflow: auto; text-align: left; padding: 20px; text-indent: 40px; font-size: 14px; clear: right;}
+ #aboutme {width: 40% ; float: left; }
+ #aboutproj {width: 50%; float: left; position: relative; left: 20px;}
  
-.TabletMenu{ border-radius: 10px; position: absolute; left: -5000px;   border: #303030 solid 2px;     background-color: #f0f0f0;  }
-.Tablet {text-align: center; border-radius: 6px; vertical-align: middle;  width:100px; margin: 2px;  padding: 3px;  border: #303030 solid 1px; display: inline-block;  }
+ #banner {position: fixed; top: -1000px;}
+ 
+.TabletMenu{ border-radius: 10px; position: absolute; left: -5000px;   border: #303030 solid 2px;   text-align: left; background-color:#f0f0f0;  }
+.Tablet {text-align: center; font-size:10px;  border-radius: 6px; vertical-align: middle;  width:100px; margin: 2px;  padding: 3px;  border: #303030 solid 1px; display: inline-block;  }
 .Tablet span{color: #303030; font-weight: normal; font-style: italic; font-size: 150%; text-shadow: 2px;}
 .Tablet img{border-radius: 4px; width: auto; border:#303030 groove 2px; }
 .SelectedTablet span{color: #dea000; font-weight: bold; text-shadow: 5px;}

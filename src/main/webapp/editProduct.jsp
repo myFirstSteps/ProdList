@@ -25,7 +25,7 @@
         <div class='TabletMenu'>
             <img id="closeMenu" class="pointer" title="Закрыть" height="16" width="16" alt="закрыть" src="${icons}Close.gif">
             <c:forEach  items="${categories}" varStatus="step" var="category">
-                <div class='Tablet'>
+                <div class='Tablet pointer'>
                     <c:set var="imgPath" value="${imgDir}/${step.count}.png"></c:set>
                     <img height="100" width="100" src="
                         <c:choose> 
