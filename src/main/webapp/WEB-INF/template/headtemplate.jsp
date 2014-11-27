@@ -112,31 +112,33 @@
         this.splash = $('div#processing');
     };
     
-    function Banner() {
-        this.ahtml = "<div id='banner' style='position: fixed;  text-align: center;' class='panel'>\n\
-<img style=' position: fixed;' src='resources/common_image/Before_leaving.png'>Перед уходом, кликните по баннеру и оставьте свое мнение.</div>";
-        this.acalcSizePos = function() {
-            
-            $(this.abanner).css('top', '50');
-           // $(this.banner).width(window.innerWidth).height(document.body.scrollHeight - $("#HeadTemplate").height());
-           // var img = $(this.banner).children("img");
-          //  var y = (window.innerHeight - $(img).height()) / 2;
-          //  $(img).css('top', y);
+    function Banner(id,html) {
+      this.left=-420;
+       this.id=id!==undefined&&(typeof (id)==='string')?id:'banner';
+        this.html = "<div id='"+this.id+"' style='position: fixed; clear:none; top:150px; left: "+this.left+"px;  text-align: center; border: solid 2px black;' class='panel'>\n\
+<img  src='resources/common_image/Before_leaving.png'><img style='float: right;' src='resources/common_image/banner.png'><br>Перед уходом, кликните по баннеру и оставьте свое мнение. </div>";
+        this.calcSizePos = function() {
         };
-        this.ashow = function() {
-            this.acalcSizePos();
-            $(this.abanner).fadeTo(100, 0.8);
-        };
-      //  $("body").html($("body").html() + this.ahtml);
-        this.abanner = $('div#banner');
-       alert("ff");
        
+        this.show = function() {
+          $('div#'+this.id).animate({left:0},300);
+        };
+        this.hide = function() {
+          $('div#'+this.id).stop(true,true);
+          $('div#'+this.id).animate({left:-$(this).width()+20},500);
+        };
+        if( $('div#'+this.id).length===0)$("body").append(this.html);
+        this.banner = $('div#'+this.id);
+        $(this.banner).mouseover(this.show);
+        $(this.banner).mouseleave(this.hide);
+        $(this.banner).click(function(){location.href='<c:url value="valuation.jsp"/>';});
+  
     };
     
     function kk(){
       alert("kk");
     };
-    var aa= new Banner();
+    var banner= new Banner("valuation");
      //$(document).ready(function(){})
     /*$(document).ready(function() {
         if (loading === null) {

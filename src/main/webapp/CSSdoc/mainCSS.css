@@ -30,7 +30,7 @@ img.ActiveNavIco { display: none; }
  #aboutme {width: 40% ; float: left; }
  #aboutproj {width: 50%; float: left; position: relative; left: 20px;}
  
- #banner {position: fixed; top: -1000px;}
+
  
 .TabletMenu{ border-radius: 10px; position: absolute; left: -5000px;   border: #303030 solid 2px;   text-align: left; background-color:#f0f0f0;  }
 .Tablet {text-align: center; font-size:10px;  border-radius: 6px; vertical-align: middle;  width:100px; margin: 2px;  padding: 3px;  border: #303030 solid 1px; display: inline-block;  }
