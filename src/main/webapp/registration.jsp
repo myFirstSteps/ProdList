@@ -26,15 +26,16 @@
                         <p>
                             Заполните необходимые поля и нажмите кнопку зарегистрировать. 
                         </p>
-
-                        <p>логин:<br><input  class="mandatory"     value="${regData['0']}"
-                                             type="text" title="Login пользователя который вы будете вводить при авторизации" name="login" placeholder="обязательное поле"></p>
-                        <p>пароль:<br><input   class="mandatory confirmt"  type="password" title="Пароль" name="password" placeholder="обязательное поле"></p>
-                        <p>подтвердить пароль:<br><input class="mandatory confirm"   type="password" title="Пароль" placeholder="обязательное поле"></p>
-                        <p>e-mail:<br><input  type="text" title="e-mail" name="e-mail" value="${regData['3']}" placeholder="очень желательное поле"></p>
-                        <p>имя:<br><input  type="text" title="Ваше имя" name="name" value="${regData['1']}" placeholder="не обязательное поле"></p>
-                        <p>Фамилия:<br><input  type="text" title="Ваша фамилия" value="${regData['2']}" name="family" placeholder="не обязательное поле"></p>
+                        <div>
+                        <div class="formitem">логин:<br><input  class="mandatory"     value="${regData['0']}"
+                                             type="text" title="Login пользователя который вы будете вводить при авторизации" name="login" placeholder="обязательное поле"></div>
+                        <div class="formitem">пароль:<br><input   class="mandatory confirmt"  type="password" title="Пароль" name="password" placeholder="обязательное поле"></div>
+                        <div class="formitem">подтвердить пароль:<br><input class="mandatory confirm"   type="password" title="Пароль" placeholder="обязательное поле"></div>
+                        <div class="formitem">e-mail:<br><input  type="text" title="e-mail" name="e-mail" value="${regData['3']}" placeholder="очень желательное поле"></div>
+                        <div class="formitem">имя:<br><input  type="text" title="Ваше имя" name="name" value="${regData['1']}" placeholder="не обязательное поле"></div>
+                        <div class="formitem">Фамилия:<br><input  type="text" title="Ваша фамилия" value="${regData['2']}" name="family" placeholder="не обязательное поле"></div>
                         <input type="button" onclick="validate(this.form)" value="Зарегистрировать">
+                         </div>
                     </form>
                 </c:when>
                 <c:otherwise>

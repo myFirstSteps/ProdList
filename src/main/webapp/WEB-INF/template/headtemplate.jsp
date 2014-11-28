@@ -76,16 +76,10 @@
             <form id="UserForm" action="LogOut" method="get"> Пользователь: <span id="UserName"><em> ${username}</em></span><br> <button name="path" value="${path}">Выход</button></form>
             </c:otherwise>
         </c:choose>
-            <%--<div id='banner' class="panel">
-        <img src='resources/common_image/Before_leaving.png' >
-        Перед уходом, кликните по баннеру и оставьте свое мнение.
-    </div>--%>
 </div>
 
 <script src='scripts/jquery-1.11.1.min.js'></script> 
 <script>
-   // loading = null;
-    non = null;
     $(".Navigation a").on("mouseover", function() {
         $(this).children(".UnActiveNavIco").hide();
         $(this).children(".ActiveNavIco").show();
@@ -95,21 +89,22 @@
         $(this).children(".UnActiveNavIco").show();
     });
     function LoadingSplash() {
-        this.ahtml = "<div id='processing' style='position: absolute; background-color: white; text-align: center; display:none; '>\n\
+        this.html = "<div id='processing' style='position: absolute; z-index:2; background-color: white; text-align: center; display:none; '>\n\
 <img style=' position: fixed;' src='${icons}ajax-loader.gif'></div>";
         this.calcSizePos = function() {
-            $(this.splash).css('top', $("#HeadTemplate").height());
-            $(this.splash).width(window.innerWidth).height(document.body.scrollHeight - $("#HeadTemplate").height());
-            var img = $(this.splash).children("img");
+            $('div#processing').width(window.innerWidth).height(document.body.scrollHeight); //- $("#HeadTemplate").height());
+            var img =  $('div#processing').children("img");
             var y = (window.innerHeight - $(img).height()) / 2;
             $(img).css('top', y);
         };
         this.show = function() {
-            this.calcSizePos();
+           splash.calcSizePos();
             $(this.splash).fadeTo(100, 0.8);
         };
-        $("body").html($("body").html() + this.ahtml);
+        this.hide=function(){$(this.splash).hide();};
+        if( $('div#processing').length===0)$("body").append(this.html);
         this.splash = $('div#processing');
+        $(window).resize(this.calcSizePos);
     };
     
     function Banner(id,html) {
@@ -134,28 +129,8 @@
         $(this.banner).click(function(){location.href='<c:url value="valuation.jsp"/>';});
   
     };
-    
-    function kk(){
-      alert("kk");
-    };
     var banner= new Banner("valuation");
-     //$(document).ready(function(){})
-    /*$(document).ready(function() {
-        if (loading === null) {
-            loading = new LoadingSplash();
-         $(window).resize(function() {
-                loading.calcSizePos();
-            });}
-             if (banner === null) {
-            banner = new Banner();}
-           
-       
-    });*/
-      // document.load(function(){alert("load();");});
-  //   $(document).ready(function(){if (non ===null){ non=new Banner();alert("hrr");} });
-     //$(document).ready(function(){if (loading===null){ loading=new LoadingSplash(); $(window).resize(function(){loading.calcSizePos();});}});
-   
-
+    var splash= new LoadingSplash();
 
 </script>
 

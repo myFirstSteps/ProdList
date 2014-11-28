@@ -18,7 +18,7 @@
     <body>
         <c:set var="categories" value="${product:getCategories(pageContext.servletContext)}"/>
         <c:import url="WEB-INF/template/headtemplate.jsp"/>
-        <div id='newList' class=' prodholder panel'>
+        <div id='newList' class='panel'>
             <div id='newListHead'>
                 <div>
                     Имя списка:<span id='listName'>Имя списка</span>
@@ -49,9 +49,9 @@
             </div>
         </div>
 
-        <div id="prodSelect" hidden="hidden" class="prodholder  panel">
+        <div id="prodSelect" hidden="hidden" class="panel">
             <img class="pointer" height="16" width="16" style="float: right;" title='Закрыть форму.' src="${icons}Close.gif" alt="Закрыть" onclick="$('#prodSelect').hide()" >
-            <div class='AddEllement main'>
+            <div class='AddEllement main formitem'>
                 <span>Категория:</span><br>
                 <select name="group" size="1"> 
                     <option>Выберите категорию</option> 
@@ -60,24 +60,24 @@
                     </c:forEach>
                 </select>
             </div>
-            <div class="AddEllement">
+            <div class="AddEllement formitem">
                 <span>Название:</span><br>
                 <select name="name" size="1"> 
                 </select>
             </div >
-            <div class="AddEllement">
+            <div class="AddEllement formitem">
                 <span>Уточняющее название:</span><br>
                 <select name="subName" size="1"> 
                 </select>
             </div>
 
-            <div class="AddEllement">
+            <div class="AddEllement formitem">
                 <span>Производитель:</span><br>
                 <select name="producer" size="1"> 
                     <option></option> 
                 </select>
             </div>
-            <div class="AddEllement">
+            <div class="AddEllement formitem">
                 <span>Объем:</span><br>
                 <select name="value" size="1"> 
                     <option></option> 
@@ -139,7 +139,7 @@
                             var term = JSON.stringify($(searchable).serializeArray().concat($(searchable).parents(".AddEllement").prevAll(".AddEllement").children("select").serializeArray())); //$(".ter:input").serializeArray();              //[{category:"фрукты"},{name:"бананы"}];
                             $.getJSON("ProductAutocomplete", {term: term}, function(data, status, xhr) {
                                 $(searchable).children('option').replaceWith(function() {
-                                    var values = '<option class="badOption">Выберите</option>';
+                                    var values = '<option class="badOption">---Выберите---</option>';
                                     $.each(data, function(i, e) {
                                         values += '<option>' + e + '</option>';
                                     });

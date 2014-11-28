@@ -11,9 +11,9 @@
 
 <form class="" method="POST" action="<c:url value='j_security_check'/>">
     <h3>Для входа в систему введите<br> логин пользователя и пароль.</h3>
-    <p>логин:<br><input type="text" name="j_username"  value="<c:choose><c:when 
+    <div class="formitem">логин:<br><input type="text" name="j_username"  value="<c:choose><c:when 
                                 test="${!empty cookie.login.value  }">${product: decodeURL(cookie.login.value,'UTF-8')}</c:when><c:otherwise
-                                >${sessionScope.user.login}</c:otherwise></c:choose>"></p>
-    <p>пароль:<br><input type="password"  name="j_password"></p>  
+                                >${sessionScope.user.login}</c:otherwise></c:choose>"></div>
+    <div class="formitem">пароль:<br><input type="password"  name="j_password"></div>  
     <p><input type="submit" value="Войти"></p>
 </form> 

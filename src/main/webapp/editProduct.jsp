@@ -58,27 +58,27 @@
             <c:set var="commentValue" value="" /> 
             <c:if test="${newProduct.comment ne null}"><c:set var="commentValue" value="${newProduct.comment}"/></c:if>
 
-            <div>
+            <div class="formitem">
                     <span>Категория:</span><br>
                     <input   size="15" type="text" name="group" class="validCheck autocomplDepended" value='${categoryValue}' id="CategorySelect" >
             </div>
-            <div>
+            <div class="formitem">
                 <span>Название:</span><br>
                 <input id="name" type="text" value='${nameValue}' autocomplete='off' name="name"  class='mandatory autocompl validCheck autocomplDepended' >
             </div>
-            <div>
+            <div class="formitem">
                 <span>Уточняющее название:</span><br>
                 <input  type="text" value='${subNameValue}' class='validCheck autocompl autocomplDepended' name="subName"  >
             </div>
-            <div>
+            <div class="formitem">
                 <span>Производитель:</span><br>
                 <input  type="text" name="producer"  value='${producerValue}' class="validCheck autocompl autocomplDepended" id="Name" >
             </div>
-            <div>
+            <div class="formitem">
                 <span id='valueLabel'>Объем:</span><br>
                 <input  type="text" size="5" maxlength="8" class="validNumberCheck"  value='${valueValue}' name="value" >
             </div>
-            <div>
+            <div class="formitem">
                 <span>Единици:</span><br>
                 <select name="valueUnits" id='valueUnits'>
                     <c:forEach items="${product:getUnits(pageContext.servletContext)}" var="units"> 
@@ -86,15 +86,15 @@
                     </c:forEach>
                 </select>
             </div>
-            <div>
+            <div class="formitem">
                 <span>Цена (руб):</span><br>
                 <input  type="text" size="5" maxlength="8" class="validNumberCheck" value='${priceValue}' name="price" >
             </div>
-            <div>
+            <div class="formitem">
                 <span>Комментарий:</span><br>
                 <input  type="text" name="comment" value="${commentValue}">
             </div><br>
-            <div>
+            <div class="formitem">
                 <span>Прикрепить изображение:</span><br>
                 <input class="pointer" type="file" id="a"   accept="image/jpeg,image/png,image/gif" name='imageFile'>
             </div><br>
@@ -102,7 +102,7 @@
             <button formaction="<c:url value='ReadProduct'/>" title="Показать продукты."><img alt="Показать" height="16" width="16" src="${icons}View.gif"></button>
         </form>
         <c:if test='${products ne null}'>
-            <div class='prodholder panel'>
+            <div class='panel'>
                 <c:if test="${status ne null}"><h4>${status}</h4></c:if>
                 <c:import url="/WEB-INF/template/productinfo.jsp"/>         
             </div> 
