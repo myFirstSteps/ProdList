@@ -58,24 +58,27 @@
             </a>
         </div>
     </c:if>
-
+     <div id="UserForm"> 
     <c:choose>
         <c:when test="${username==null}">
 
             <c:if test="${path ne'/loginPage.jsp' and path ne '/loginError.jsp'  and path ne '/registration.jsp' }">
-                <form id="UserForm" action="<c:url value='loginPage.jsp'/>"  method="get">  
+                
                     Вход не выполнен.<br>
-                    <input class="pointer" type="submit" value="Войти"><br>
-                    <a style='color:#dea000;' href='<c:url value="registration.jsp"/>'>регистрация</a>
-                </form> 
+                    <a  href='<c:url value="loginPage.jsp"/>'>вход</a><br>
+                    <%--<input class="pointer" type="submit" value="Войти"><br>--%>
+                    <a href='<c:url value="registration.jsp"/>'>регистрация</a>
+               
                 <c:set var="lastPage" scope="session" value="${path}"/>
             </c:if> 
 
         </c:when>
         <c:otherwise> 
-            <form id="UserForm" action="LogOut" method="get"> Пользователь: <span id="UserName"><em> ${username}</em></span><br> <button name="path" value="${path}">Выход</button></form>
+            Пользователь: <em> ${username}</em><br> <a href='<c:url value="LogOut?path=${path}"/>'>выход</a>
+            
             </c:otherwise>
         </c:choose>
+             </div> 
 </div>
 
 <script src='scripts/jquery-1.11.1.min.js'></script> 

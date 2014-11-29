@@ -76,6 +76,7 @@ function getClassSelector(text){
 function addErr(field, selector, errText) {
     if ($(field).siblings(selector).length === 0) {
         $(field).before(errText);
+        $(field).siblings(".error").width($(field).width());
         $(field).css("color", "red");
     }
 }

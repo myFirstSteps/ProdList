@@ -17,7 +17,7 @@
     <body>
         <c:import url="WEB-INF/template/headtemplate.jsp"/>
         <div  class='panel'> 
-            <h2>Просмотр списков.</h2>
+            <h1>Просмотр списков</h1>
             <div class="formitem">
                 <span>Имя списка:</span><br>
                 <select id="listName" onchange="showButton()" name="ListName">

@@ -11,7 +11,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Создание списка покупок.</title>
+        <title>Создание списка покупок</title>
         <link href='CSSdoc/mainCSS.css' rel='stylesheet' type="text/css">
         <link rel="stylesheet" href="CSSdoc/jquery-ui.min.css">
     </head>
@@ -19,20 +19,20 @@
         <c:set var="categories" value="${product:getCategories(pageContext.servletContext)}"/>
         <c:import url="WEB-INF/template/headtemplate.jsp"/>
         <div id='newList' class='panel'>
-            <div id='newListHead'>
-                <div>
+           <%-- <div> <div id='newListHead'>
+               
                     Имя списка:<span id='listName'>Имя списка</span>
                     <button onclick='editListName(this)' title='Редактировать'>
                         <img height='16' width='16' alt='edit' src='${icons}Modify.gif'>
                     </button>
-                </div>
-                <h2>Список покупок.</h2>
-            </div>
-
-            <center class="emptyList"><h3>Список пуст. Нажмите на кнопку добавить и воспользуйтесь формой для выбора продуктов.</h3></center>
+                
+              
+            </div></div>--%>
+            <h1>Список покупок</h1>
+            <h3  id="emptyList">Список пуст. Нажмите на кнопку добавить и воспользуйтесь формой для выбора продуктов.</h3>
             <ol id="list">
-
             </ol>
+            <div class="formitem"><span>Имя списка:</span><br><input id='listName' class='mandatory' type="text" value="Список №1"></div>
             <div id='newListButtons'>
                 <button title="Добавить в список новую позицию" onclick="$('#prodSelect').show()">
                     <img height="16" width="16" src="${icons}Add.gif" 
@@ -93,6 +93,10 @@
                 var product;
                 var item;
                 var id;
+                $(document).ready(function(){
+                $("input.mandatory").on('blur keyup', function() {
+                        emptyCheck(this, "<span class='mandatory error'>Поле не может быть пустым</span><br class='mandatory error'>");
+                    });});
                 function editListName(o) {
                     $(o).replaceWith("<div class='editValues' style='float:none'><input  type='text' class='mandatory' value='" + $(o).prev("span").text().trim() + "'><br><button class='accept' \n\
                         onclick='acceptEdit(this)'><img height='16' width='16'\n\src='${icons}Yes.gif'></button>\n\
@@ -115,7 +119,7 @@
                     $(o).parent().replaceWith("<button onclick='editListName(this)' title='Редактировать'><img height='16' width='16' alt='edit' src='${icons}Modify.gif'></button>");
                 }
                 function addProduct(o) {
-                    $(".emptyList").remove();
+                    $("#emptyList").remove();
                     if ($("#list").children("li#" + id).length === 0) {
                         $("#list").append(listItem.replace('<li>', '<li id="' + id + '">' + item));
                     } else {
@@ -179,7 +183,7 @@
                         alert($(e).children("input").val());
                         items+="_"+$(e).children("input").val()+" ";
                     });
-                    var list=JSON.stringify({name:$("#listName").text(),items:items});
+                    var list=JSON.stringify({name:$("#listName").val(),items:items});
                     $.post("List",{action:"save",list:list},function(data,status,xhr){
                       if(data.error===undefined)alert("Список успешно сохранен.");else alert("Не удалось сохранить список.\n"+data.error);
                     });

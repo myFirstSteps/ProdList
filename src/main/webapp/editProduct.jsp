@@ -41,7 +41,7 @@
 
         <form  class="panel" id="newProduct" method="post"  enctype="multipart/form-data" action= '<c:url value="addProduct"/>'>
 
-            <h2>Редактор продуктов.</h2>
+            <h1>Редактор продуктов</h1>
             <div id='error' class='error'>${error}</div><br>
             <c:set var="categoryValue" value="" /> 
             <c:if test="${newProduct.group ne null}"><c:set var="categoryValue" value="${newProduct.group}"/></c:if>
@@ -79,7 +79,7 @@
                 <input  type="text" size="5" maxlength="8" class="validNumberCheck"  value='${valueValue}' name="value" >
             </div>
             <div class="formitem">
-                <span>Единици:</span><br>
+                <span>Единицы:</span><br>
                 <select name="valueUnits" id='valueUnits'>
                     <c:forEach items="${product:getUnits(pageContext.servletContext)}" var="units"> 
                         <option>${units}</option>
