@@ -1,18 +1,15 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 
 package com.pankratov.prodlist.model.dao.jdbc;
 
-/**
- *
- * @author pankratov
- */
-public class JDBCDAOException extends Exception {
-     public JDBCDAOException (String s,Throwable cause){
-         super(s,cause);
+import com.pankratov.prodlist.model.dao.DAOException;
+
+public class JDBCDAOException extends DAOException {
+     public JDBCDAOException(){}
+     public JDBCDAOException (Throwable cause,String s){
+         super(cause,s);
+     }
+     public JDBCDAOException (String s, Throwable cause){
+         super(cause,s);
      }
      public JDBCDAOException (String s){
          super(s);

@@ -42,7 +42,7 @@
                showButton(); 
             });
             function showList(){
-                $.post("List",{action:'show',listName:$("#listName").val()},function(response){
+                $.post("<c:url value='List.do'/>",{action:'show',listName:$("#listName").val()},function(response){
                   var alist=response.list;
                   if(response.error!==undefined){
                       alert(response.error);

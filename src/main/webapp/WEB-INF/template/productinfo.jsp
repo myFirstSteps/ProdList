@@ -7,6 +7,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
 <!DOCTYPE html>
+<c:set scope="session" var="isAdmin" value="${role=='admin'}"/>
 <c:set var="icons" value='${pageContext.servletContext.getInitParameter("icons")}'/>
 <c:set var="OriginProdIco" value="<img class='prodStatIcon' title='Ключевой продукт. Продукт, являющийся прообразом для пользовательских продуктов.' height='16' width='16' src='resources/common_image/icons/Key.gif' alt='Ключевой'>"/>
 <c:set var="modifyButtonTemplate" value="<button onclick='edit(this)' title='Редактировать'><img height='16' width='16' alt='edit' src='${icons}Modify.gif'></button>"/>
@@ -34,7 +35,7 @@
         <c:forEach items="${products}" var="prod" varStatus="stat">
             <c:set var="ModifyButton" value=""/>
             <c:set var="DeleteButton" value=""/>
-            <c:if test='${(!prod.origin  and (prod.author eq username or prod.author eq cookie.clid.value) ) or isAdmin }'>
+            <c:if test='${(!prod.origin  and (prod.author eq client or prod.author eq cookie.clid.value) ) or isAdmin }'>
                 <c:set var="ModifyButton" value="${modifyButtonTemplate}"/><c:set var="DeleteButton" value='<button title="Удалить продукт" onclick="deleteProduct(this)">
                                                                                   <img src="${icons}Delete.gif" alt="Удалить"></button>'/>         
             </c:if>
@@ -74,7 +75,7 @@
 
         </c:forEach>
     </table>
-    <script>
+     <script>
         /*Здесь очень много кривого, избыточного, безобразного javascript кода. Его обязательно нужно переработать, но пока, у этой задачи низкий приоритет.*/
         $(document).ready(function() {
             $(".proddata").css("max-width", $("#prodtable").parent().innerWidth() * 0.25);
@@ -85,7 +86,8 @@
         var syncButton = "<button class='SyncButton' onclick='sendChanges(this)'><img height='16' width='16' src='${icons}Sync.gif'>Изменить</button>";
         var errIco = "<img class='error' height='20' width='20' src='${icons}Error.ico' alt='error' >";
         function edit(o) {
-            $(o).replaceWith("<div class='editValues'><input  type='text' value='" + $(o).parent().text().trim() + "'><br><button class='accept' onclick='acceptEdit(this)'><img height='16' width='16'\n\
+            $(o).replaceWith("<div class='editValues'><input  type='text' value='" + $(o).parent().text().trim() + "'>\n\
+    <br><button class='accept' onclick='acceptEdit(this)'><img height='16' width='16'\n\
       src='${icons}Yes.gif'></button>\n\
      <button onclick='denyEdit(this)'><img height='16' width='16' src='${icons}No.gif'></button></div>");
             $(".price .editValues input, .value .editValues input").on("change blur keyup", function() {
@@ -96,11 +98,9 @@
                 else
                     $(".accept").removeAttr("disabled");
             });
-
         }
         function acceptEdit(o) {
             var cell = $(o).parent().parent();
-
             var x = $(cell).closest("tr.prodrow");
 
             var buttons = $(cell).closest("tr.prodrow").next(".buttons").children("td");
@@ -149,7 +149,7 @@
 
             var req = JSON.stringify([ajson]);
             $(o).append("<img src='${icons}loading.gif'>");
-            $.getJSON("ChangeProducts", {product: req, action: "change"}, function(data, status, xhr) {
+            $.getJSON("ChangeProducts.do", {product: req, action: "change"}, function(data, status, xhr) {
                 if (data.error === undefined) {
                     $.each(data, function(i, e) {
                         prodrow.children("td.proddata." + i + ".edited").text(e).css("color","green").removeClass("edited").append(modifyButton);
@@ -171,7 +171,7 @@
                 "origin": $(o).parents(".prodrow").attr("id").split("_")[2] === "o" ? "true" : "false"
             };
             var req = JSON.stringify([ajson]);
-            $.getJSON("ChangeProducts", {product: req, action: "clone"}, function(data, status, xhr) {
+            $.getJSON("ChangeProducts.do", {product: req, action: "clone"}, function(data, status, xhr) {
                 if (data.error === undefined) {
                     $(o).parents(".prodrow").next(".buttons").remove();
                     var prodClone=$(o).parents(".prodrow").clone();
@@ -199,7 +199,7 @@
             var ajson = {"id": $(o).parents(".prodrow").attr("id").split("_")[0]     
             };
               var req = JSON.stringify([ajson]);
-            $.getJSON("ChangeProducts", {product: req, action: "legalize"}, function(data, status, xhr) {
+            $.getJSON("ChangeProducts.do", {product: req, action: "legalize"}, function(data, status, xhr) {
                 if (data.error === undefined) {
                     $(o).parents(".prodrow").next(".buttons").remove();
                     var prodLegalize=$(o).parents(".prodrow").clone();
@@ -226,7 +226,7 @@
                 "origin": $(o).parents(".prodrow").attr("id").split("_")[2] === "o" ? "true" : "false"
             };
             var req = JSON.stringify([ajson]);
-            $.getJSON("ChangeProducts", {product: req, action: "delete"}, function(data, status, xhr) {
+            $.getJSON("ChangeProducts.do", {product: req, action: "delete"}, function(data, status, xhr) {
                 if (data.error === undefined) {
                     $(o).parents(".prodrow").next(".buttons").remove();
                     $(o).parents(".prodrow").remove();

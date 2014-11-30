@@ -8,22 +8,24 @@ import java.util.*;
 import java.util.concurrent.ConcurrentSkipListSet;
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
+import org.apache.logging.log4j.*;
 import org.json.simple.*;
 import org.json.simple.parser.JSONParser;
 
 //Автодополнение полей формы редактора продуктов
 public class ProductAutocomplete extends HttpServlet { 
+   
+    private static Logger log= org.apache.logging.log4j.LogManager.getLogger(ProductAutocomplete.class);
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
          try { 
+           
             ConcurrentSkipListSet<String> list = new ConcurrentSkipListSet<>();
             TreeMap<String, String> prodInit = new TreeMap<>();
             String key = "name";
             response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
             JSONParser parser = new org.json.simple.parser.JSONParser();
-          
             Object reqJSONObj = parser.parse(request.getParameter("term"));
             JSONArray array = (JSONArray) reqJSONObj;
 
@@ -36,7 +38,7 @@ public class ProductAutocomplete extends HttpServlet {
                 prodInit.put((String) obj.get("name"), (String) obj.get("value"));
             }
             Product prod = new Product(prodInit);
-            prod.setAuthor(request.getRemoteUser() != null ? request.getRemoteUser() : (String) request.getSession().getAttribute("clid"));
+            prod.setAuthor((String)request.getSession().getAttribute("client"));
             try (ProductDAO pdao = DAOFactory.getProductDAOInstance(DAOFactory.DAOSource.JDBC, request.getServletContext());) {
                 switch (key) {
                     case "name":
@@ -59,8 +61,11 @@ public class ProductAutocomplete extends HttpServlet {
                 resp.put(i++, s);
             }
             response.getWriter().println(resp);
-        } catch (Exception ex) {
-            throw new IOException(ex);
+        } catch (Exception ex) { 
+            log.error(ex);
+            JSONObject jsonerr=new JSONObject();
+            jsonerr.put("error", ex.toString());
+            response.getWriter().println(jsonerr);
         }
        
     }
@@ -71,9 +76,6 @@ public class ProductAutocomplete extends HttpServlet {
       response.sendError(405);
     }
 
-    @Override
-    public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
+   
 
 }

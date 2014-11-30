@@ -16,17 +16,10 @@ import org.apache.commons.fileupload.*;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
-
-/**
- *
- * @author pankratov
- */
 public class AddProduct extends HttpServlet {
     //Ошибки 
     private enum Error {
-
-        FILE_SIZE_ERROR, FILE_TYPE_ERROR, DUBLICATE, OTHER;
-
+        FILE_SIZE_ERROR, FILE_TYPE_ERROR, DUBLICATE, WRONG_DATA, OTHER;
     }
     private long maxImgSize;
     private int maxMemSize;
@@ -36,12 +29,11 @@ public class AddProduct extends HttpServlet {
     private static final org.apache.logging.log4j.Logger log = org.apache.logging.log4j.LogManager.getLogger(AddProduct.class);
 
     /*Не получилось быстро найти готовый класс для проверки сигнатуры файла на соответствие заявленному типу,
-     по этому решил написать свой.*/
+     по этому вложенный класс.*/
     private static class CheckFileContent {
         /*Метод проверяет содержится ли в файле f "magic number" соответствующий требуемому формату файла.
          Если сигнатура файла соответствует формату gif,jpeg или png, метод возвращает true.
          */
-
         static boolean isValid(File f) throws IOException {
             boolean result = false;
             final byte[] gifMagic = {0x47, 0x49, 0x46, 0x38, 0x39, 0x61};
@@ -64,10 +56,8 @@ public class AddProduct extends HttpServlet {
                                 result = true;
                             }
                         }
-
                     }
                 }
-
             }
             return result;
         }
@@ -77,16 +67,16 @@ public class AddProduct extends HttpServlet {
     public void init(ServletConfig config) {
         String param = null;
         ServletContext context = config.getServletContext();
-        param = config.getServletContext().getInitParameter("MAX_UPLOAD_FILE_SIZE");
-        Path appRoot = Paths.get(context.getRealPath(context.getContextPath())).getParent();
+        param = context.getInitParameter("MAX_UPLOAD_FILE_SIZE");// Максимальный объем загружаемых файлов (байт)
+        Path appRoot = Paths.get(context.getRealPath(context.getContextPath())).getParent(); //Получение абсолютного пути к корню приложения
         maxImgSize = (param != null) ? Long.parseLong(param) : 512000;
-        param = context.getInitParameter("MAX_FILE_MEMORY");
+        param = context.getInitParameter("MAX_FILE_MEMORY"); 
         maxMemSize = (param != null) ? Integer.parseInt(param) : 100 * 1024;
-        param = context.getInitParameter("TEMP_FILE_DIR");
+        param = context.getInitParameter("TEMP_FILE_DIR"); //директория временных файлов
         absTempDir = (param != null) ? Paths.get(param) : Paths.get(appRoot + "/temp/imgfile");
         param = context.getInitParameter("PROD_IMG_FILE_DIR");
         absImgDir = (param != null) ? Paths.get(param) : Paths.get(appRoot + "/resources/img/products");
-        if (!absTempDir.isAbsolute()) {
+        if (!absTempDir.isAbsolute()) { //если в дескрипторе задан относительный путь, разрешаем его относительно корня приложения.
             absTempDir = Paths.get(appRoot + "/" + absTempDir);
         }
         if (!absImgDir.isAbsolute()) {
@@ -114,19 +104,15 @@ public class AddProduct extends HttpServlet {
        response.sendError(405);
     }
 
-  
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         File f = null;
         try {
             if (!ServletFileUpload.isMultipartContent(request)) {
-                response.setCharacterEncoding("UTF-8");
-                response.setContentType("text/plain");
-                response.getWriter().println("Использован ошибочный способ передачи данных формы. Данные должны передаваться в 'multipart/form-data'");
+                sendError(Error.WRONG_DATA, request, response);
                 return;
             }
-
             DiskFileItemFactory factory = new DiskFileItemFactory(maxMemSize, absTempDir.toFile());
             ServletFileUpload upl = new ServletFileUpload(factory);
             upl.setFileSizeMax(maxImgSize);
@@ -134,9 +120,9 @@ public class AddProduct extends HttpServlet {
             String fileName = "/" + request.getSession().getId() + "_" + creationTime + "_"
                     + String.valueOf(ThreadLocalRandom.current().nextInt(maxMemSize));
             f = (Paths.get(absImgDir + fileName)).toFile();
-            List<FileItem> x = upl.parseRequest(request);
+            List<FileItem> fileItems = upl.parseRequest(request);
 
-            for (FileItem i : x) {
+            for (FileItem i : fileItems) {
                 if (!i.isFormField()) {
                     if (i.getSize() > 0) {
                         f.createNewFile();
@@ -149,9 +135,9 @@ public class AddProduct extends HttpServlet {
                 f.delete();
                 sendError(Error.FILE_TYPE_ERROR, request, response);
                 return;
-            };
-            //Чтение продукта и запроса
-            Product product = Product.getInstanceFromFormFields(x, request);
+            }
+            //Чтение продукта из запроса
+            Product product = Product.getInstanceFromFormFields(fileItems, request);
             request.setAttribute("newProduct", product);
             //Добавление продукта в БД c фото или без.
             try (ProductDAO pdao = DAOFactory.getProductDAOInstance(DAOFactory.DAOSource.JDBC, request.getServletContext())) {
@@ -203,19 +189,11 @@ public class AddProduct extends HttpServlet {
              case OTHER:
                 text = "Во время добавления продукта произошла ошибка.\n";
                 break;
+             case WRONG_DATA:
+                 text="Использован ошибочный способ передачи данных формы. Данные должны передаваться в \"multipart/form-data\"";
+                 break;
         }
         request.setAttribute("error", text);
         request.getRequestDispatcher(response.encodeURL("editProduct.jsp")).forward(request, response);
     }
-
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
-    @Override
-    public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
-
 }

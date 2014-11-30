@@ -20,7 +20,7 @@
         <%--Форма регистрации --%>
         <div class="center_form panel" id="registration">
             <c:choose> <c:when test="${registration ne 'done'}">
-                    <form id="registration"  method="post" action="<c:url value='Registration'/>" >
+                    <form id="registration"  method="post" action="<c:url value='Registration.do'/>" >
                         <div id='error' class='error'>${error}</div> 
                         <h3>Добро пожаловать на страницу регистрации.</h3>
                         <p>

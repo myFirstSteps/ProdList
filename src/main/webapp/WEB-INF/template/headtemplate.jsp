@@ -5,15 +5,7 @@
 --%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
-<c:set var="username" scope="session" value="${pageContext.request.getRemoteUser()}"/>
-<c:set var="client" scope="session">
-    <c:choose>
-        <c:when test="${username ne null}">${username}</c:when>
-        <c:otherwise>${clid}</c:otherwise>    
-    </c:choose>
-</c:set>
 <c:set var="path" value="${pageContext.request.getServletPath()}"/>
-<c:set scope="session" var="isAdmin" value="${pageContext.request.isUserInRole('admin')}"/>
 <c:set scope="request" var="icons" value='${pageContext.servletContext.getInitParameter("icons")}'/>
 <c:set var="ico1img" value='${icons}Home.png'/>
 <c:set var="ico2img" value='${icons}Sandbox.png'/>
@@ -60,13 +52,12 @@
     </c:if>
      <div id="UserForm"> 
     <c:choose>
-        <c:when test="${username==null}">
+        <c:when test="${pageContext.request.getRemoteUser()==null}">
 
             <c:if test="${path ne'/loginPage.jsp' and path ne '/loginError.jsp'  and path ne '/registration.jsp' }">
                 
                     Вход не выполнен.<br>
                     <a  href='<c:url value="loginPage.jsp"/>'>вход</a><br>
-                    <%--<input class="pointer" type="submit" value="Войти"><br>--%>
                     <a href='<c:url value="registration.jsp"/>'>регистрация</a>
                
                 <c:set var="lastPage" scope="session" value="${path}"/>
@@ -74,8 +65,7 @@
 
         </c:when>
         <c:otherwise> 
-            Пользователь: <em> ${username}</em><br> <a href='<c:url value="LogOut?path=${path}"/>'>выход</a>
-            
+            Пользователь: <em> ${client}</em><br> <a href='<c:url value="LogOut.do?path=${path}"/>'>выход</a>      
             </c:otherwise>
         </c:choose>
              </div> 

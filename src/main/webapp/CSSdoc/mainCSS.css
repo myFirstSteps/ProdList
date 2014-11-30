@@ -11,7 +11,7 @@ textArea {font-size: 16px; }
 #HeadTemplate div img {border-radius: 5px; }
 
 img.UnActiveNavIco { display: inline-block; }
-img.ActiveNavIco { display: none; }
+img.ActiveNavIco { display: none;  }
 
 #UserForm{ background-color:#303030;  float: right; text-align:right; display: inline-block; padding: 5px;  }
 #UserForm em, #UserForm a{color: #dea000; font-size: 16px;}
@@ -32,8 +32,8 @@ img.ActiveNavIco { display: none; }
  img#springimg{max-width: 80%; margin: 10px 0px 0px 0px; float: none;}
  #about ul  {margin: 10px 20px; text-indent: 0px; line-height: 1.5;}
  #about > div{display: inline-block; overflow: auto; text-align: left; padding: 20px; text-indent: 40px; font-size: 14px; clear: right;}
- #aboutme {width: 40% ; float: left; }
- #aboutproj {width: 50%; float: left; position: relative; left: 20px;}
+ #aboutme {width: 35% ; float: left; }
+ #aboutproj {width: 55%; float: left; position: relative; left: 20px;}
  #aboutproj div a {font-size: 22px;}
  
 
@@ -49,14 +49,14 @@ div.SelectedTablet {border: #dea000 solid 2px;}
 
 #newProduct > input {padding: 5px;}
 form#newProduct > div {margin: 5px; position: static; display: inline-block;}
-.ui-menu{background-color: white; border: solid 1px #303030;}
-.ui-state-focus.ui-menu-item {background-color: #dea000; color: white;}
+.ui-menu{background-color: white; border: solid 1px #303030; text-align: left;}
+.ui-state-focus.ui-menu-item {background-color: #dea000; color: white; }
 .ui-autocomplete-loading {
     background: white url("resources/common_image/icons/loading.gif") right center no-repeat;
 }
 
 
-#prodtable{  border-collapse: collapse;}
+#prodtable{  border-collapse: collapse; margin: 15px auto;}
 .prodheader {font-weight: bold;}
 .proddata { vertical-align: middle; border: solid 1px #303030;  margin: 2px; padding:5px; }
 .prodImg {border: solid 2px #303030; max-width: 200px;}

@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.pankratov.prodlist.model.dao.jdbc;
 
 import java.sql.*;
@@ -12,10 +7,6 @@ import java.util.concurrent.*;
 import java.util.regex.*;
 import javax.sql.rowset.*;
 
-/**
- *
- * @author pankratov
- */
 public class Table {
 
     private Connection connection;
@@ -30,7 +21,7 @@ public class Table {
             columnNames = colNames;
             connection = con;
             //  log.debug(String.format("created table %s with columns: %s rowset:%s", tableName, columnNames, rowset));
-        } catch (Exception e) {
+        } catch (SQLException e) {
             throw new JDBCDAOException("Ошибка при создании:" + Table.class + "для: " + tableName, e);
         }
 

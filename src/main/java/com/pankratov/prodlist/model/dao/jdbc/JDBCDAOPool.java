@@ -1,21 +1,11 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.pankratov.prodlist.model.dao.jdbc;
 
 import java.sql.SQLException;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.servlet.ServletContext;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.*;
 
-/**
- *
- * @author pankratov
- */
 public class JDBCDAOPool<T extends JDBCDAOObject> {
 
     private static final Logger log = LogManager.getLogger(JDBCDAOPool.class);
@@ -82,7 +72,6 @@ public class JDBCDAOPool<T extends JDBCDAOObject> {
                             instance = (T) adam.newInstance();
                             DAOsCount.incrementAndGet();
                         }
-
                     }
                 }
             } else {

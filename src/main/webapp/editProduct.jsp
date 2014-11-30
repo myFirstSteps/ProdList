@@ -16,9 +16,7 @@
         <link rel="stylesheet" type="text/css" href='CSSdoc/jquery-ui.min.css'>
     </head>
     <body>
-
         <c:import url="/WEB-INF/template/headtemplate.jsp"/>
-
         <c:set var="imgRoot" value="/resources/common_image/product_categories/"/>
         <c:set var="imgDir" value="${pageContext.servletContext.getRealPath(imgRoot)}"/>
         <c:set var="categories" value="${product:getCategories(pageContext.servletContext)}"/>
@@ -27,7 +25,7 @@
             <c:forEach  items="${categories}" varStatus="step" var="category">
                 <div class='Tablet pointer'>
                     <c:set var="imgPath" value="${imgDir}/${step.count}.png"></c:set>
-                    <img height="100" width="100" src="
+                        <img height="100" width="100" src="
                         <c:choose> 
                             <c:when test='${product:isImageExist(imgPath)}'> <c:url value="${imgRoot}${step.count}.png"/></c:when>
                             <c:otherwise> <c:url value="${imgRoot}0.png"/></c:otherwise> 
@@ -37,9 +35,7 @@
                 </div>
             </c:forEach>
         </div>
-
-
-        <form  class="panel" id="newProduct" method="post"  enctype="multipart/form-data" action= '<c:url value="addProduct"/>'>
+        <form  class="panel" id="newProduct" method="post"  enctype="multipart/form-data" action= '<c:url value="AddProduct.do"/>'>
 
             <h1>Редактор продуктов</h1>
             <div id='error' class='error'>${error}</div><br>
@@ -57,14 +53,13 @@
             <c:if test="${newProduct.price ne -1.0 }"><c:set var="priceValue" value="${newProduct.price}"/></c:if>
             <c:set var="commentValue" value="" /> 
             <c:if test="${newProduct.comment ne null}"><c:set var="commentValue" value="${newProduct.comment}"/></c:if>
-
-            <div class="formitem">
+                <div class="formitem">
                     <span>Категория:</span><br>
                     <input   size="15" type="text" name="group" class="validCheck autocomplDepended" value='${categoryValue}' id="CategorySelect" >
             </div>
             <div class="formitem">
                 <span>Название:</span><br>
-                <input id="name" type="text" value='${nameValue}' autocomplete='off' name="name"  class='mandatory autocompl validCheck autocomplDepended' >
+                <input placeholder="Обязательное поле" id="name" type="text" value='${nameValue}' autocomplete='off' name="name"  class='mandatory autocompl validCheck autocomplDepended' >
             </div>
             <div class="formitem">
                 <span>Уточняющее название:</span><br>
@@ -99,7 +94,7 @@
                 <input class="pointer" type="file" id="a"   accept="image/jpeg,image/png,image/gif" name='imageFile'>
             </div><br>
             <button type="button" onclick="validate(this.form)" title="Добавить продукт в базу."><img alt="Добавить" height="16" width="16" src="${icons}Add.gif"></button>
-            <button formaction="<c:url value='ReadProduct'/>" title="Показать продукты."><img alt="Показать" height="16" width="16" src="${icons}View.gif"></button>
+            <button formaction="<c:url value='ReadProduct.do'/>" title="Показать продукты."><img alt="Показать" height="16" width="16" src="${icons}View.gif"></button>
         </form>
         <c:if test='${products ne null}'>
             <div class='panel'>
@@ -111,7 +106,7 @@
         <script src="scripts/formValidation.js"></script>
         <script src="scripts/PopUpMenu.js"></script>
         <script>
-                imgMenu=null;
+                imgMenu = new ImgMenu($('.TabletMenu'), $("#CategorySelect"))
                 var testUnits = function(s) {
                     switch (s) {
                         case "кг":
@@ -123,12 +118,10 @@
                     }
                 };
                 $(document).ready(function() {
-                    if(imgMenu===null){imgMenu=new ImgMenu($('.TabletMenu'), $("#CategorySelect"))};
                     $("#valueUnits").change(function() {
                         $("#valueLabel").text(testUnits($("#valueUnits").val()));
                     });
                     $("#valueLabel").text(testUnits($("#valueUnits").val()));
-
                     $("input.mandatory").on('blur keyup', function() {
                         emptyCheck(this, "<span class='mandatory error'>Поле не может быть пустым</span><br class='mandatory error'>");
                     });
@@ -143,27 +136,23 @@
                     $.each($("input.autocompl"), function(k, v) {
                         prodAutoComplete(v, $("input.autocomplDepended"));
                     });
-
-
                 });
-
                 function prodAutoComplete(field, dependent) {
                     $(field).autocomplete({
                         minLength: 2,
                         source: function(request, response) {
                             var term = request.term;
-                            request.term = JSON.stringify($(field).serializeArray().concat($(dependent).filter("[name!=" + $(field).attr("name") + "]").serializeArray())); //$(".ter:input").serializeArray();              //[{category:"фрукты"},{name:"бананы"}];
-
-                            $.getJSON("ProductAutocomplete", request, function(data, status, xhr) {
-                                response(data);
+                            request.term = JSON.stringify($(field).serializeArray().concat($(dependent).filter("[name!=" + $(field).attr("name") + "]").serializeArray()));
+                            $.getJSON("<c:url value="ProductAutocomplete.do"/>", request, function(data, status, xhr) {
+                                if (data.error === undefined) {
+                                    response(data);                             
+                                }else{
+                                    response(new(Object));
+                                }
                             });
                         }
-
                     });
                 }
-
-
         </script>
-
     </body>
 </html>

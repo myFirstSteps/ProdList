@@ -19,15 +19,7 @@
         <c:set var="categories" value="${product:getCategories(pageContext.servletContext)}"/>
         <c:import url="WEB-INF/template/headtemplate.jsp"/>
         <div id='newList' class='panel'>
-           <%-- <div> <div id='newListHead'>
-               
-                    Имя списка:<span id='listName'>Имя списка</span>
-                    <button onclick='editListName(this)' title='Редактировать'>
-                        <img height='16' width='16' alt='edit' src='${icons}Modify.gif'>
-                    </button>
-                
-              
-            </div></div>--%>
+         
             <h1>Список покупок</h1>
             <h3  id="emptyList">Список пуст. Нажмите на кнопку добавить и воспользуйтесь формой для выбора продуктов.</h3>
             <ol id="list">
@@ -141,7 +133,7 @@
                         $(searchable).html('<option></option>');
                         if (searchable.length > 0) {
                             var term = JSON.stringify($(searchable).serializeArray().concat($(searchable).parents(".AddEllement").prevAll(".AddEllement").children("select").serializeArray())); //$(".ter:input").serializeArray();              //[{category:"фрукты"},{name:"бананы"}];
-                            $.getJSON("ProductAutocomplete", {term: term}, function(data, status, xhr) {
+                            $.getJSON("ProductAutocomplete.do", {term: term}, function(data, status, xhr) {
                                 $(searchable).children('option').replaceWith(function() {
                                     var values = '<option class="badOption">---Выберите---</option>';
                                     $.each(data, function(i, e) {
@@ -157,7 +149,7 @@
                                     'value': $(".AddEllement select[name='value']").filter(":visible").val(),
                                 };
                                 $(searchable).parents(".AddEllement").show();
-                                $.getJSON("ReadProduct", {maxCount: 1, product: JSON.stringify([product])}, function(data, status, xhr) {
+                                $.getJSON("ReadProduct.do", {maxCount: 1, product: JSON.stringify([product])}, function(data, status, xhr) {
                                     if (data.products !== undefined && data.products.length === 1) {
                                         product = data.products[0];
                                         item = product.name + " " + product.subName + " " + product.producer + " " + product.value + " " + product.valueUnits + " " + product.price + "руб.";
@@ -184,7 +176,7 @@
                         items+="_"+$(e).children("input").val()+" ";
                     });
                     var list=JSON.stringify({name:$("#listName").val(),items:items});
-                    $.post("List",{action:"save",list:list},function(data,status,xhr){
+                    $.post("List.do",{action:"save",list:list},function(data,status,xhr){
                       if(data.error===undefined)alert("Список успешно сохранен.");else alert("Не удалось сохранить список.\n"+data.error);
                     });
                    

@@ -1,24 +1,15 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package com.pankratov.prodlist.model.products;
 
 import java.io.UnsupportedEncodingException;
 import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.fileupload.FileItem;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import org.apache.log4j.*;
+import org.json.simple.*;
 import org.json.simple.parser.JSONParser;
 
-/**
- *
- * @author pankratov
- */
 public class Product {
-
     private Long id=-1l;
     private String name="";
     private String subName="";
@@ -35,21 +26,15 @@ public class Product {
     private boolean origin=true;
     private Long originID=-1l;
 
-    /**
-     * @return the lastModify
-     */
+    private static final Logger log=LogManager.getLogger(Product.class);
     public String getLastModify() {
         return lastModify;
     }
 
-    /**
-     * @param lastModify the lastModify to set
-     */
+  
     public void setLastModify(String lastModify) {
         this.lastModify = lastModify;
     }
-
-   
 
     private static class ProductFieldsRiper {
 
@@ -105,7 +90,6 @@ public class Product {
 
     }
 
-
     public Product(Product product, boolean onlyKeyFields) {
         this.id = product.id;
         this.name = product.name;
@@ -136,7 +120,6 @@ public class Product {
             this.value = (x = initData.get("value")) != null && !x.equals("") ? new Float(x.replace(",", ".")) : -1;
         } catch (java.lang.NumberFormatException e) { this.value=-1f;
         }
-
         this.name = (x = initData.get("name")) != null ? x : "";
         this.subName = (x = initData.get("subName")) != null ? x : "";
         this.producer = (x = initData.get("producer")) != null ? x : ""; 
@@ -149,8 +132,8 @@ public class Product {
         this.origin = ((x = initData.get("origin")) != null && x.equalsIgnoreCase("false"))||originID!=-1 ? false:true;
         this.lastModify=(x = initData.get("lastModify")) != null ? x : "";
     }
-    public static Product getInstanceFromJSON(HttpServletRequest request)throws Exception{
-        JSONParser par=new JSONParser();
+    public static Product getInstanceFromJSON(HttpServletRequest request) throws ProductException {
+       try{JSONParser par=new JSONParser();
        JSONArray a=(JSONArray)par.parse(request.getParameter("product"));
        JSONObject o=(JSONObject)a.get(0);
         TreeMap<String, String> prodInit = new TreeMap<>();
@@ -159,7 +142,10 @@ public class Product {
         }
         prodInit.put("author", ProductFieldsRiper.readAuthor(request));
         prodInit.put("authorRole", ProductFieldsRiper.readAuthorRole(request));
-        return new Product(prodInit);
+        return new Product(prodInit);}catch(Exception e){
+            log.error("Error on ProductfromJSON", e);
+            throw new ProductException("Ошибка при создании продукта из JSON request",e);
+        }
     }
 
     public static Product getInstanceFromRequest(HttpServletRequest req) {
@@ -170,11 +156,16 @@ public class Product {
         return new Product(prodInit);
     }
 
-    public static Product getInstanceFromFormFields(List<FileItem> fields, HttpServletRequest req) throws UnsupportedEncodingException {
+    public static Product getInstanceFromFormFields(List<FileItem> fields, HttpServletRequest req) throws  ProductException {
+        try{
         TreeMap<String, String> prodInit  = ProductFieldsRiper.ripFields(fields);
         prodInit.put("author", ProductFieldsRiper.readAuthor(req));
         prodInit.put("authorRole", ProductFieldsRiper.readAuthorRole(req));
         return new Product(prodInit);
+        }catch(Exception e){
+            log.error("Error on ProductfromFormFields", e);
+            throw new ProductException("Ошибка при создании продукта из FormFields request",e);
+        }
     }
     public JSONObject toJSON(){
         JSONObject json=new JSONObject();
@@ -196,131 +187,74 @@ public class Product {
         return json;
     } 
 
-    
-    
-    
-    /**
-     * @return the id
-     */
     public Long getId() {
         return id;
     }
 
-    /**
-     * @param id the id to set
-     */
     public void setId(Long id) {
         this.id = id;
     }
 
-    /**
-     * @return the name
-     */
     public String getName() {
         return name;
     }
 
-    /**
-     * @param name the name to set
-     */
     public void setName(String name) {
         this.name = name;
     }
-
-    /**
-     * @return the subname
-     */
+    
     public String getSubName() {
         return subName;
     }
 
-    /**
-     * @param subName the subname to set
-     */
     public void setSubName(String subName) {
         this.subName = subName;
     }
 
-    /**
-     * @return the producer
-     */
     public String getProducer() {
         return producer;
     }
 
-    /**
-     * @param producer the producer to set
-     */
     public void setProducer(String producer) {
         this.producer = producer;
     }
 
-    /**
-     * @return the value
-     */
     public Float getValue() {
         return value;
     }
 
-    /**
-     * @param value the value to set
-     */
     public void setValue(Float value) {
         this.value = value;
     }
 
-    /**
-     * @return the valueUnits
-     */
     public String getValueUnits() {
         return valueUnits;
     }
 
-    /**
-     * @param valueUnits the valueUnits to set
-     */
     public void setValueUnits(String valueUnits) {
         this.valueUnits = valueUnits;
     }
 
-    /**
-     * @return the group
-     */
     public String getGroup() {
         return  group.toLowerCase();
     }
 
-    /**
-     * @param group the group to set
-     */
     public void setGroup(String group) {
         this.group = group;
     }
 
-    /**
-     * @return the price
-     */
     public Float getPrice() {
         return price;
     }
 
-    /**
-     * @param price the price to set
-     */
     public void setPrice(Float price) {
         this.price = price;
     }
 
-    /**
-     * @return the comment
-     */
     public String getComment() {
         return comment;
     }
 
-    /**
-     * @param comment the comment to set
-     */
     public void setComment(String comment) {
         this.comment = comment;
     }
@@ -333,71 +267,42 @@ public class Product {
                 value, valueUnits != null ? valueUnits : "null", group != null ? group.toLowerCase() : "null", price, comment != null ? comment : "", author != null ? author : "гость");
     }
 
-    /**
-     * @return the author
-     */
     public String getAuthor() {
         return author;
     }
 
-    /**
-     * @param author the author to set
-     */
     public void setAuthor(String author) {
         this.author = author;
     }
 
-    /**
-     * @return the imageLinks
-     */
     public LinkedList<String> getImageLinks() {
         return imageLinks;
     }
 
-    /**
-     * @param imageLinks the imageLinks to set
-     */
     public void setImageLinks(LinkedList<String> imageLinks) {
         this.imageLinks = imageLinks;
     }
 
-    /**
-     * @return the origin
-     */
     public boolean isOrigin() {
         return origin;
     }
 
-    /**
-     * @param origin the origin to set
-     */
     public void setOrigin(boolean origin) {
         this.origin = origin;
     }
 
-    /**
-     * @return the originID
-     */
     public Long getOriginID() {
         return originID;
     }
 
-    /**
-     * @param originID the originID to set
-     */
     public void setOriginID(Long originID) {
         this.originID = originID;
     }
-     /**
-     * @return the authorRole
-     */
+
     public String getAuthorRole() {
         return authorRole;
     }
 
-    /**
-     * @param authorRole the authorRole to set
-     */
     public void setAuthorRole(String authorRole) {
         this.authorRole = authorRole;
     }

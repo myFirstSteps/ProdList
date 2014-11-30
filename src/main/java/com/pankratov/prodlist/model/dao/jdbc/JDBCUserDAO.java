@@ -62,12 +62,17 @@ public class JDBCUserDAO extends JDBCDAOObject implements UserDAO {
    
 
     @Override
-    public void close() throws SQLException {
+    public void close() throws JDBCDAOException {
+        try{
         LOGINS_TABLE.getRowSet().release();
         ROLES_TABLE.getRowSet().release();
         USER_INFO_TABLE.getRowSet().release();
         getConnection().setAutoCommit(true);
         pool.put(this);
+         } catch (SQLException e) {
+            log.error("close exception", e);
+            throw new JDBCDAOException(e);
+        }
     }
 
     @Override
@@ -75,7 +80,7 @@ public class JDBCUserDAO extends JDBCDAOObject implements UserDAO {
         return new JDBCUserDAO(context);
     }
 
-    static public JDBCUserDAO getInstance(javax.servlet.ServletContext context) throws Exception {
+    static public JDBCUserDAO getInstance(javax.servlet.ServletContext context) throws JDBCDAOException {
         try {
             JDBCUserDAO instance = null;
             JDBCUserDAO.context = context;
@@ -89,7 +94,8 @@ public class JDBCUserDAO extends JDBCDAOObject implements UserDAO {
             instance = pool.get();
             return instance;
         } catch (Exception e) {
-            throw new JDBCDAOException("Exception when getting  JDBCUsDAO instance", e);
+            log.error(e);
+            throw new JDBCDAOException(String.format("Exception when getting  JDBC%sDAO instance",DAO_NAME), e);
         }
 
     }

@@ -1,46 +1,28 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.pankratov.prodlist.web;
 
 import com.pankratov.prodlist.model.dao.*;
 import com.pankratov.prodlist.model.dao.DAOFactory;
 import static com.pankratov.prodlist.model.dao.ProductDAO.KindOfProduct.BOTH;
 import com.pankratov.prodlist.model.products.Product;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import com.pankratov.prodlist.model.products.ProductException;
+import java.io.*;
 import java.util.*;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileUploadException;
+import javax.servlet.http.*;
+import org.apache.commons.fileupload.*;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import org.json.simple.*;
 
-/**
- *
- * @author pankratov
- */
-public class ReadProduct extends HttpServlet {
 
-    
-
-    
+public class ReadProduct extends HttpServlet {  
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         Product product;
         List<Product> ls = null;
         String x = null;
-        for(Map.Entry<String,String[]>m:request.getParameterMap().entrySet()){
-            System.out.println(">"+m.getKey()+"|"+Arrays.asList(m.getValue()));
-        }
+     
         int maxCount = (x = request.getParameter("maxCount")) != null ? new Integer(x) : 0;
         try (ProductDAO pdao = DAOFactory.getProductDAOInstance(DAOFactory.DAOSource.JDBC, request.getServletContext());) {
             product = Product.getInstanceFromJSON(request);
@@ -65,15 +47,6 @@ public class ReadProduct extends HttpServlet {
             response.getWriter().println(result.toJSONString());
         }
     }
-
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -85,11 +58,11 @@ public class ReadProduct extends HttpServlet {
                 List<FileItem> x = upl.parseRequest(request);
                 TreeMap<String, String> prodInit = new TreeMap<>();
                 product = Product.getInstanceFromFormFields(x, request);
-            } catch (UnsupportedEncodingException | FileUploadException e) {
+            } catch (ProductException | FileUploadException e) {
             }
         } else {
             product = Product.getInstanceFromRequest(request);
-        }
+                }
 
         try (ProductDAO pdao = DAOFactory.getProductDAOInstance(DAOFactory.DAOSource.JDBC, request.getServletContext());) {
             request.setAttribute("products", pdao.readProducts(product, BOTH));
@@ -97,17 +70,7 @@ public class ReadProduct extends HttpServlet {
         } catch (Exception e) {
             throw new ServletException(e);
         }
-
     }
 
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
-    @Override
-    public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
 
 }
