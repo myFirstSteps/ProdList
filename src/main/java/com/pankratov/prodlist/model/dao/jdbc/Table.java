@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.*;
 import java.util.regex.*;
 import javax.sql.rowset.*;
+import org.apache.logging.log4j.*;
 
 public class Table {
 
@@ -13,16 +14,18 @@ public class Table {
     private CachedRowSet rowset;
     private String tableName;
     private List<String> columnNames;
-
+    private static final Logger log=LogManager.getLogger(Table.class);
+    
     protected Table(String tableName, Connection con, List<String> colNames) throws JDBCDAOException {
         try {
             rowset = RowSetProvider.newFactory().createCachedRowSet();
             this.tableName = tableName;
             columnNames = colNames;
             connection = con;
-            //  log.debug(String.format("created table %s with columns: %s rowset:%s", tableName, columnNames, rowset));
+            log.debug(String.format("created table %s with columns: %s rowset:%s", tableName, columnNames, rowset));
         } catch (SQLException e) {
-            throw new JDBCDAOException("Ошибка при создании:" + Table.class + "для: " + tableName, e);
+            log.error(String.format("Ошибка при создании %s",tableName),e);
+            throw new JDBCDAOException(String.format("Ошибка при создании %s",tableName), e);
         }
 
     }
@@ -55,7 +58,9 @@ public class Table {
         try (Statement st = connection.createStatement();) {
             st.executeUpdate(query);
         } catch (SQLException e) {
-            if( e.toString().contains("Duplicate entry"))throw new JDBCDAOException("Данный продукт уже существует.");else
+            if( e.toString().contains("Duplicate entry"))throw new AlreadyExistsException();
+            if( e.toString().contains("Data truncation: Out of range")) throw new TruncationException();
+            log.error(String.format("Ошибка при добавлении данных в таблицу %s",e));
             throw new JDBCDAOException(String.format("Ошибка при добавлении данных в таблицу %s", tableName), e);
         }
         return true;
@@ -85,8 +90,8 @@ public class Table {
                 result = true;
             }
         } catch (SQLException | JDBCDAOException ex) {
-
-            throw new JDBCDAOException("Ошибка добавления категорий продуктов", ex);
+            log.error(String.format("Ошибка изменения структуры таблицы %s",tableName),ex);
+            throw new JDBCDAOException(String.format("Ошибка изменения структуры таблицы %s",tableName), ex);
         }
         return result;
     }
@@ -112,6 +117,7 @@ public class Table {
                 result.add(resultRow);
             }
         } catch (SQLException e) {
+            log.error(String.format("Ошибка при чтении данных из таблицы %s", tableName),e);
             throw new JDBCDAOException(String.format("Ошибка при чтении данных из таблицы %s", tableName), e);
         }
         return result;
@@ -124,8 +130,8 @@ public class Table {
                 result.add(res.getString(1));
             }
         } catch (SQLException ex) {
-
-            throw new JDBCDAOException("Ошибка чтения имен пользователя", ex);
+            log.error(String.format("Ошибка чтения столбца %s(%s) таблицы %s",n, this.columnNames.get(n - 1),tableName), ex);
+            throw new JDBCDAOException(String.format("Ошибка чтения столбца %s(%s) таблицы %s",n, this.columnNames.get(n - 1),tableName), ex);
         }
         return result;
     }
@@ -143,11 +149,11 @@ public class Table {
         try (Statement st = connection.createStatement(); ResultSet res = st.executeQuery(query);) {
             while (res.next()) {
                 String sstr=res.getString(1); 
-                if (sstr!=null)result.add(sstr);
+                if (sstr!=null)result.add(sstr);    
             }
         } catch (SQLException ex) {
-
-            throw new JDBCDAOException("Ошибка чтения имен пользователя", ex);
+            log.error(String.format("Ошибка чтения столбца %s(%s) таблицы %s",n, this.columnNames.get(n - 1),tableName), ex);
+            throw new JDBCDAOException(String.format("Ошибка чтения столбца %s(%s) таблицы %s",n, this.columnNames.get(n - 1),tableName), ex);
         }
         return result;
     }
@@ -167,6 +173,7 @@ public class Table {
              res = st.executeUpdate(query);
             if (res==0) throw new JDBCDAOException(String.format("Ошибка при изменении данных в таблице %s. Ни одна запись не изменена", tableName));
         } catch (SQLException e) {
+            log.error(String.format("Ошибка при изменении данных в таблице %s.%s", tableName,e.getMessage()), e);
             throw new JDBCDAOException(String.format("Ошибка при изменении данных в таблице %s.%s", tableName,e.getMessage()), e);
         }
         return res;
@@ -178,6 +185,7 @@ public class Table {
              res = st.executeUpdate(query);
             if (res==0) throw new JDBCDAOException(String.format("Ошибка при изменении данных в таблице %s. Ни одна запись не изменена", tableName));
         } catch (SQLException e) {
+            log.error(String.format("Ошибка при изменении данных в таблице %s.%s", tableName,e.getMessage()), e);
             throw new JDBCDAOException(String.format("Ошибка при изменении данных в таблице %s.%s", tableName,e.getMessage()), e);
         }
         return res;  
@@ -200,8 +208,8 @@ public class Table {
                 }
             }
         } catch (SQLException ex) {
-
-            throw new JDBCDAOException(String.format("Ошибка чтения enum значений столбца %s таблицы %s", this.getColumnName(col), this.getTableName()), ex);
+            log.error(String.format("Ошибка чтения enum значений столбца %s таблицы %s", this.getColumnName(col), tableName), ex);
+            throw new JDBCDAOException(String.format("Ошибка чтения enum значений столбца %s таблицы %s", this.getColumnName(col), tableName), ex);
         }
         return result;
     }
@@ -215,6 +223,7 @@ public class Table {
         try {
             res = columnNames.get(numb - 1);
         } catch (IndexOutOfBoundsException e) {
+            log.error(String.format("У таблици %s нет столбца с индексом %d", tableName, numb), e);
             throw new JDBCDAOException(String.format("У таблици %s нет столбца с индексом %d", tableName, numb), e);
         }
         return res;

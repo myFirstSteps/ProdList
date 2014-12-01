@@ -123,33 +123,32 @@
         function denyEdit(o) {
             $(o).parent().replaceWith(modifyButton);
         }
-
+        function IDtoJSON(idcode){
+            var idParts =idcode.split("_");
+            var id = idParts[0];
+            var originId = idParts[1];
+            var origin = idParts.length > 2 ? "true" : "false";
+            return  {
+                "id": id,
+                "originID": originId,
+                "origin": origin};
+        }
         function sendChanges(o) {
             if ($(o).hasClass("pressed"))
                 return;
             $(o).addClass("pressed");
-            var prodrow = $(o).parents('.buttons').prev(".prodrow");
-            var idParts = prodrow.attr("id").split("_");
-            var id = idParts[0];
-            var originId = idParts[1];
-            var origin = idParts.length > 2 ? "true" : "false";
+            var prodrow = $(o).parents('tr').prev("tr");
+            var json = IDtoJSON(prodrow.attr("id"));
             var classes = ["name", "producer", "group", "subName", "price", "valueUnits", "value", "comment"];
-            var ajson = {
-                "id": id,
-                "originID": originId,
-                "origin": origin};
-
             $.each(classes, function(i, e) {
                 var x;
                 x = $(prodrow).children("td.proddata.edited." + e).length > 0 ? $(prodrow).children("td.proddata.edited." + e).text() : null;
                 if (x !== null)
-                    ajson[e] = x !== '' ? x : '\u007F';
+                    json[e] = x !== '' ? x : '\u007F';
             });
-
-
-            var req = JSON.stringify([ajson]);
+            var req = JSON.stringify([json]);
             $(o).append("<img src='${icons}loading.gif'>");
-            $.getJSON("ChangeProducts.do", {product: req, action: "change"}, function(data, status, xhr) {
+            $.post("ChangeProducts.do", {product: req, action: "change"}, function(data, status, xhr) {
                 if (data.error === undefined) {
                     $.each(data, function(i, e) {
                         prodrow.children("td.proddata." + i + ".edited").text(e).css("color","green").removeClass("edited").append(modifyButton);
@@ -159,7 +158,6 @@
                         $(prodrow).next(".buttons").remove();
                 }
                 else {
-
                     $(prodrow).next(".buttons").children("td").children(".SyncButton").replaceWith(errIco);
                     $(prodrow).next(".buttons").children("td").children(".error").attr("title", data.error);
                 }
@@ -167,11 +165,9 @@
             });
         }
         function clone(o){
-             var ajson = {"id": $(o).parents(".prodrow").attr("id").split("_")[0],
-                "origin": $(o).parents(".prodrow").attr("id").split("_")[2] === "o" ? "true" : "false"
-            };
-            var req = JSON.stringify([ajson]);
-            $.getJSON("ChangeProducts.do", {product: req, action: "clone"}, function(data, status, xhr) {
+            var json = IDtoJSON($(o).parents(".prodrow").attr("id"));
+            var req = JSON.stringify([json]);
+            $.post("ChangeProducts.do", {product: req, action: "clone"}, function(data, status, xhr) {
                 if (data.error === undefined) {
                     $(o).parents(".prodrow").next(".buttons").remove();
                     var prodClone=$(o).parents(".prodrow").clone();
@@ -196,10 +192,9 @@
             
         }
         function legalize(o){
-            var ajson = {"id": $(o).parents(".prodrow").attr("id").split("_")[0]     
-            };
-              var req = JSON.stringify([ajson]);
-            $.getJSON("ChangeProducts.do", {product: req, action: "legalize"}, function(data, status, xhr) {
+            var json = IDtoJSON($(o).parents(".prodrow").attr("id"));
+              var req = JSON.stringify([json]);
+            $.post("ChangeProducts.do", {product: req, action: "legalize"}, function(data, status, xhr) {
                 if (data.error === undefined) {
                     $(o).parents(".prodrow").next(".buttons").remove();
                     var prodLegalize=$(o).parents(".prodrow").clone();
@@ -222,11 +217,9 @@
             
         }
         function deleteProduct(o) {
-            var ajson = {"id": $(o).parents(".prodrow").attr("id").split("_")[0],
-                "origin": $(o).parents(".prodrow").attr("id").split("_")[2] === "o" ? "true" : "false"
-            };
-            var req = JSON.stringify([ajson]);
-            $.getJSON("ChangeProducts.do", {product: req, action: "delete"}, function(data, status, xhr) {
+            var json = IDtoJSON($(o).parents(".prodrow").attr("id"));
+            var req = JSON.stringify([json]);
+            $.post("ChangeProducts.do", {product: req, action: "delete"}, function(data, status, xhr) {
                 if (data.error === undefined) {
                     $(o).parents(".prodrow").next(".buttons").remove();
                     $(o).parents(".prodrow").remove();

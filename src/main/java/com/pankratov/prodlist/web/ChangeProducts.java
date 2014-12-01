@@ -2,13 +2,14 @@ package com.pankratov.prodlist.web;
 
 import com.pankratov.prodlist.model.dao.*;
 import static com.pankratov.prodlist.model.dao.ProductDAO.KindOfProduct.*;
-import com.pankratov.prodlist.model.dao.jdbc.JDBCDAOException;
+import com.pankratov.prodlist.model.dao.jdbc.AlreadyExistsException;
+import com.pankratov.prodlist.model.dao.jdbc.TruncationException;
 import com.pankratov.prodlist.model.products.Product;
 import com.pankratov.prodlist.model.products.ProductException;
 import java.io.*;
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
-import org.apache.log4j.*;
+import org.apache.logging.log4j.*;
 import org.json.simple.*;
 
 public class ChangeProducts extends HttpServlet {
@@ -16,25 +17,27 @@ private static final Logger log= LogManager.getLogger(ChangeProducts.class);
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        response.sendError(405,"Необходим метод POST");
+    }
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         response.setContentType("application/json");
-         JSONObject jsonerr = new JSONObject();
+        JSONObject jsonerr = new JSONObject();
         try (ProductDAO pdao = DAOFactory.getProductDAOInstance(DAOFactory.DAOSource.JDBC, request.getServletContext())) { 
-            Product temp, p = Product.getInstanceFromJSON(request);
+            Product temp=new Product(), p = Product.getInstanceFromJSON(request);
             String action=request.getParameter("action"); 
             String client = (String) request.getSession().getAttribute("client");
             String role = (String) request.getSession().getAttribute("role");
             switch (action) {
                 case "change":
-                case "delete":
-                    if ((p.isOrigin() && !request.isUserInRole("admin"))) {
-                        throw new JDBCDAOException("Нет прав.");
-                    }
-                    temp = new Product();
+                case "delete":    
                     temp.setOrigin(p.isOrigin());
                     temp.setId(p.getId());
-                    if (!(pdao.readProduct(temp, temp.isOrigin() ? ORIGINAL : USER_COPY).getAuthor().equals(client)
-                            || request.isUserInRole("admin"))) {
-                        throw new JDBCDAOException("Нет прав.");
+                    String author=pdao.readProduct(temp, temp.isOrigin() ? ORIGINAL : USER_COPY).getAuthor();
+                    if (!(author.equals(client)
+                            || role.equals("admin"))||(p.isOrigin()&&!role.equals("admin"))) {
+                        throw new SecurityException(String.format("Нет прав на выполнение операции \"%s\" над продуктом  \"%s\".",action,p.getId()+p.getOriginID()));
                     }
                     if (action.equals("change")) {
                         p = pdao.changeProduct(p);
@@ -44,20 +47,15 @@ private static final Logger log= LogManager.getLogger(ChangeProducts.class);
                     break;
                 case "clone":
                     p = pdao.readProduct(p, ORIGINAL);
-                    temp = new Product();
                     temp.setOriginID(p.getId());
                     temp.setName(p.getName());
                     temp.setGroup(p.getGroup());
-                    temp.setAuthor(client);
-                    if (pdao.readProducts(temp, USER_COPY).size() > 0) {
-                        throw new JDBCDAOException("Пользовательский вариант уже существует.");
-                    }
+                    temp.setAuthor(client); 
                     p = pdao.addProduct(temp, p.getImageLinks());
                     break;
                 case "legalize":
-                    if (!request.isUserInRole("admin")) {
-                        throw new JDBCDAOException("Нет прав.");
-                    }
+                    if (!role.equals("admin")) {
+                        throw new SecurityException(String.format("Нет прав на выполнение операции \"legalize\" над продуктом  %s.",p.getId()+p.getOriginID()));}
                     p = pdao.readProduct(p, USER_COPY);
                     p.setOrigin(true);
                     p.setAuthorRole("admin");
@@ -68,35 +66,27 @@ private static final Logger log= LogManager.getLogger(ChangeProducts.class);
                     temp.setOrigin(false);
                     pdao.changeProduct(temp);
             }
-            response.getWriter().println(p.toJSON());
-        } catch (DAOException |ProductException ex) {
-            
-            String couse = ex.getMessage();
-            if (ex.getMessage().contains("Data truncation: Out of range")) {
-                jsonerr.put("error", "Введено слишком большое число.");
-            }
+            response.getWriter().println(p.toJSON()); return;
+        }catch(ProductException ex){
+            jsonerr.put("error", "Ошибка обработки запроса");
+        }catch(SecurityException e){ 
+            jsonerr.put("error", "У вас нет прав на редактирование этого продукта.");
+        }catch (AlreadyExistsException e){
+            jsonerr.put("error", "Пользовательский вариант уже существует.");
+        } 
+        catch (TruncationException e){
+            jsonerr.put("error", "Введено слишком большое число.");
+        }
+        catch (DAOException ex) {
             if (ex.getMessage().contains("Ни одна запись не изменена")) {
                 jsonerr.put("error", "Запись не изменена");
             }
-            if (ex.getMessage().contains("Нет прав")) {
-                jsonerr.put("error", "У вас нет прав на редактирование этого продукта");
-            }
-            if (ex.getMessage().contains("уже существует")) {
-                jsonerr.put("error", "Пользовательский вариант уже существует.");
-            }
-            if (jsonerr.size() == 0) {
+        }
+        catch (Exception ex){  
                 log.error(ex);
                 jsonerr.put("error", "Во время редактирования записи произошла ошибка");
-            }
-            response.getWriter().println(jsonerr);
+           
         }
+         response.getWriter().println(jsonerr);   
     }
-
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-
-    }
-
-
 }

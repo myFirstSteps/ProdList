@@ -4,7 +4,7 @@ import java.sql.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.servlet.ServletContext;
-import org.apache.log4j.*;
+import org.apache.logging.log4j.*;
 
 public abstract class JDBCDAOObject implements AutoCloseable {
     private static final Logger log=LogManager.getLogger(JDBCDAOObject.class);

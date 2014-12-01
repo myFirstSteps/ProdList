@@ -5,7 +5,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.fileupload.FileItem;
-import org.apache.log4j.*;
+import org.apache.logging.log4j.*;
 import org.json.simple.*;
 import org.json.simple.parser.JSONParser;
 
