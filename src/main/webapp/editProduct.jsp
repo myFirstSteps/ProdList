@@ -106,7 +106,7 @@
         <script src="scripts/formValidation.js"></script>
         <script src="scripts/PopUpMenu.js"></script>
         <script>
-                imgMenu = new ImgMenu($('.TabletMenu'), $("#CategorySelect"))
+                imgMenu = new ImgMenu($('.TabletMenu'), $("#CategorySelect"));
                 var testUnits = function(s) {
                     switch (s) {
                         case "кг":
@@ -152,7 +152,21 @@
                             });
                         }
                     });
-                }
+                };
+                $("input[type='text']").on('change',function(){
+                alert('here');
+                   var product = {'group': $("#group").val(),
+                                    'name': $("name").val(),
+                                    'subName': $("subName").val(),
+                                    'producer': $("producer").val(),
+                                    'value': $("value").val(),
+                                    'price': $("price").val(),
+                                    'comment':$("comment").val()
+                                };
+                                $.getJSON('<c:url value="ReadProduct.do"/>', {action: "count", product: JSON.stringify([product])}, function(data, status, xhr) {
+                                   $.each(data,function(k,v){ alert(k+"|"+v);  }); 
+                                });
+                });
         </script>
     </body>
 </html>

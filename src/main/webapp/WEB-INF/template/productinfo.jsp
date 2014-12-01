@@ -1,9 +1,3 @@
-<%-- 
-    Document   : productinfo
-    Created on : 16.10.2014, 14:06:43
-    Author     : pankratov
---%>
-
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
 <!DOCTYPE html>
@@ -167,65 +161,20 @@
         function clone(o) {
             PostJSON(o, "clone");
             return;
-            var json = IDtoJSON($(o).parents(".prodrow").attr("id"));
-            var req = JSON.stringify([json]);
-            $.post("ChangeProducts.do", {product: req, action: "clone"}, function(data, status, xhr) {
-                if (data.error === undefined) {
-                    //   $(o).parents(".prodrow").next(".buttons").remove();
-                    var prodClone = $(o).parents(".prodrow").clone();
-                    $(o).parents(".prodrow").after(prodClone);
-                    $(prodClone).children("*").css("color", "green");
-                    $(prodClone).attr("id", data.id + "_" + data.originID);
-                    $(prodClone).children("td").children(".prodStatIcon").replaceWith(userProdIco);
-                    var modFields = ["name", "producer", "subName", "price", "value", "comment"];
-                    $.each(modFields, function(i, e) {
-                        $(prodClone).children("td.proddata." + e).text(data.e).append(modifyButton);
-                    });
-                    $(prodClone).find(".cloneButton").replaceWith("<button title='Удалить продукт' onclick='deleteProduct(this)'>\n\
-        <img src='${icons}Delete.gif' alt='Удалить'></button>");
-
-                }
-                else {
-                    var x = $(o).parents(".prodrow");
-                    $(o).replaceWith(errIco);
-                    $(x).find('.error').attr("title", data.error);
-                }
-            });
-
         }
         function legalize(o) {
             PostJSON(o, "legalize");
-            return;
-            var data = PostJSON($(o).parents(".prodrow").attr("id"), "legalize");
-            if (data.error === undefined) {
-                //    $(o).parents(".prodrow").next(".buttons").remove();
-                var prodLegalize = $(o).parents(".prodrow").clone();
-                $(o).parents(".prodrow").after(prodLegalize);
-                $(prodLegalize).children("*").css("color", "green");
-                $(prodLegalize).attr("id", data.id + "_" + data.originID + "_o");
-                $(prodLegalize).children("td").children(".prodStatIcon").replaceWith(originProdIco);
-                var modFields = ["name", "producer", "subName", "price", "value", "comment"];
-                $.each(modFields, function(i, e) {
-                    $(prodLegalize).children("td.proddata." + e).text(data.e);
-                });
-                $(prodLegalize).find(".legalizeButton").remove();
-            }
-            else {
-                var par = $(o).parents(".prodrow");
-                $(o).replaceWith(errIco);
-                $(par).children('.error').attr("title", data.error);
-            }
-
-
         }
         function deleteProduct(o) {
             PostJSON(o, "delete");
         }
         function PostJSON(o, action) {
+            splash.show();
             var row = $(o).parents(".prodrow");
             var json = IDtoJSON($(row).attr("id"));
             var req = JSON.stringify([json]);
-            $.post("ChangeProducts.do", {product: req, action: action}, function(data, status, xhr) {
+            $.post('<c:url value="ChangeProducts.do"/>', {product: req, action: action}, function(data, status, xhr) {
+                splash.hide();
                 if (data.error === undefined) {
                     $(row).next(".buttons").remove();
                     switch (data.action) {
@@ -238,7 +187,6 @@
                             $(row).after(prodClone);
                             $(prodClone).children("*").css("color", "green");
                             var origin=data.product.origin===true?"_o":"";
-                           // alert( data.product.id + "_" + data.product.originID+data.product.origin === true ? "_o" : "");
                             $(prodClone).attr("id", data.product.id + "_" + data.product.originID+origin);
                             var modFields = ["name", "producer", "subName", "price", "value", "comment"];
                             $.each(modFields, function(i, e) {
@@ -247,11 +195,12 @@
                             if (data.action === "clone") {
                                 $(prodClone).find(".cloneButton").replaceWith("<button title='Удалить продукт' onclick='deleteProduct(this)'>\n\
         <img src='${icons}Delete.gif' alt='Удалить'></button>");
+                                $(prodClone).find(".prodStatIcon").replaceWith(userProdIco);
                             } else {
                                 $(prodClone).find(".legalizeButton").remove();
+                                 $(prodClone).find(".prodStatIcon").replaceWith(originProdIco);
                             }
-
-
+                            break;
                     }
                 }
                 else {

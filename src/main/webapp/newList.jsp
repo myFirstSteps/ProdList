@@ -62,7 +62,6 @@
                 <select name="subName" size="1"> 
                 </select>
             </div>
-
             <div class="AddEllement formitem">
                 <span>Производитель:</span><br>
                 <select name="producer" size="1"> 
@@ -89,27 +88,7 @@
                 $("input.mandatory").on('blur keyup', function() {
                         emptyCheck(this, "<span class='mandatory error'>Поле не может быть пустым</span><br class='mandatory error'>");
                     });});
-                function editListName(o) {
-                    $(o).replaceWith("<div class='editValues' style='float:none'><input  type='text' class='mandatory' value='" + $(o).prev("span").text().trim() + "'><br><button class='accept' \n\
-                        onclick='acceptEdit(this)'><img height='16' width='16'\n\src='${icons}Yes.gif'></button>\n\
-         <button onclick='denyEdit(this)'><img height='16' width='16' src='${icons}No.gif'></button></div>");
-                    $("input.mandatory").on('blur keyup', function() {
-                        emptyCheck(this, "<span class='mandatory error'>Поле не может быть пустым</span><br class='mandatory error'>");
-                        if ($('.editValues .error').length !== 0)
-                            $(".accept").attr("disabled", "disabled");
-                        else
-                            $(".accept").removeAttr("disabled");
-                    });
-
-                }
-                function acceptEdit(o) {
-                    $(o).parent().prev("span").text($(o).siblings("input").val());
-                    denyEdit(o);
-                }
-
-                function denyEdit(o) {
-                    $(o).parent().replaceWith("<button onclick='editListName(this)' title='Редактировать'><img height='16' width='16' alt='edit' src='${icons}Modify.gif'></button>");
-                }
+             
                 function addProduct(o) {
                     $("#emptyList").remove();
                     if ($("#list").children("li#" + id).length === 0) {
@@ -133,7 +112,7 @@
                         $(searchable).html('<option></option>');
                         if (searchable.length > 0) {
                             var term = JSON.stringify($(searchable).serializeArray().concat($(searchable).parents(".AddEllement").prevAll(".AddEllement").children("select").serializeArray())); //$(".ter:input").serializeArray();              //[{category:"фрукты"},{name:"бананы"}];
-                            $.getJSON("ProductAutocomplete.do", {term: term}, function(data, status, xhr) {
+                            $.getJSON('<c:url value="ProductAutocomplete.do"/>', {term: term}, function(data, status, xhr) {
                                 $(searchable).children('option').replaceWith(function() {
                                     var values = '<option class="badOption">---Выберите---</option>';
                                     $.each(data, function(i, e) {
@@ -149,7 +128,7 @@
                                     'value': $(".AddEllement select[name='value']").filter(":visible").val(),
                                 };
                                 $(searchable).parents(".AddEllement").show();
-                                $.getJSON("ReadProduct.do", {maxCount: 1, product: JSON.stringify([product])}, function(data, status, xhr) {
+                                $.getJSON('<c:url value="ReadProduct.do"/>', {action: "products", product: JSON.stringify([product])}, function(data, status, xhr) {
                                     if (data.products !== undefined && data.products.length === 1) {
                                         product = data.products[0];
                                         item = product.name + " " + product.subName + " " + product.producer + " " + product.value + " " + product.valueUnits + " " + product.price + "руб.";

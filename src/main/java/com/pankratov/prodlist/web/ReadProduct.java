@@ -2,7 +2,7 @@ package com.pankratov.prodlist.web;
 
 import com.pankratov.prodlist.model.dao.*;
 import com.pankratov.prodlist.model.dao.DAOFactory;
-import static com.pankratov.prodlist.model.dao.ProductDAO.KindOfProduct.BOTH;
+import static com.pankratov.prodlist.model.dao.ProductDAO.KindOfProduct.*;
 import com.pankratov.prodlist.model.products.Product;
 import com.pankratov.prodlist.model.products.ProductException;
 import java.io.*;
@@ -14,39 +14,42 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.json.simple.*;
 
+public class ReadProduct extends HttpServlet {
 
-public class ReadProduct extends HttpServlet {  
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         Product product;
         List<Product> ls = null;
         String x = null;
-     
-        int maxCount = (x = request.getParameter("maxCount")) != null ? new Integer(x) : 0;
+        response.setContentType("application/json");
+        JSONObject result = new JSONObject();
+        String action = request.getParameter("action");
         try (ProductDAO pdao = DAOFactory.getProductDAOInstance(DAOFactory.DAOSource.JDBC, request.getServletContext());) {
             product = Product.getInstanceFromJSON(request);
-            ls = pdao.readProducts(product, BOTH);
-        } catch (Exception e) { System.out.println(e);
-            
-        }
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-
-        if (maxCount > 0 && ls.size() > maxCount) {
-            JSONObject jsonerr = new JSONObject();
-            jsonerr.put("error", "Найедено слишком много продуктов.");
-            response.getWriter().println(jsonerr);
-        } else {
-            JSONArray products = new JSONArray();
-            for (Product p : ls) {
-                products.add(p.toJSON());
+            if (!product.getAuthor().equals((String) request.getSession().getAttribute("client"))) {
+                throw new SecurityException();
             }
-            JSONObject result=new JSONObject();
-            result.put("products", products);
-            response.getWriter().println(result.toJSONString());
+            ls = pdao.readProducts(product, BOTH);
+            switch (action) {
+                case "products":
+                    JSONArray products = new JSONArray();
+                    for (Product p : ls) {
+                        products.add(p.toJSON());
+                    }
+                    result.put("products", products);
+                    break;
+                case "count":
+                    result.put("prodCount", ls.size());
+            }
+        } catch (DAOException | ProductException e) {
+            result.put("error", "Ошибка при чтении продуктов");
+        } catch (SecurityException ex) {
+            result.put("error", "Нет прав на чтение данного продукта");
         }
+        response.getWriter().println(result);
     }
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -62,7 +65,7 @@ public class ReadProduct extends HttpServlet {
             }
         } else {
             product = Product.getInstanceFromRequest(request);
-                }
+        }
 
         try (ProductDAO pdao = DAOFactory.getProductDAOInstance(DAOFactory.DAOSource.JDBC, request.getServletContext());) {
             request.setAttribute("products", pdao.readProducts(product, BOTH));
@@ -71,6 +74,5 @@ public class ReadProduct extends HttpServlet {
             throw new ServletException(e);
         }
     }
-
 
 }
