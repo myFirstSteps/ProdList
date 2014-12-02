@@ -1,8 +1,3 @@
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 function ImgMenu(content, owner) {
 
     this.tablet = $(content).children("div");
@@ -25,9 +20,7 @@ function ImgMenu(content, owner) {
         $(content).css("left", left);
         $(content).css("top", formBottom);
         $(content).toggle("clip", 300);
-        $(content).fadeOut(4000);
-        
-       
+        $(content).fadeOut(3000);       
     };
     popDown = function() {
         $(content).stop(true,true);
@@ -53,6 +46,7 @@ function ImgMenu(content, owner) {
         $(this).click(function() {
                    $( "#CategorySelect").val('');
                    $(owner).val($(this).children("span").text());
+                   $(owner).change();
                    
             popDown();
         });

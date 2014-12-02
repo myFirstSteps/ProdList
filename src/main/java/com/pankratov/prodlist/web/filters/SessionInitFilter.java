@@ -69,7 +69,6 @@ public class SessionInitFilter implements Filter {
                 ses.setAttribute("client",cl.getClient());
                 ses.setAttribute("role",cl.getRole());
                 response.setCharacterEncoding("UTF-8");
-                 if(request.getParameter("term")==null)System.out.println("NULL!!!!!!!!"); else System.out.println("term");
                 chain.doFilter(request, response);
                
             }

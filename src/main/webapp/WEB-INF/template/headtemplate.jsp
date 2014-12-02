@@ -50,25 +50,26 @@
             </a>
         </div>
     </c:if>
-     <div id="UserForm"> 
-    <c:choose>
-        <c:when test="${pageContext.request.getRemoteUser()==null}">
+    <div id="UserForm"> 
+        <c:choose>
+            <c:when test="${pageContext.request.getRemoteUser()==null}">
 
-            <c:if test="${path ne'/loginPage.jsp' and path ne '/loginError.jsp'  and path ne '/registration.jsp' }">
-                
+                <c:if test="${path ne'/loginPage.jsp' and path ne '/loginError.jsp'  and path ne '/registration.jsp' }">
+
                     Вход не выполнен.<br>
                     <a  href='<c:url value="loginPage.jsp"/>'>вход</a><br>
                     <a href='<c:url value="registration.jsp"/>'>регистрация</a>
-               
-                <c:set var="lastPage" scope="session" value="${path}"/>
-            </c:if> 
+                    <c:if test="${path ne '/errorPage.jsp'}">
+                        <c:set var="lastPage" scope="session" value="${path}"/>
+                    </c:if>
+                </c:if> 
 
-        </c:when>
-        <c:otherwise> 
-            Пользователь: <em> ${client}</em><br> <a href='<c:url value="LogOut.do?path=${path}"/>'>выход</a>      
+            </c:when>
+            <c:otherwise> 
+                Пользователь: <em> ${client}</em><br> <a href='<c:url value="LogOut.do?path=${path}"/>'>выход</a>      
             </c:otherwise>
         </c:choose>
-             </div> 
+    </div> 
 </div>
 
 <script src='scripts/jquery-1.11.1.min.js'></script> 
@@ -86,44 +87,52 @@
 <img style=' position: fixed;' src='${icons}ajax-loader.gif'></div>";
         this.calcSizePos = function() {
             $('div#processing').width(window.innerWidth).height(document.body.scrollHeight); //- $("#HeadTemplate").height());
-            var img =  $('div#processing').children("img");
+            var img = $('div#processing').children("img");
             var y = (window.innerHeight - $(img).height()) / 2;
             $(img).css('top', y);
         };
         this.show = function() {
-           splash.calcSizePos();
+            splash.calcSizePos();
             $(this.splash).fadeTo(100, 0.8);
         };
-        this.hide=function(){$(this.splash).hide();};
-        if( $('div#processing').length===0)$("body").append(this.html);
+        this.hide = function() {
+            $(this.splash).hide();
+        };
+        if ($('div#processing').length === 0)
+            $("body").append(this.html);
         this.splash = $('div#processing');
         $(window).resize(this.calcSizePos);
-    };
-    
-    function Banner(id,html) {
-      this.left=-420;
-       this.id=id!==undefined&&(typeof (id)==='string')?id:'banner';
-        this.html = "<div id='"+this.id+"' style='position: fixed; clear:none; top:150px; left: "+this.left+"px;  text-align: center; border: solid 2px black;' class='panel'>\n\
+    }
+    ;
+
+    function Banner(id, html) {
+        this.left = -420;
+        this.id = id !== undefined && (typeof (id) === 'string') ? id : 'banner';
+        this.html = "<div id='" + this.id + "' style='position: fixed; clear:none; top:150px; left: " + this.left + "px;  text-align: center; border: solid 2px black;' class='panel'>\n\
 <img  src='resources/common_image/Before_leaving.png'><img style='float: right;' src='resources/common_image/banner.png'><br>Перед уходом, кликните по баннеру и оставьте свое мнение. </div>";
         this.calcSizePos = function() {
         };
-       
+
         this.show = function() {
-          $('div#'+this.id).animate({left:0},300);
+            $('div#' + this.id).animate({left: 0}, 300);
         };
         this.hide = function() {
-          $('div#'+this.id).stop(true,true);
-          $('div#'+this.id).animate({left:-$(this).width()+20},500);
+            $('div#' + this.id).stop(true, true);
+            $('div#' + this.id).animate({left: -$(this).width() + 20}, 500);
         };
-        if( $('div#'+this.id).length===0)$("body").append(this.html);
-        this.banner = $('div#'+this.id);
+        if ($('div#' + this.id).length === 0)
+            $("body").append(this.html);
+        this.banner = $('div#' + this.id);
         $(this.banner).mouseover(this.show);
         $(this.banner).mouseleave(this.hide);
-        $(this.banner).click(function(){location.href='<c:url value="valuation.jsp"/>';});
-  
-    };
-    var banner= new Banner("valuation");
-    var splash= new LoadingSplash();
+        $(this.banner).click(function() {
+            location.href = '<c:url value="valuation.jsp"/>';
+        });
+
+    }
+    ;
+    var banner = new Banner("valuation");
+    var splash = new LoadingSplash();
 
 </script>
 

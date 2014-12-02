@@ -1,9 +1,3 @@
-<%-- 
-    Document   : newProduct
-    Created on : 06.10.2014, 11:24:48
-    Author     : pankratov
---%>
-
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib prefix="product" uri="ProductsEL" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
@@ -93,8 +87,8 @@
                 <span>Прикрепить изображение:</span><br>
                 <input class="pointer" type="file" id="a"   accept="image/jpeg,image/png,image/gif" name='imageFile'>
             </div><br>
-            <button type="button" onclick="validate(this.form)" title="Добавить продукт в базу."><img alt="Добавить" height="16" width="16" src="${icons}Add.gif"></button>
-            <button formaction="<c:url value='ReadProduct.do'/>" title="Показать продукты."><img alt="Показать" height="16" width="16" src="${icons}View.gif"></button>
+            <button type="button" onclick="validate(this.form)" title="Добавить продукт в базу."><img alt="Добавить" height="16" width="16" src="${icons}Add.gif"></button>    
+            <button formaction="<c:url value='ReadProduct.do'/>" title="Показать продукты."><span style="vertical-align: top;" id="found"></span><img alt="Показать" height="16" width="16" src="${icons}View.gif"></button><span id="found"></span>
         </form>
         <c:if test='${products ne null}'>
             <div class='panel'>
@@ -145,27 +139,30 @@
                             request.term = JSON.stringify($(field).serializeArray().concat($(dependent).filter("[name!=" + $(field).attr("name") + "]").serializeArray()));
                             $.getJSON("<c:url value="ProductAutocomplete.do"/>", request, function(data, status, xhr) {
                                 if (data.error === undefined) {
-                                    response(data);                             
-                                }else{
-                                    response(new(Object));
+                                    response(data);
+                                } else {
+                                    response(new (Object));
                                 }
                             });
                         }
                     });
-                };
-                $("input[type='text']").on('change',function(){
-                alert('here');
-                   var product = {'group': $("#group").val(),
-                                    'name': $("name").val(),
-                                    'subName': $("subName").val(),
-                                    'producer': $("producer").val(),
-                                    'value': $("value").val(),
-                                    'price': $("price").val(),
-                                    'comment':$("comment").val()
-                                };
-                                $.getJSON('<c:url value="ReadProduct.do"/>', {action: "count", product: JSON.stringify([product])}, function(data, status, xhr) {
-                                   $.each(data,function(k,v){ alert(k+"|"+v);  }); 
-                                });
+                }
+                ;
+                $("input[type='text']").on('change', function() {
+                alert($("input[name='group']").val());
+                    var product = {'group': $("input[name='group']").val(),
+                        'name': $("input[name='name']").val(),
+                        'subName': $("input[name='subName']").val(),
+                        'producer': $("input[name='producer']").val(),
+                        'value': $("input[name='value']").val(),
+                        'price': $("input[name='price']").val(),
+                        'comment': $("input[name='comment']").val()
+                    };
+                    $.getJSON('<c:url value="ReadProduct.do"/>', {action: "count", product: JSON.stringify([product])}, function(data, status, xhr) {
+                        if (data.error === undefined) {
+                            $('#found').text("("+data.prodCount+")");
+                        }else  $('#found').text("");
+                    });
                 });
         </script>
     </body>

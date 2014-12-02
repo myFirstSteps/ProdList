@@ -51,7 +51,6 @@ public class ChangeProducts extends HttpServlet {
                 case "clone":
                     p = pdao.readProduct(p, ORIGINAL);
                     temp.setOriginID(p.getId());
-                    temp.setName(p.getName());
                     temp.setGroup(p.getGroup());
                     temp.setAuthor(client);
                     p = pdao.addProduct(temp, p.getImageLinks());

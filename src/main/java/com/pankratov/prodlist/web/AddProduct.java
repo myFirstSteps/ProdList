@@ -2,6 +2,7 @@
 package com.pankratov.prodlist.web;
 
 import com.pankratov.prodlist.model.dao.*;
+import com.pankratov.prodlist.model.dao.jdbc.AlreadyExistsException;
 import com.pankratov.prodlist.model.dao.jdbc.JDBCDAOException;
 import com.pankratov.prodlist.model.products.Product;
 import java.io.*;
@@ -153,7 +154,7 @@ public class AddProduct extends HttpServlet {
             request.setAttribute("addedProduct", product);
             request.setAttribute("status", "Продукт успешно добавлен.");
             request.getRequestDispatcher(response.encodeURL("editProduct.jsp")).forward(request, response);
-        } catch (FileUploadException | SQLException | JDBCDAOException e) {
+        } catch (FileUploadException | AlreadyExistsException  e) {
             if (f != null) {
                 f.delete();
             }
@@ -161,7 +162,7 @@ public class AddProduct extends HttpServlet {
                 sendError(Error.FILE_SIZE_ERROR, request, response);
                 return;
             }
-            if (e.toString().contains("Данный продукт уже существует.")) {
+            if (e.getClass()==AlreadyExistsException.class) {
                 sendError(Error.DUBLICATE, request, response);
                 return;
             }

@@ -111,7 +111,7 @@
                         $(this).parents('div.AddEllement').nextAll('div.AddEllement').css('display', 'none').find('option').remove();
                         $(searchable).html('<option></option>');
                         if (searchable.length > 0) {
-                            var term = JSON.stringify($(searchable).serializeArray().concat($(searchable).parents(".AddEllement").prevAll(".AddEllement").children("select").serializeArray())); //$(".ter:input").serializeArray();              //[{category:"фрукты"},{name:"бананы"}];
+                            var term = JSON.stringify($(searchable).serializeArray().concat($(searchable).parents(".AddEllement").prevAll(".AddEllement").children("select").serializeArray())); 
                             $.getJSON('<c:url value="ProductAutocomplete.do"/>', {term: term}, function(data, status, xhr) {
                                 $(searchable).children('option').replaceWith(function() {
                                     var values = '<option class="badOption">---Выберите---</option>';

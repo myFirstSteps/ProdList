@@ -9,7 +9,6 @@ import java.util.concurrent.*;
 import javax.servlet.ServletContext;
 import org.apache.logging.log4j.*;
 
-
 public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
 
     private static final Logger log = LogManager.getLogger(JDBCProductDAO.class);
@@ -38,13 +37,13 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
 
     @Override
     public void close() throws JDBCDAOException {
-        try{
-        USERS_PRODUCTS_TABLE.getRowSet().release();
-        PRODUCTS_TABLE.getRowSet().release();
-        IMAGES_TABLE.getRowSet().release();
-        getConnection().setAutoCommit(true);
-        pool.put(this);
-         } catch (SQLException e) {
+        try {
+            USERS_PRODUCTS_TABLE.getRowSet().release();
+            PRODUCTS_TABLE.getRowSet().release();
+            IMAGES_TABLE.getRowSet().release();
+            getConnection().setAutoCommit(true);
+            pool.put(this);
+        } catch (SQLException e) {
             log.error("close exception", e);
             throw new JDBCDAOException(e);
         }
@@ -70,26 +69,25 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
             return instance;
         } catch (Exception e) {
             log.error(e);
-            throw new JDBCDAOException(String.format("Exception when getting  JDBC%sDAO instance",DAO_NAME), e);
+            throw new JDBCDAOException(String.format("Exception when getting  JDBC%sDAO instance", DAO_NAME), e);
         }
-
     }
 
     private JDBCProductDAO(ServletContext context) throws JDBCDAOException {
         super(context, DAO_NAME);
         try {
-        ConcurrentHashMap<String, List<String>> tablesMetaData=this.initTables();
-        String productsTableName = context.getInitParameter("PRODUCTS_TABLE");
-        String usersProductsTableName = context.getInitParameter("USERS_PRODUCTS_TABLE");
-        String imagesTableName = context.getInitParameter("IMAGES_TABLE");           
-                PRODUCTS_TABLE = new Table(productsTableName, getConnection(), tablesMetaData.get(productsTableName));
-                USERS_PRODUCTS_TABLE = new Table(usersProductsTableName,  getConnection(), tablesMetaData.get(usersProductsTableName));
-                IMAGES_TABLE = new Table(imagesTableName,  getConnection(), tablesMetaData.get(imagesTableName));
-            
+            ConcurrentHashMap<String, List<String>> tablesMetaData = this.initTables();
+            String productsTableName = context.getInitParameter("PRODUCTS_TABLE");
+            String usersProductsTableName = context.getInitParameter("USERS_PRODUCTS_TABLE");
+            String imagesTableName = context.getInitParameter("IMAGES_TABLE");
+            PRODUCTS_TABLE = new Table(productsTableName, getConnection(), tablesMetaData.get(productsTableName));
+            USERS_PRODUCTS_TABLE = new Table(usersProductsTableName, getConnection(), tablesMetaData.get(usersProductsTableName));
+            IMAGES_TABLE = new Table(imagesTableName, getConnection(), tablesMetaData.get(imagesTableName));
+
             log.debug("ProductDAO created");
         } catch (Exception e) {
             log.error("JDBCProductDAO creation error", e);
-            throw new JDBCDAOException(String.format("Exception when creating  JDBC%sDAO",DAO_NAME), e);
+            throw new JDBCDAOException(String.format("Exception when creating  JDBC%sDAO", DAO_NAME), e);
         }
     }
 
@@ -97,7 +95,7 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
     ServletContext getContext() {
         return context;
     }
-      
+
     //Преобразование прочитанных записей в продукт. 
     private Product productFromTable(List<String> fieldValues) {
         String[] fields = {"id", "name", "subName", "producer", "value", "valueUnits",
@@ -115,7 +113,7 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
         }
         return new Product(prodInit);
     }
-  
+
     private List<Product> productsFromTable(List<List<String>> fieldValues) {
         List<Product> products = new LinkedList<>();
         for (List<String> record : fieldValues) {
@@ -186,10 +184,12 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
         }
 
         if (!isAdmin) {
-            List<Product> origin = readProducts(new Product(product, true), ORIGINAL);
+            Product templ = new Product(product, true);
+            templ.setId(product.getOriginID() != -1l ? product.getOriginID() : -1l);
+            List<Product> origin = readProducts(templ, ORIGINAL);
             if (origin.size() > 0) {
                 product.setOriginID(origin.get(0).getId());
-
+                product.setName(origin.get(0).getName());
             }
         }
         product.setId(-1l);
@@ -202,13 +202,13 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
     public Product addProduct(Product product, LinkedList<String> imagesPath) throws JDBCDAOException {
         Product p = this.addProduct(product);
         LinkedList<String> img = new LinkedList<>();
- 
+
         TreeMap<Integer, String> s = new TreeMap<>();
-        for(String image: imagesPath){
-        s.put(2, image);
-        s.put(p.isOrigin() ? 3 : 4, String.valueOf(p.getId()));
-        IMAGES_TABLE.addRecord(s);
-         img.add(image);
+        for (String image : imagesPath) {
+            s.put(2, image);
+            s.put(p.isOrigin() ? 3 : 4, String.valueOf(p.getId()));
+            IMAGES_TABLE.addRecord(s);
+            img.add(image);
         }
         p.setImageLinks(img);
         return p;
@@ -220,10 +220,13 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
         table.deleteRowByID(product.getId().toString());
         return product;
     }
-     @Override
+
+    @Override
     public Product readProduct(Product product, KindOfProduct kind) throws JDBCDAOException {
-        List<Product> p=readProducts(product,kind);
-        if( p.size()>1) throw new NotUniqueException();
+        List<Product> p = readProducts(product, kind);
+        if (p.size() > 1) {
+            throw new NotUniqueException();
+        }
         return p.get(0);
     }
 
@@ -243,8 +246,12 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
             case ORIGINAL:
                 resultRows = originRows;
                 break;
-            case BOTH:
+
             case USER_COPY:
+                if (userRows.size() == 0) {
+                    break;
+                }
+            case BOTH:
                 for (List<String> row : userRows) {
                     String originId = row.get(11);
                     List<String> original = null;
@@ -276,7 +283,7 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
             TreeMap<Integer, String> im = new TreeMap<>();
             Product localProduct = productFromTable(l);
             im.put(localProduct.isOrigin() ? 3 : 4, String.valueOf(localProduct.getId()));
-            LinkedList<String> imgLinks = new  LinkedList<>();
+            LinkedList<String> imgLinks = new LinkedList<>();
             for (List<String> imgRes : IMAGES_TABLE.readRawsWhere(im)) {
                 imgLinks.add(imgRes.get(1));
             }
@@ -285,8 +292,8 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
         }
         return products;
     }
-    
-    protected ConcurrentSkipListSet<String> readColumn(int col,Product product) throws JDBCDAOException{
+
+    protected ConcurrentSkipListSet<String> readColumn(int col, Product product) throws JDBCDAOException {
         ConcurrentSkipListSet<String> res = new ConcurrentSkipListSet<>();
         res.addAll(PRODUCTS_TABLE.readColumn(col, productToTable(product, ORIGINAL)));
         res.addAll(USERS_PRODUCTS_TABLE.readColumn(col, productToTable(product, USER_COPY)));
@@ -295,23 +302,23 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
 
     @Override
     public ConcurrentSkipListSet<String> readProductNames(Product product) throws JDBCDAOException {
-        return readColumn(2,product);
+        return readColumn(2, product);
     }
 
     @Override
     public ConcurrentSkipListSet<String> readProductSubNames(Product product) throws JDBCDAOException {
-     return readColumn(3,product);
+        return readColumn(3, product);
     }
-      
+
     @Override
     public ConcurrentSkipListSet<String> readProductProducers(Product product) throws JDBCDAOException {
-       return readColumn(4,product);
+        return readColumn(4, product);
     }
-    
+
     @Override
-    public ConcurrentSkipListSet<String> readProductValues(Product product) throws JDBCDAOException{
-        return readColumn(5,product);
-    } 
+    public ConcurrentSkipListSet<String> readProductValues(Product product) throws JDBCDAOException {
+        return readColumn(5, product);
+    }
 
     @Override
     public ArrayList readProductGroups() throws JDBCDAOException {
@@ -354,6 +361,7 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
 
     boolean isProductInTable(Product product, KindOfProduct kind) throws JDBCDAOException {
         Product identity = new Product();
+        identity.setGroup(product.getGroup());
         identity.setName(product.getName());
         identity.setSubName(product.getSubName());
         identity.setProducer(product.getProducer());
@@ -364,6 +372,7 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
                 break;
             case BOTH:
             case USER_COPY:
+                identity.setOriginID(product.getOriginID());
                 identity.setAuthor(product.getAuthor());
         }
         return readProducts(identity, kind).size() > 0;
