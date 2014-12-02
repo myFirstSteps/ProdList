@@ -24,6 +24,7 @@ img.ActiveNavIco { display: none;  }
 
 .panel {background-color:#f0f0f0; border-radius:10px;   vertical-align: middle; padding: 10px; margin:10px auto 10px auto; clear: both; max-width: 90%; overflow: auto;}
 
+.infographic{float: left;height: 300px; }
 
  .center_form{  max-width: 400px; margin-top: 40px;}
  
@@ -47,8 +48,9 @@ img.ActiveNavIco { display: none;  }
 div.SelectedTablet {border: #dea000 solid 2px;}
 
 
-#newProduct > input {padding: 5px;}
-form#newProduct > div {margin: 5px; position: static; display: inline-block;}
+form#newProduct > div {margin: 0px; position: static; display: inline-block; float: left;}
+form#newProduct  button { clear: both; }
+
 .ui-menu{background-color: white; border: solid 1px #303030; text-align: left;}
 .ui-state-focus.ui-menu-item {background-color: #dea000; color: white; }
 .ui-autocomplete-loading {

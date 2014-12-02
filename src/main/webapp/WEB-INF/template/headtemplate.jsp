@@ -106,10 +106,10 @@
     ;
 
     function Banner(id, html) {
-        this.left = -420;
+        this.left = -440;
         this.id = id !== undefined && (typeof (id) === 'string') ? id : 'banner';
         this.html = "<div id='" + this.id + "' style='position: fixed; clear:none; top:150px; left: " + this.left + "px;  text-align: center; border: solid 2px black;' class='panel'>\n\
-<img  src='resources/common_image/Before_leaving.png'><img style='float: right;' src='resources/common_image/banner.png'><br>Перед уходом, кликните по баннеру и оставьте свое мнение. </div>";
+<img  src='resources/common_image/Before_leaving.png'></div>";
         this.calcSizePos = function() {
         };
 
@@ -118,7 +118,7 @@
         };
         this.hide = function() {
             $('div#' + this.id).stop(true, true);
-            $('div#' + this.id).animate({left: -$(this).width() + 20}, 500);
+            $('div#' + this.id).animate({left: -$(this).width() + 25}, 500);
         };
         if ($('div#' + this.id).length === 0)
             $("body").append(this.html);

@@ -32,6 +32,7 @@
         <form  class="panel" id="newProduct" method="post"  enctype="multipart/form-data" action= '<c:url value="AddProduct.do"/>'>
 
             <h1>Редактор продуктов</h1>
+            <img class="infographic" src="resources/common_image/Edit_products_infogr.png" alt=""/>
             <div id='error' class='error'>${error}</div><br>
             <c:set var="categoryValue" value="" /> 
             <c:if test="${newProduct.group ne null}"><c:set var="categoryValue" value="${newProduct.group}"/></c:if>
@@ -47,7 +48,7 @@
             <c:if test="${newProduct.price ne -1.0 }"><c:set var="priceValue" value="${newProduct.price}"/></c:if>
             <c:set var="commentValue" value="" /> 
             <c:if test="${newProduct.comment ne null}"><c:set var="commentValue" value="${newProduct.comment}"/></c:if>
-                <div class="formitem">
+                <div  class="formitem">
                     <span>Категория:</span><br>
                     <input   size="15" type="text" name="group" class="validCheck autocomplDepended" value='${categoryValue}' id="CategorySelect" >
             </div>
@@ -82,13 +83,15 @@
             <div class="formitem">
                 <span>Комментарий:</span><br>
                 <input  type="text" name="comment" value="${commentValue}">
-            </div><br>
+            </div>
             <div class="formitem">
                 <span>Прикрепить изображение:</span><br>
                 <input class="pointer" type="file" id="a"   accept="image/jpeg,image/png,image/gif" name='imageFile'>
-            </div><br>
+            </div>
+            <div style="width:100%;">
             <button type="button" onclick="validate(this.form)" title="Добавить продукт в базу."><img alt="Добавить" height="16" width="16" src="${icons}Add.gif"></button>    
             <button formaction="<c:url value='ReadProduct.do'/>" title="Показать продукты."><span style="vertical-align: top;" id="found"></span><img alt="Показать" height="16" width="16" src="${icons}View.gif"></button><span id="found"></span>
+            </div>
         </form>
         <c:if test='${products ne null}'>
             <div class='panel'>
