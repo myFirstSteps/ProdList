@@ -21,9 +21,7 @@
         <div id='newList' class='panel'>
          
             <h1>Список покупок</h1>
-            <h3  id="emptyList">Список пуст. Нажмите на кнопку добавить и воспользуйтесь формой для выбора продуктов.</h3>
-            <ol id="list">
-            </ol>
+            <img class="infographic" style="height: 200px; float: left;" src="resources/common_image/Make_list_infogr.png">          
             <div class="formitem"><span>Имя списка:</span><br><input id='listName' class='mandatory' type="text" value="Список №1"></div>
             <div id='newListButtons'>
                 <button title="Добавить в список новую позицию" onclick="$('#prodSelect').show()">
@@ -39,6 +37,8 @@
                          alt='Очистить'>
                 </button>
             </div>
+            <ol id="list">
+            </ol>
         </div>
 
         <div id="prodSelect" hidden="hidden" class="panel">
@@ -90,7 +90,6 @@
                     });});
              
                 function addProduct(o) {
-                    $("#emptyList").remove();
                     if ($("#list").children("li#" + id).length === 0) {
                         $("#list").append(listItem.replace('<li>', '<li id="' + id + '">' + item));
                     } else {

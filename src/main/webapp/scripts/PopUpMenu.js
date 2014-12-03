@@ -65,10 +65,5 @@ function ImgMenu(content, owner) {
     $(content).children("#closeMenu").css( "float", 'right').click(function() {
                popDown();    
     });
-   
-  
-
-
-
 }
 

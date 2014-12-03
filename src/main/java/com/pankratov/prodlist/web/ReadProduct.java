@@ -41,6 +41,14 @@ public class ReadProduct extends HttpServlet {
                     break;
                 case "count":
                     result.put("prodCount", ls.size());
+                    break;
+                 case "infoCard":
+                     request.setAttribute("products", ls);
+                     request.setAttribute("productsOnly", true);
+                     request.getRequestDispatcher("/WEB-INF/template/productinfo.jsp").forward(request, response);
+                     System.out.println("send");
+                     result.put("card", ls.get(0).toJSON());
+                   //  response.getWriter().println("byby"); return;
             }
         } catch (DAOException | ProductException e) {
             result.put("error", "Ошибка при чтении продуктов");

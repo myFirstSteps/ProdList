@@ -69,6 +69,7 @@
 
         </c:forEach>
     </table>
+            <c:if test="${productsOnly eq null }">
     <script>
         /*Здесь очень много кривого, избыточного, безобразного javascript кода. Его обязательно нужно переработать, но пока, у этой задачи низкий приоритет.*/
         $(document).ready(function() {
@@ -210,4 +211,5 @@
             });
         }
     </script>    
+    </c:if>
 </c:if>

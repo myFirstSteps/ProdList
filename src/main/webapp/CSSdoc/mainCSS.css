@@ -64,9 +64,10 @@ form#newProduct  button { clear: both; }
 .prodImg {border: solid 2px #303030; max-width: 200px;}
 img.prodStatIcon { float: left;}
 
-#newList ol{left: 0px; }
+#newList ol{left: 0px; clear: both; }
 
 #list  li {font-size: 16px;  cursor: move; text-align: left;}
-#list div {font-size: 16px; text-align: left; }
+#list div {font-size: 16px; text-align: left; margin-left: 40px;  }
 
 #prodSelect div {display: inline-block; text-align: left; }
+#card{position: fixed; left:-1000px; display: none; border: solid black 1px;}
