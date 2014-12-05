@@ -87,9 +87,19 @@ public class Product {
     }
 
     public Product() {
-
     }
-
+    public Product(Long id){
+        this.id=id;
+    }
+    public Product(Long id,Long originID){
+        this(id);
+        this.originID=originID;
+        origin=false;
+    }
+    public Product(Long id,Long originID, String author){
+        this(id,originID);
+        this.author=author;
+    }
     public Product(Product product, boolean onlyKeyFields) {
         this.id = product.id;
         this.name = product.name;
@@ -296,6 +306,7 @@ public class Product {
     }
 
     public void setOriginID(Long originID) {
+        if(originID!=-1){origin=false;}
         this.originID = originID;
     }
 

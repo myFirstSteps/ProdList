@@ -24,12 +24,12 @@
             <th class="proddata">Цена, руб</th>
             <th class="proddata">Комментарий</th>
             <c:if test="${isAdmin}"><th class="proddata">Добавил</th></c:if>
-                <th class="proddata"></th>
+            <c:if test="${not productsOnly}"> <th class="proddata"></th> </c:if>
             </tr>
         <c:forEach items="${products}" var="prod" varStatus="stat">
             <c:set var="ModifyButton" value=""/>
             <c:set var="DeleteButton" value=""/>
-            <c:if test='${(!prod.origin  and (prod.author eq client or prod.author eq cookie.clid.value) ) or isAdmin and not productsOnly}'>
+            <c:if test='${ productsOnly eq null and (!prod.origin  and (prod.author eq client or prod.author eq cookie.clid.value) ) or isAdmin }'>
                 <c:set var="ModifyButton" value="${modifyButtonTemplate}"/><c:set var="DeleteButton" value='<button title="Удалить продукт" onclick="deleteProduct(this)">
                                                                                   <img src="${icons}Delete.gif" alt="Удалить"></button>'/>         
             </c:if>
@@ -57,14 +57,16 @@
                 <td class="proddata price">${prod.price}${ModifyButton}</td>
                 <td class="proddata comment">${prod.comment}${ModifyButton}</td>
                 <c:if test="${isAdmin}"><td class="proddata author">${prod.author}</td></c:if>
+                <c:if test="${not productsOnly}">
                 <td class="proddata">${DeleteButton}
-                    <c:if test="${prod.origin and not isAdmin and not productsOnly}">
+                    <c:if test="${prod.origin and not isAdmin}">
                         <button class='cloneButton' title="Создать пользовательскую копию." onclick="clone(this)">
                             <img src="${icons}Copy.gif" alt="Клонировать"></button>
                         </c:if>
-                        <c:if test="${not prod.origin and isAdmin and prod.originID eq -1 and not productsOnly}"><button class='legalizeButton' title="Добавить в основную базу." onclick="legalize(this)">
+                        <c:if test="${not prod.origin and isAdmin and prod.originID eq -1}"><button class='legalizeButton' title="Добавить в основную базу." onclick="legalize(this)">
                             <img src="resources/common_image/icons/Yes.gif" alt="Легализовать"></button></c:if>
                     </td>
+                    </c:if>
                 </tr>
 
         </c:forEach>

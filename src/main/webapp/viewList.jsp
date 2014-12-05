@@ -13,6 +13,7 @@
         <c:import url="WEB-INF/template/headtemplate.jsp"/>
         <div  class='panel'> 
             <h1>Просмотр списков</h1>
+            <h4 id='error'  class='error'>${error}</h4>
             <div class="formitem">
                 <span>Имя списка:</span><br>
                 <select id="listName" onchange="showButton()" name="ListName">
@@ -48,19 +49,18 @@
                         
                     });
                     function showList() {
+                        $("#error").text('');
                         splash.show();
                         $.post("<c:url value='List.do'/>", {action: 'show', listName: $("#listName").val()}, function(response) {
                             splash.hide();
                             var alist = response.list;
                             if (response.error !== undefined) {
-                                alert(response.error);
+                                 $("#error").text(response.error);
                                 return;
                             }
                             var listhtml = "<h2>Список: " + alist.name + " от " + alist.timeStamp + "</h2>";
                             
                             $.each(alist.products, function(i, e) {
-                                alert(e.key);
-                                alert(e.key!==0);
                                 listhtml += "<div id='"+e.key+"'>" + e.value + (e.key!=='0'?"<button onclick='showCard(this)'><img height='16' width='16' alt='Показать' src='${icons}View.gif'></button></div>":"");
                             });
                             $("#list").html(listhtml).show();
