@@ -1,8 +1,3 @@
-<%-- 
-    Document   : newList
-    Created on : 06.11.2014, 16:44:53
-    Author     : pankratov
---%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
@@ -19,8 +14,10 @@
         <c:set var="categories" value="${product:getCategories(pageContext.servletContext)}"/>
         <c:import url="WEB-INF/template/headtemplate.jsp"/>
         <div id='newList' class='panel'>
-         
+
             <h1>Список покупок</h1>
+            <h4 id='error'  class='error'>${error}</h4>
+            <h4 id='success'  ></h4>
             <img class="infographic" style="height: 200px; float: left;" src="resources/common_image/Make_list_infogr.png">          
             <div class="formitem"><span>Имя списка:</span><br><input id='listName' class='mandatory' type="text" value="Список №1"></div>
             <div id='newListButtons'>
@@ -78,17 +75,18 @@
         </div>
 
         <script src="scripts/jquery-ui.js"></script>
-        <script src="scripts/formValidation.js"></script>
+        <script src="scripts/myJavaScript.js"></script>
         <script>
                 var listItem = "<li><input onclick='focus()' type='text' size='1'  value='1'>шт.<button onclick='deleteProduct(this)'><img alt='delete' height='16' width='16' src='${icons}Delete.gif'></button></li>";
                 var product;
                 var item;
                 var id;
-                $(document).ready(function(){
-                $("input.mandatory").on('blur keyup', function() {
+                $(document).ready(function() {
+                    $("input.mandatory").on('blur keyup', function() {
                         emptyCheck(this, "<span class='mandatory error'>Поле не может быть пустым</span><br class='mandatory error'>");
-                    });});
-             
+                    });
+                });
+
                 function addProduct(o) {
                     if ($("#list").children("li#" + id).length === 0) {
                         $("#list").append(listItem.replace('<li>', '<li id="' + id + '">' + item));
@@ -106,11 +104,12 @@
                     $("#list").disableSelection();
                     $('.AddEllement.main').siblings('.AddEllement').css('display', 'none');
                     $(".AddEllement select").on("change", function() {
+                        clearInfo();
                         var searchable = $(this).parents('div.AddEllement').next(".AddEllement").children("select");
                         $(this).parents('div.AddEllement').nextAll('div.AddEllement').css('display', 'none').find('option').remove();
                         $(searchable).html('<option></option>');
                         if (searchable.length > 0) {
-                            var term = JSON.stringify($(searchable).serializeArray().concat($(searchable).parents(".AddEllement").prevAll(".AddEllement").children("select").serializeArray())); 
+                            var term = JSON.stringify($(searchable).serializeArray().concat($(searchable).parents(".AddEllement").prevAll(".AddEllement").children("select").serializeArray()));
                             $.getJSON('<c:url value="ProductAutocomplete.do"/>', {term: term}, function(data, status, xhr) {
                                 $(searchable).children('option').replaceWith(function() {
                                     var values = '<option class="badOption">---Выберите---</option>';
@@ -145,21 +144,29 @@
                     });
                 });
                 function saveList() {
-                    var items='' ;
+                    clearInfo();
+                    var items = '';
                     $("#list li").each(function(i, e) {
-                        var idParts = $(e).attr("id").split("_");
-                        items+=String(idParts[0]);
-                        items+=String(idParts.length > 2?"o":"");
-                        alert($(e).children("input").val());
-                        items+="_"+$(e).children("input").val()+" ";
+                        items +=$(e).attr("id");
+                        items += "_" + $(e).children("input").val() + " ";
                     });
-                    var list=JSON.stringify({name:$("#listName").val(),items:items});
-                    $.post("List.do",{action:"save",list:list},function(data,status,xhr){
-                      if(data.error===undefined)alert("Список успешно сохранен.");else alert("Не удалось сохранить список.\n"+data.error);
+                    if(items.length===0){$("#error").text("Список пуст. Добавьте позиции в список."); return;};
+                    
+                    var list = JSON.stringify({name: $("#listName").val(), items: items});
+                    splash.show();
+                    $.post("List.do", {action: "save", list: list}, function(data, status, xhr) {
+                        if (data.error === undefined)
+                            $("#success").text("Список '" + data.listNmae + "' успешно сохранен.");
+                        else
+                            $("#error").text(data.error);
+                        splash.hide();
                     });
-                   
                 }
-                
+                function clearInfo() {
+                    $("#success").text("");
+                    $("#error").text("");
+
+                }
         </script>
     </body>
 

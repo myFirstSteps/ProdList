@@ -224,23 +224,35 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
     @Override
     public Product readProduct(Product product, KindOfProduct kind) throws JDBCDAOException {
         List<Product> p = readProducts(product, kind);
-        if (p.size() > 1) {
-            throw new NotUniqueException();
+        switch (p.size()) {
+            case 1:
+                return p.get(0);
+            case 0:
+                return null;
+            default:
+                throw new NotUniqueException();
         }
-        return p.get(0);
     }
 
     @Override
     public List<Product> readProducts(Product product, KindOfProduct kind) throws JDBCDAOException {
         List<Product> products = new LinkedList<>();
-        LinkedList<List<String>> originRows = PRODUCTS_TABLE.readRawsWhere(productToTable(product, ORIGINAL));
-        LinkedList<List<String>> userRows = new LinkedList<>();
-        LinkedList<List<String>> resultRows = new LinkedList<>();
+        LinkedHashSet<List<String>> originRows = new LinkedHashSet<>(), userRows = new LinkedHashSet<>(), resultRows = new LinkedHashSet<>();
+        originRows.addAll(PRODUCTS_TABLE.readRawsWhere(productToTable(product, ORIGINAL)));
         if (kind == KindOfProduct.USER_COPY || kind == KindOfProduct.BOTH) {
             if (product.getAuthorRole().equals("admin")) {
                 product.setAuthor("");
             }
-            userRows = USERS_PRODUCTS_TABLE.readRawsWhere(productToTable(product, USER_COPY));
+            if (originRows.size() > 0) {
+                for (List<String> o : originRows) {
+                    Product localp = new Product();
+                    localp.setOrigin(false);
+                    localp.setOriginID(Long.parseLong(o.get(0)));
+                    localp.setAuthor(product.getAuthor());
+                    userRows.addAll(USERS_PRODUCTS_TABLE.readRawsWhere(productToTable(localp, USER_COPY)));
+                }
+            }
+            userRows.addAll(USERS_PRODUCTS_TABLE.readRawsWhere(productToTable(product, USER_COPY)));
         }
         switch (kind) {
             case ORIGINAL:
@@ -248,9 +260,10 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
                 break;
 
             case USER_COPY:
-                if (userRows.size() == 0) {
-                    break;
-                }
+             if (userRows.size() == 0) {
+             break;
+             }
+
             case BOTH:
                 for (List<String> row : userRows) {
                     String originId = row.get(11);
@@ -259,6 +272,7 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
                         for (List<String> originFields : originRows) {
                             if (originFields.get(0).equals(originId)) {
                                 original = originFields;
+                                originRows.remove(originFields);
                                 break;
                             }
                         }
@@ -273,8 +287,9 @@ public class JDBCProductDAO extends JDBCDAOObject implements ProductDAO {
                         }
                     }
                 }
+
                 if (kind == BOTH) {
-                    userRows.addAll(originRows);
+                          userRows.addAll(originRows);
                 }
                 resultRows = userRows;
         }

@@ -4,34 +4,34 @@ function ImgMenu(content, owner) {
     this.amenu = $(content);
     this.TabletCount = 0;
     popUp = function() {
-        $(content).stop(true,true);
-        var tabletDim=$(content).children("div").outerWidth(true);    
+        $(content).stop(true, true);
+        var tabletDim = $(content).children("div").outerWidth(true);
         $(content).css("position", "absolute");
         $(content).css("left", " -5000px");
-        var menuWidth = window.innerWidth - (window.innerWidth *0.15);
+        var menuWidth = window.innerWidth - (window.innerWidth * 0.15);
         var HorCount = Math.floor(menuWidth / tabletDim);
         var VerCount = Math.ceil(tablCount / HorCount);
         var left = (window.innerWidth - menuWidth) / 2;
-        var formBottom=$(owner).closest("form").position().top+$(owner).closest("form").outerHeight();
-           
-      
-        $(content).innerWidth(tabletDim * HorCount+tabletDim*0.35);
+        var formBottom = $(owner).closest("form").position().top + $(owner).closest("form").outerHeight();
+
+
+        $(content).innerWidth(tabletDim * HorCount + tabletDim * 0.35);
         $(content).innerHeight(tabletDim * VerCount);
         $(content).css("left", left);
         $(content).css("top", formBottom);
         $(content).toggle("clip", 300);
-        $(content).fadeOut(3000);       
+        $(content).fadeOut(3000);
     };
     popDown = function() {
-        $(content).stop(true,true);
+        $(content).stop(true, true);
         $(content).hide();
     };
 
     $(content).mouseleave(function() {
-        $(content).stop(true,true).fadeOut(3000);
+        $(content).stop(true, true).fadeOut(3000);
     });
     $(content).mouseover(function() {
-        $(content).stop(true,true).fadeIn(300);
+        $(content).stop(true, true).fadeIn(300);
     });
     var maxDim = 0;
     var tablCount = 0;
@@ -44,10 +44,10 @@ function ImgMenu(content, owner) {
             $(this).removeClass("SelectedTablet");
         });
         $(this).click(function() {
-                   $( "#CategorySelect").val('');
-                   $(owner).val($(this).children("span").text());
-                   $(owner).change();
-                   
+            $("#CategorySelect").val('');
+            $(owner).val($(this).children("span").text());
+            $(owner).change();
+
             popDown();
         });
         ++tablCount;
@@ -58,12 +58,12 @@ function ImgMenu(content, owner) {
     this.tablet.height(maxDim);
     $(content).hide();
     $(owner).click(function() {
-               popUp();
-           
+        popUp();
+
     });
-    
-    $(content).children("#closeMenu").css( "float", 'right').click(function() {
-               popDown();    
+
+    $(content).children("#closeMenu").css("float", 'right').click(function() {
+        popDown();
     });
 }
 
@@ -77,70 +77,73 @@ function ImgMenu(content, owner) {
 //Проверка правильности заполнения  формы перед отправкой запроса.
 function validate(senderForm) {
     switch (senderForm.id) {
-        case "registration":;
+        case "registration":
+            ;
         case "newProduct":
             $(".mandatory, .confirm").keyup();
-                  
-            setTimeout(function(){if ($("span.error").size() === 0) {
-                              $(senderForm).submit();
-            }},1000);
+
+            setTimeout(function() {
+                if ($("span.error").size() === 0) {
+                    $(senderForm).submit();
+                }
+            }, 1000);
     }
 }
 //Проверка, что поле обязательное для заполнения не пусто
-function emptyCheck(field,errText) {
-    var sel=getClassSelector(errText);
-    if (field.value === "") {    
-              addErr(field, sel,errText);
+function emptyCheck(field, errText) {
+    var sel = getClassSelector(errText);
+    if (field.value === "") {
+        addErr(field, sel, errText);
     }
     else {
         rmErr(field, sel);
     }
 }
 //Проверка, что значения полей которые должны иметь одинаковые значения действительно одинаковы.
-function confirmationCheck(field,target,errText) {
-    var sel=getClassSelector(errText);
+function confirmationCheck(field, target, errText) {
+    var sel = getClassSelector(errText);
     if ($(field).prop('value') !== $(target).prop('value')) {
-       text= new String (errText);
-      text=text.substring(0,text.indexOf("</"))+" "+$(target).prop('title').toLowerCase()+ text.substring(text.indexOf("</"),text.length);
-                addErr(field,sel,text ); 
+        text = new String(errText);
+        text = text.substring(0, text.indexOf("</")) + " " + $(target).prop('title').toLowerCase() + text.substring(text.indexOf("</"), text.length);
+        addErr(field, sel, text);
     }
     else {
         rmErr(field, sel);
     }
 }
 //Проверка валидности введенных данных.
-function dataValidCheck(field,pattern,errText) {
+function dataValidCheck(field, pattern, errText) {
     var val = new String($(field).prop('value'));
-    var sel=getClassSelector(errText);
-    
-    if (val !='' && (val.match(pattern) === null)) {
-        
-        addErr(field,sel,errText);
+    var sel = getClassSelector(errText);
+
+    if (val != '' && (val.match(pattern) === null)) {
+
+        addErr(field, sel, errText);
     } else {
         rmErr(field, sel);
     }
 }
 //Проверка уникальности вводимых данных (отсутствие в DB).
-function uniqueCheck(field,data,method,url,errText){ 
-     $.ajax({
+function uniqueCheck(field, data, method, url, errText) {
+    $.ajax({
         data: data,
         type: method,
         url: url,
         success: function(msg) {
-            var sel=getClassSelector(errText);
-            if(msg.toString() == field.value){
-             
-                addErr(field,sel, errText);
-            }else
+            var sel = getClassSelector(errText);
+            if (msg.toString() == field.value) {
+
+                addErr(field, sel, errText);
+            } else
             {
-                rmErr(field,sel);
+                rmErr(field, sel);
             }
         }});
 }
 
-function getClassSelector(text){
-     var init = new String(text).match(" class=['|\"]((?:.)+?)['|\"]");
-      return  "*[class='" + new String(init[1]) + "']"; //'.'+new String(init[1]).replace(' ','.');
+function getClassSelector(text) {
+    var init = new String(text).match(" class=['|\"]((?:.)+?)['|\"]");
+    return  "*[class='" + new String(init[1]) + "']"; //'.'+new String(init[1]).replace(' ','.');
 }
 function addErr(field, selector, errText) {
     if ($(field).siblings(selector).length === 0) {
@@ -156,4 +159,15 @@ function rmErr(field, err) {
         $(field).css('color', 'green');
     else
         $(field).css('color', 'red');
+}
+
+function SplitID(idcode) {
+    var idParts = idcode.split("_");
+    var id = idParts[0];
+    var originId = idParts[1];
+    var origin = idParts.length > 2 ? "true" : "false";
+    return  {
+        "id": id,
+        "originID": originId,
+        "origin": origin};
 }

@@ -1,8 +1,3 @@
-<%-- 
-    Document   : viewList
-    Created on : 20.11.2014, 17:03:24
-    Author     : pankratov
---%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
@@ -39,7 +34,7 @@
             <div>
             </div>
         </div>
-        <script src="scripts/formValidation.js"></script>
+        <script src="scripts/myJavaScript.js"></script>
         <script>
 
                     function showButton() {
@@ -53,29 +48,34 @@
                         
                     });
                     function showList() {
+                        splash.show();
                         $.post("<c:url value='List.do'/>", {action: 'show', listName: $("#listName").val()}, function(response) {
+                            splash.hide();
                             var alist = response.list;
                             if (response.error !== undefined) {
                                 alert(response.error);
                                 return;
                             }
                             var listhtml = "<h2>Список: " + alist.name + " от " + alist.timeStamp + "</h2>";
-
+                            
                             $.each(alist.products, function(i, e) {
-                                listhtml += "<div>" + e + "<button onclick='showCard()'><img height='16' width='16' alt='Показать' src='${icons}View.gif'></button></div>";
+                                alert(e.key);
+                                alert(e.key!==0);
+                                listhtml += "<div id='"+e.key+"'>" + e.value + (e.key!=='0'?"<button onclick='showCard(this)'><img height='16' width='16' alt='Показать' src='${icons}View.gif'></button></div>":"");
                             });
                             $("#list").html(listhtml).show();
                         });
                     }
-                    function showCard() {
-                        alert("show card");
-                        var product = {id: "5"};
+                    function showCard(o) {
+                        var product =  SplitID($(o).parent("div").attr("id"));
+                        splash.show();    
                         $.get('<c:url value="ReadProduct.do"/>', {action: "infoCard", product: JSON.stringify([product])}, function(data, status, xhr) {
                             $("#card div").html(data);
                             $("#card").show();
                             var left = (window.innerWidth - $("#card").outerWidth()) / 2;
                             var top = (window.innerHeight - $("#card").outerHeight()) / 2;
                             $("#card").css("left", left).css("top", top);
+                            splash.hide();
                         });
                     }
         </script>

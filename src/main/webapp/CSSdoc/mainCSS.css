@@ -17,6 +17,9 @@ img.ActiveNavIco { display: none;  }
 #UserForm em, #UserForm a{color: #dea000; font-size: 16px;}
  
 .error{color:red; font-size: 12px; text-align: left;}
+#error{text-align: center;}
+#success{color:green; font-size: 12px; text-align: center;}
+
 .formitem { padding:10px; display: inline-block;}
 .formitem span{float: left;}
 .formitem *{ clear: left; }

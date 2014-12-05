@@ -33,6 +33,7 @@ public class ReadProduct extends HttpServlet {
             ls = pdao.readProducts(product, BOTH);
             switch (action) {
                 case "products":
+                    ls = pdao.readProducts(product, USER_COPY);
                     JSONArray products = new JSONArray();
                     for (Product p : ls) {
                         products.add(p.toJSON());
@@ -48,7 +49,6 @@ public class ReadProduct extends HttpServlet {
                      request.getRequestDispatcher("/WEB-INF/template/productinfo.jsp").forward(request, response);
                      System.out.println("send");
                      result.put("card", ls.get(0).toJSON());
-                   //  response.getWriter().println("byby"); return;
             }
         } catch (DAOException | ProductException e) {
             result.put("error", "Ошибка при чтении продуктов");

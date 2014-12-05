@@ -1,13 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.pankratov.prodlist.model.list;
 
 import com.pankratov.prodlist.model.dao.ProductDAO;
 import com.pankratov.prodlist.model.dao.ProductDAO.KindOfProduct;
+import static com.pankratov.prodlist.model.dao.ProductDAO.KindOfProduct.*;
 import com.pankratov.prodlist.model.products.Product;
+import java.text.*;
 import java.util.*;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
@@ -15,10 +12,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-/**
- *
- * @author pankratov
- */
 public class ProdList {
 
     private Long id = -1l;
@@ -53,33 +46,48 @@ public class ProdList {
         listInit.put("name",(String)a.get("name"));
         listInit.put("products",(String)a.get("items"));
         listInit.put("ownerName",
-                request.getRemoteUser() != null ? request.getRemoteUser() : (String) request.getSession().getAttribute("clid"));
+               (String) request.getSession().getAttribute("clid"));
         return new ProdList(listInit);
     }
     public JSONObject toJSON(ProductDAO productSource)throws Exception{
         JSONObject prodlist=new JSONObject();
+        Product res;
         prodlist.put("name", name);
         prodlist.put("id", id);
         prodlist.put("ownerName", ownerName);
-        prodlist.put("timeStamp",timeStamp);
+        prodlist.put("timeStamp",timeStamp.substring(0, timeStamp.lastIndexOf(":")));
         JSONArray prods=new JSONArray();
         String[] products=this.products.split(" ");
         int i=1;
         for(String p:products){
+            JSONObject single=new JSONObject();
             String item[]=p.split("_");
-            KindOfProduct kind=item[0].contains("o")?ProductDAO.KindOfProduct.ORIGINAL:ProductDAO.KindOfProduct.USER_COPY;
+            KindOfProduct kind=item[2].equals("o")?ORIGINAL:USER_COPY;
             Product product=new Product();
-            product.setId(new Long(item[0].replaceAll("o", "")));
-             product=productSource.readProduct(product, kind);
-            if( product==null) continue ;
+            product.setId(new Long(item[0]));
+             res=productSource.readProduct(product, kind);
+            if( res==null&&kind==USER_COPY){ 
+                product=new Product();
+                product.setId(Long.parseLong(item[1]));
+                res=productSource.readProduct(product, ORIGINAL);
+                if (res==null){ 
+                     single.put("key", "0");
+                     single.put("value", String.format("%d. Продукт был удалён!",i++));
+                    prods.add(single);
+                    continue;
+                }
+            }
                  String temp;
-                 prods.add(String.format("%d. %s %s %s %.2fруб.   %dшт.",
-                         i,product.getName(),
-                         (temp=product.getSubName()).equals("любой")?"":temp,
-                         (temp=product.getProducer()).equals("любой")?"":temp, 
-                         product.getPrice(),
-                  new Integer(item[1])       
+                 String key=res.getId()+"_"+res.getOriginID()+(res.isOrigin()?"_o":"");
+                 single.put("key", key);
+                 single.put("value", String.format("%d. %s %s %s %.2fруб.   %dшт.",
+                         i,res.getName(),
+                         (temp=res.getSubName()).equals("любой")?"":temp,
+                         (temp=res.getProducer()).equals("любой")?"":temp, 
+                         res.getPrice(),
+                  new Integer(item[item.length-1])       
                  ));
+                 prods.add(single);
                  i++;
         }
         prodlist.put("products",prods);

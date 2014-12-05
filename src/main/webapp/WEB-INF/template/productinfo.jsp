@@ -29,7 +29,7 @@
         <c:forEach items="${products}" var="prod" varStatus="stat">
             <c:set var="ModifyButton" value=""/>
             <c:set var="DeleteButton" value=""/>
-            <c:if test='${(!prod.origin  and (prod.author eq client or prod.author eq cookie.clid.value) ) or isAdmin }'>
+            <c:if test='${(!prod.origin  and (prod.author eq client or prod.author eq cookie.clid.value) ) or isAdmin and not productsOnly}'>
                 <c:set var="ModifyButton" value="${modifyButtonTemplate}"/><c:set var="DeleteButton" value='<button title="Удалить продукт" onclick="deleteProduct(this)">
                                                                                   <img src="${icons}Delete.gif" alt="Удалить"></button>'/>         
             </c:if>
@@ -58,11 +58,11 @@
                 <td class="proddata comment">${prod.comment}${ModifyButton}</td>
                 <c:if test="${isAdmin}"><td class="proddata author">${prod.author}</td></c:if>
                 <td class="proddata">${DeleteButton}
-                    <c:if test="${prod.origin and not isAdmin}">
+                    <c:if test="${prod.origin and not isAdmin and not productsOnly}">
                         <button class='cloneButton' title="Создать пользовательскую копию." onclick="clone(this)">
                             <img src="${icons}Copy.gif" alt="Клонировать"></button>
                         </c:if>
-                        <c:if test="${not prod.origin and isAdmin and prod.originID eq -1}"><button class='legalizeButton' title="Добавить в основную базу." onclick="legalize(this)">
+                        <c:if test="${not prod.origin and isAdmin and prod.originID eq -1 and not productsOnly}"><button class='legalizeButton' title="Добавить в основную базу." onclick="legalize(this)">
                             <img src="resources/common_image/icons/Yes.gif" alt="Легализовать"></button></c:if>
                     </td>
                 </tr>
@@ -118,22 +118,13 @@
         function denyEdit(o) {
             $(o).parent().replaceWith(modifyButton);
         }
-        function IDtoJSON(idcode) {
-            var idParts = idcode.split("_");
-            var id = idParts[0];
-            var originId = idParts[1];
-            var origin = idParts.length > 2 ? "true" : "false";
-            return  {
-                "id": id,
-                "originID": originId,
-                "origin": origin};
-        }
+       
         function sendChanges(o) {
             if ($(o).hasClass("pressed"))
                 return;
             $(o).addClass("pressed");
             var prodrow = $(o).parents('tr').prev("tr");
-            var json = IDtoJSON(prodrow.attr("id"));
+            var json = SplitID(prodrow.attr("id"));
             var classes = ["name", "producer", "group", "subName", "price", "valueUnits", "value", "comment"];
             $.each(classes, function(i, e) {
                 var x;
@@ -172,7 +163,7 @@
         function PostJSON(o, action) {
             splash.show();
             var row = $(o).parents(".prodrow");
-            var json = IDtoJSON($(row).attr("id"));
+            var json = SplitID($(row).attr("id"));
             var req = JSON.stringify([json]);
             $.post('<c:url value="ChangeProducts.do"/>', {product: req, action: action}, function(data, status, xhr) {
                 splash.hide();

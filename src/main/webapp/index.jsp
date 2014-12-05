@@ -111,7 +111,7 @@
                 код, который меня не во всем устраивает.  Самой приоритетной моей задачей станет рефакторинг Java кода и тщательное его
                 комментирование. Ну, а пока, то что <a target="_blank" href="https://github.com/myFirstSteps/ProdList">есть</a>. Около полугода назад я выполнял тестовое задание,
                 тогда мои знания были значительно ниже, но, думаю, это тоже может быть полезно, поэтому привожу
-                <a target="_blank" href="https://github.com/myFirstSteps/ProdList">ссылку</a> (в readme.md пояснения). На этом всё.</p>
+                <a target="_blank" href="https://github.com/Pankratovm/MonitorService/tree/master/MonitorService">ссылку</a> (в readme.md пояснения). На этом всё.</p>
                 <div>
                 <a href="<c:url value="editProduct.jsp"/>">Учебный проект</a>
                 &nbsp&nbsp&nbsp

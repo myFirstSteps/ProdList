@@ -1,8 +1,3 @@
-<%-- 
-    Document   : registration
-    Created on : 15.09.2014, 21:33:37
-    Author     : pankratov
---%>
 
 <%@page  pageEncoding="UTF-8" contentType="text/html; charset=UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
@@ -54,7 +49,7 @@
             </c:choose>
         </div>
         <script src="scripts/jquery-1.11.1.min.js"></script>
-        <script src="scripts/formValidation.js"></script>
+        <script src="scripts/myJavaScript.js"></script>
         <script>$("input.mandatory").on('blur keyup', function() {
                                 emptyCheck(this, "<span class='mandatory error'>Поле не может быть пустым</span><br class='mandatory error'>");
                             });
@@ -67,7 +62,7 @@
                                     confirmationCheck(this, $("input.confirmt"), "<span class='confirm error'>Значение поля не совпадает с полем</span><br class='confirm error'>");
                             });
                             $("input[name='login']").bind('keyup', function() {
-                                uniqueCheck(this, {name: this.value}, "GET", "Registration", "<span class='unique error'>К сожалению логин уже занят</span><br class='unique error'>");
+                                uniqueCheck(this, {name: this.value}, "GET", "<c:url value='Registration.do'/>", "<span class='unique error'>К сожалению логин уже занят</span><br class='unique error'>");
                             });
 
                             $("input.confirm").bind('keyup', function() {

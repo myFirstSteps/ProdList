@@ -32,8 +32,8 @@
         <form  class="panel" id="newProduct" method="post"  enctype="multipart/form-data" action= '<c:url value="AddProduct.do"/>'>
 
             <h1>Редактор продуктов</h1>
-            <img class="infographic" src="resources/common_image/Edit_products_infogr.png" alt=""/>
-            <div id='error' class='error'>${error}</div><br>
+             <h4 id='error' class='error'>${error}</h4>
+            <img class="infographic" src="resources/common_image/Edit_products_infogr.png" alt=""/>       
             <c:set var="categoryValue" value="" /> 
             <c:if test="${newProduct.group ne null}"><c:set var="categoryValue" value="${newProduct.group}"/></c:if>
             <c:set var="nameValue" value="" /> 
@@ -100,8 +100,7 @@
             </div> 
         </c:if> 
         <script src="scripts/jquery-ui.js"></script>
-        <script src="scripts/formValidation.js"></script>
-        <script src="scripts/PopUpMenu.js"></script>
+        <script src="scripts/myJavaScript.js"></script>
         <script>
                 imgMenu = new ImgMenu($('.TabletMenu'), $("#CategorySelect"));
                 var testUnits = function(s) {
@@ -152,7 +151,6 @@
                 }
                 ;
                 $("input[type='text']").on('change', function() {
-                alert($("input[name='group']").val());
                     var product = {'group': $("input[name='group']").val(),
                         'name': $("input[name='name']").val(),
                         'subName': $("input[name='subName']").val(),
@@ -161,7 +159,7 @@
                         'price': $("input[name='price']").val(),
                         'comment': $("input[name='comment']").val()
                     };
-                    $.getJSON('<c:url value="ReadProduct.do"/>', {action: "count", product: JSON.stringify([product])}, function(data, status, xhr) {
+                    $.getJSON('<c:url value="ReadProduct.do"/>', {action: "count", product:JSON.stringify([product])}, function(data, status, xhr) {
                         if (data.error === undefined) {
                             $('#found').text("("+data.prodCount+")");
                         }else  $('#found').text("");
