@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 
 package com.pankratov.prodlist.model.dao;
 
@@ -10,10 +5,7 @@ import com.pankratov.prodlist.model.dao.jdbc.*;
 
 import javax.servlet.ServletContext;
 
-/**
- *
- * @author pankratov
- */
+
 public class DAOFactory {
     private DAOFactory(){}
     public enum DAOSource{JDBC}
@@ -35,6 +27,13 @@ public class DAOFactory {
          switch(source){
             case JDBC: 
                 return JDBCProdListDAO.getInstance(context);//
+        }
+        return null;
+    }
+     public static JDBCValuationDAO getValuationDAOInstance(DAOSource source, ServletContext context) throws DAOException{
+         switch(source){
+            case JDBC: 
+                return JDBCValuationDAO.getInstance(context);//
         }
         return null;
     }

@@ -135,7 +135,7 @@ public class JDBCProdListDAO extends JDBCDAOObject implements ProdListDAO {
 
     @Override
     public ProdList changeProdList(ProdList list) throws JDBCDAOException {
-        return null;
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override

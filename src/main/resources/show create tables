@@ -90,4 +90,19 @@ user_info | CREATE TABLE `user_info` (
   UNIQUE KEY `id` (`id`),
   UNIQUE KEY `name` (`name`,`owner`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Отзывы
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  valuation | CREATE TABLE `valuation` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `valuation` tinyint(3) unsigned DEFAULT '0',
+  `reference` text,
+  `overview` text,
+  `author` varchar(254) DEFAULT '',
+  `stamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8 
+
+
 

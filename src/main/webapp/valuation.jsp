@@ -1,13 +1,4 @@
-<%-- 
-    Document   : valuation
-    Created on : 27.11.2014, 15:32:12
-    Author     : pankratov
---%>
-<%-- 
-    Document   : viewList
-    Created on : 20.11.2014, 17:03:24
-    Author     : pankratov
---%>
+
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
 <%@taglib prefix="product" uri="ProductsEL" %>
@@ -21,14 +12,25 @@
     <body>
         <c:import url="WEB-INF/template/headtemplate.jsp"/>
         <div  class='panel'> 
-            <h2>Оцените ресурс и оставьте свой отзыв.</h2>
+            <c:if test="${success eq null}"><h2>Оцените ресурс и оставьте свой отзыв.</h2></c:if>
+            <h4 id='error'  class='error'>${error}</h4>
+            <h2 id='success' > ${success}</h2>
             <img  src='resources/common_image/Valuation.png'>
-            <form method="post" action="valuation">
-               
-                <span>Оценка:</span> <c:forEach begin="1" varStatus="st" end="5"> <input value="${st.index}" name="valuation" type="radio">${st.index}</c:forEach>
-                <br> <div style="margin-top: 10px;"><span>Напишите отзыв:</span><br><textarea rows="5" cols="60" form="valuation"></textarea></div>
-                <br><input type="submit" class="pointer" value="Отправить">
-            </form>
+            <c:if test="${success eq null}">
+                <form id="valuat" method="post" action="<c:url value='Valuation.do'/>">
+                    <input type="hidden" name="action" value="write">
+                    <span>Оценка:</span> <c:forEach begin="1" varStatus="st" end="5"> <input value="${st.index}" name="rating" type="radio">${st.index}</c:forEach>
+                        <br> <div style="margin-top: 10px;"><span>Напишите отзыв:</span><br><textarea rows="5" cols="60" name="reference" form="valuat"></textarea></div>
+                        <br><input type="submit" class="pointer" value="Отправить">
+                    </form>
+            </c:if>
+            <div id="valuations">
+                <c:forEach var="vals" items="${valuations}">
+                    ${vals.timeStamp}
+                    <c:forEach begin="1" var="star" end="${vals.rating}"><img src="${icons}Star.gif" alt="*"></c:forEach> 
+               <p>${vals.reference}</p>
+                </c:forEach>
+            </div>
         </div>
         <script>
             $("#valuation").hide();

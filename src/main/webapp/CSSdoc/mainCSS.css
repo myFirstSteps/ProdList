@@ -19,6 +19,7 @@ img.ActiveNavIco { display: none;  }
 .error{color:red; font-size: 12px; text-align: left;}
 #error{text-align: center;}
 #success{color:green; font-size: 12px; text-align: center;}
+h2#success{font-size: 20px;}
 
 .formitem { padding:10px; display: inline-block;}
 .formitem span{float: left;}
@@ -74,3 +75,4 @@ img.prodStatIcon { float: left;}
 
 #prodSelect div {display: inline-block; text-align: left; }
 #card{position: fixed; left:-1000px; display: none; border: solid black 1px;}
+#valuations {text-align: left; width: 80%; font-size: 14px; margin-top: 10px; padding: 10px 0px 0px 30px; text-indent: 40px; }

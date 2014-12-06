@@ -121,7 +121,7 @@
         $(this.banner).mouseover(this.show);
         $(this.banner).mouseleave(this.hide);
         $(this.banner).click(function() {
-            location.href = '<c:url value="valuation.jsp"/>';
+            location.href = '<c:url value="Valuation.do"/>';
         });
 
     }

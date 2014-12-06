@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.pankratov.prodlist.model.dao.jdbc;
 
 import com.pankratov.prodlist.model.dao.UserDAO;
@@ -16,10 +11,6 @@ import javax.sql.rowset.*;
 import javax.sql.rowset.RowSetProvider;
 import org.apache.logging.log4j.*;
 
-/**
- *
- * @author pankratov
- */
 public class JDBCUserDAO extends JDBCDAOObject implements UserDAO {
 
     private class UserTable extends Table {
@@ -188,12 +179,12 @@ public class JDBCUserDAO extends JDBCDAOObject implements UserDAO {
 
     @Override
     public User deleteUser(User user) {
-        return null;
+       throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public User changeUser(User user) {
-        return null;
+       throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override

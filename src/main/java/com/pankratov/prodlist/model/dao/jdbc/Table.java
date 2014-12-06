@@ -127,7 +127,8 @@ public class Table {
         String query = String.format("select %s from %s", this.columnNames.get(n - 1), this.tableName);
         try (Statement st = connection.createStatement(); ResultSet res = st.executeQuery(query);) {
             while (res.next()) {
-                result.add(res.getString(1));
+                String sstr=res.getString(1); 
+                if (sstr!=null)result.add(sstr); 
             }
         } catch (SQLException ex) {
             log.error(String.format("Ошибка чтения столбца %s(%s) таблицы %s",n, this.columnNames.get(n - 1),tableName), ex);
