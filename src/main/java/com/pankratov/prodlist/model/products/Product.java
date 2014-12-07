@@ -74,7 +74,7 @@ public class Product {
         }
 
         static String readAuthor(HttpServletRequest req) {
-            String author = req.getRemoteUser() != null ? req.getRemoteUser() : (String) req.getSession().getAttribute("clid");
+            String author = req.getRemoteUser() != null ? req.getRemoteUser() : (String) req.getSession().getAttribute("client");
             return author;
         }
 

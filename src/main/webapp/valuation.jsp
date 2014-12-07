@@ -25,9 +25,9 @@
                     </form>
             </c:if>
             <div id="valuations">
-                <c:forEach var="vals" items="${valuations}">
-                    ${vals.timeStamp}
+                <c:forEach var="vals" items="${valuations}">           
                     <c:forEach begin="1" var="star" end="${vals.rating}"><img src="${icons}Star.gif" alt="*"></c:forEach> 
+                    <span>${vals.timeStamp}</span>  <c:if test="${role eq 'admin'}"><span><em>${vals.author}</em></span></c:if>
                <p>${vals.reference}</p>
                 </c:forEach>
             </div>

@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
 
 public class ListServlet extends HttpServlet {
@@ -39,8 +38,7 @@ public class ListServlet extends HttpServlet {
             break;
             case "show":  
               String listName= request.getParameter("listName");
-              ProdList plist=new ProdList();
-              plist.setName(listName);
+              ProdList plist=new ProdList(listName,(String)request.getSession().getAttribute("client"));
               json.put("list",pldao.readProdLists(plist).get(0).toJSON(pdao));
                
         }

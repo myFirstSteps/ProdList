@@ -20,6 +20,7 @@ public class ProdList {
     private String timeStamp = "";
     private String ownerName = "";
     private String checked="";
+    private Date time=new Date();
 
     public ProdList(TreeMap<String, String> initData) {
         String x;
@@ -30,13 +31,17 @@ public class ProdList {
         }
         this.products = (x = initData.get("products")) != null ? x : "";
         this.name = (x = initData.get("name")) != null ? x : "";
-        this.timeStamp = (x = initData.get("timeStamp")) != null ? x : "";
+        setTimeStamp((x = initData.get("timeStamp")) != null ? x : "");
         this.ownerName = (x = initData.get("ownerName")) != null ? x : "";
         this.checked = (x = initData.get("checked")) != null ? x : "";
 
     }
     public ProdList(){
         
+    }
+    public ProdList(String name,String owner){
+        this.name=name!=null?name:"";
+        this.ownerName=owner!=null?owner:"";
     }
 
     public static ProdList getInstanceFromJSON(HttpServletRequest request) throws Exception {
@@ -46,7 +51,7 @@ public class ProdList {
         listInit.put("name",(String)a.get("name"));
         listInit.put("products",(String)a.get("items"));
         listInit.put("ownerName",
-               (String) request.getSession().getAttribute("clid"));
+               (String) request.getSession().getAttribute("client"));
         return new ProdList(listInit);
     }
     public JSONObject toJSON(ProductDAO productSource)throws Exception{
@@ -55,7 +60,7 @@ public class ProdList {
         prodlist.put("name", name);
         prodlist.put("id", id);
         prodlist.put("ownerName", ownerName);
-        prodlist.put("timeStamp",timeStamp.substring(0, timeStamp.lastIndexOf(":")));
+        prodlist.put("timeStamp",timeStamp);
         JSONArray prods=new JSONArray();
         String[] products=this.products.split(" ");
         int i=1;
@@ -133,7 +138,13 @@ public class ProdList {
      * @param timeStamp the timeStamp to set
      */
     public void setTimeStamp(String timeStamp) {
-        this.timeStamp = timeStamp;
+        this.timeStamp =  timeStamp;
+        try {
+            this.time = java.sql.Timestamp.valueOf( timeStamp);
+            this.timeStamp = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM,
+                    Locale.getDefault()).format(this.time);
+        } catch (IllegalArgumentException e) {
+        }
     }
 
     /**

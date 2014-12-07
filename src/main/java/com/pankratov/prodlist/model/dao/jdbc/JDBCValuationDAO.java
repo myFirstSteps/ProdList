@@ -113,8 +113,8 @@ public class JDBCValuationDAO extends JDBCDAOObject implements ValuationDAO{
     }
     
     @Override
-    public List<Valuation> readValuations(Valuation val) throws DAOException {
-        List<Valuation> result =new LinkedList<>();
+    public Set<Valuation> readValuations(Valuation val) throws DAOException {
+        Set<Valuation> result =new TreeSet<>();
         LinkedList<List<String>> rows=new LinkedList<>();
         if(val.getAuthor().equals("admin")){
             for(String s:VAL_TABLE.readColumn(5)){

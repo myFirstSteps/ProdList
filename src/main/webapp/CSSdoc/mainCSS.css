@@ -75,4 +75,5 @@ img.prodStatIcon { float: left;}
 
 #prodSelect div {display: inline-block; text-align: left; }
 #card{position: fixed; left:-1000px; display: none; border: solid black 1px;}
-#valuations {text-align: left; width: 80%; font-size: 14px; margin-top: 10px; padding: 10px 0px 0px 30px; text-indent: 40px; }
+#valuations *{ text-indent: 40px;}
+#valuations {text-align: left; width: 80%; font-size: 14px; margin-top: 10px; padding: 10px 0px 0px 30px; }

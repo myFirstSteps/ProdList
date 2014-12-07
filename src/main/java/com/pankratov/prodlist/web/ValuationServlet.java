@@ -28,10 +28,10 @@ public class ValuationServlet extends HttpServlet {
             request.setCharacterEncoding("UTF-8");
             String ref = (ref = request.getParameter("reference")) != null ? ref : "";
             int rating = request.getParameter("rating") == null ? 0 : Integer.parseInt(request.getParameter("rating"));
-            String action = (action = request.getParameter("action")) != null ? action : "read";
+            String action = (action = request.getParameter("action")) != null ? action : "";
             RequestDispatcher dispatcher = request.getRequestDispatcher(response.encodeURL("valuation.jsp"));
             Valuation val;
-            
+
             switch (action) {
                 case "write":
                     if (ref.equals("") && rating == 0) {
@@ -39,19 +39,19 @@ public class ValuationServlet extends HttpServlet {
                         dispatcher.forward(request, response);
                         return;
                     }
-                    val = new Valuation((String) request.getSession().getAttribute("client"), rating, ref,"");
-                    if(vald.addValuation(val))request.setAttribute("success", "Спасибо за потраченное время. Ваш отзыв принят.");
-                    dispatcher.forward(request, response);
-                    break;
-                case "read":
-                    val=new Valuation();
+                    val = new Valuation((String) request.getSession().getAttribute("client"), rating, ref, "");
+                    val.setOverview(request.getSession().getAttribute("visited").toString());
+                    if (vald.addValuation(val)) {
+                        request.setAttribute("success", "Спасибо за потраченное время. Ваш отзыв принят.");
+                    }
+            }
+              val=new Valuation();
                    if(!request.isUserInRole("admin")) val.setAuthor((String) request.getSession().getAttribute("client")); else val.setAuthor("admin");
                     request.setAttribute("valuations",vald.readValuations(val));
                     dispatcher.forward(request, response);
-            }
         } catch (Exception e) {
             log.error(e);
-           throw new ServletException(e);
+            throw new ServletException(e);
         }
     }
 
