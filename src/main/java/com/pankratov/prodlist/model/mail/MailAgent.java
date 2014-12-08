@@ -1,22 +1,11 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.pankratov.prodlist.model.mail;
 
 import org.apache.commons.mail.*;
 import javax.servlet.*;
 import org.apache.logging.log4j.*;
-import java.io.*;
 import java.net.URL;
-import java.util.*;
 import org.apache.commons.mail.resolver.DataSourceUrlResolver;
 
-/**
- *
- * @author pankratov
- */
 public class MailAgent {
 
     final static Logger log = org.apache.logging.log4j.LogManager.getLogger(MailAgent.class);
@@ -33,7 +22,7 @@ public class MailAgent {
             HOST_PORT = Integer.parseInt(context.getInitParameter("APPMAIL_PORT").toString());
             ADDRESS = context.getInitParameter("APPMAIL_ADDRESS").toString();
             PWD = context.getInitParameter("APPMAIL_PWD").toString();
-            URL = new URL(context.getInitParameter("APPLICATION_URL").toString());
+            URL = new URL("http://127.0.0.1:8080/ProdList/"/*context.getInitParameter("APPLICATION_URL").toString()*/);
         } catch (Exception e) {
             log.error("Ошибка при создании MailAgent", e);
             throw e;
@@ -41,7 +30,7 @@ public class MailAgent {
 
     }
 
-    public boolean sendSingleMail(String htmlmsg, String altmsg, final String subj, final String to) {
+    public void sendSingleMail(String htmlmsg, String altmsg, final String subj, final String to) {
         try {
             final ImageHtmlEmail email = new ImageHtmlEmail();
             email.setHostName(HOST_NAME);
@@ -50,7 +39,6 @@ public class MailAgent {
             email.setSSLOnConnect(true);
             email.setFrom(ADDRESS);
             email.setSubject(subj);
-            // System.out.println(altmsg);
             email.setDataSourceResolver(new DataSourceUrlResolver(URL));
             email.setHtmlMsg(htmlmsg);
             email.setTextMsg(altmsg);
@@ -67,9 +55,8 @@ public class MailAgent {
             ;
         } .start();
         }catch (EmailException e) {
-            System.out.println(e);
+           log.error(e);
         }
-        return false;
     }
 
 }

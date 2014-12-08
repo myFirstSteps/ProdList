@@ -86,7 +86,7 @@ function validate(senderForm) {
                 if ($("span.error").size() === 0) {
                     $(senderForm).submit();
                 }
-            }, 1000);
+            }, 500);
     }
 }
 //Проверка, что поле обязательное для заполнения не пусто

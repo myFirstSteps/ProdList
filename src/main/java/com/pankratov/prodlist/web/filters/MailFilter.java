@@ -28,7 +28,7 @@ class MailHttpServletResponse extends HttpServletResponseWrapper {
     }
 }
 
-@WebFilter(filterName = "MailFilter", urlPatterns = {"/Registration"}, dispatcherTypes = {DispatcherType.REQUEST})
+@WebFilter(filterName = "MailFilter", urlPatterns = {"/Registration.do"}, dispatcherTypes = {DispatcherType.REQUEST})
 public class MailFilter implements Filter {
     public static final Logger log= LogManager.getLogger(MailFilter.class);
 
@@ -60,7 +60,8 @@ public class MailFilter implements Filter {
                             request.getRequestDispatcher(resp.encodeURL("/registration.jsp")).forward(request, response);
                         case "passrestore":;
                     }
-                }
+                }else
+                 request.getRequestDispatcher(((HttpServletResponse)response).encodeURL("/registration.jsp")).forward(request, response);
             } else {
                 chain.doFilter(request, response);
             }
