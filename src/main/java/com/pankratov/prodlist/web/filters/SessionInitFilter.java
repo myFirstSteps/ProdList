@@ -2,6 +2,8 @@
 package com.pankratov.prodlist.web.filters;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import static java.text.DateFormat.*;
 import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -58,16 +60,20 @@ public class SessionInitFilter implements Filter {
                 resp.sendRedirect(resp.encodeRedirectURL(req.getRequestURL().toString()));
             } else {
                 Object tempVar;
-                TreeMap<Long,String> visited;
+                Set<String> tempList;
+                TreeMap<String,Set<String>> visited;
                 try{
                 visited=(tempVar=ses.getAttribute("visited"))!=null?
-                        (TreeMap<Long,String>)tempVar:new TreeMap<Long,String>();
-                visited.put(System.currentTimeMillis(), req.getServletPath());
+                        (TreeMap<String,Set<String>>)tempVar:new TreeMap<String,Set<String>>();
+                tempList=(tempList=visited.get(req.getServletPath()))==null?new TreeSet<String>():tempList;
+                tempList.add(DateFormat.getDateTimeInstance(SHORT,MEDIUM, Locale.getDefault()).format(new Date()));
+                visited.put(req.getServletPath(), tempList);
                 ses.setAttribute("visited", visited);}
                 catch (Exception e){log.error(e);}
                 Client cl=new Client(req);
                 ses.setAttribute("client",cl.getClient());
                 ses.setAttribute("role",cl.getRole());
+                request.setCharacterEncoding("UTF-8");
                 response.setCharacterEncoding("UTF-8");
                 chain.doFilter(request, response);
                

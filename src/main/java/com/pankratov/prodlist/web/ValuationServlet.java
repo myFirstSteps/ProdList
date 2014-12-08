@@ -25,7 +25,7 @@ public class ValuationServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try (JDBCValuationDAO vald = DAOFactory.getValuationDAOInstance(DAOFactory.DAOSource.JDBC, request.getServletContext());) {
-            request.setCharacterEncoding("UTF-8");
+           // request.setCharacterEncoding("UTF-8");
             String ref = (ref = request.getParameter("reference")) != null ? ref : "";
             int rating = request.getParameter("rating") == null ? 0 : Integer.parseInt(request.getParameter("rating"));
             String action = (action = request.getParameter("action")) != null ? action : "";

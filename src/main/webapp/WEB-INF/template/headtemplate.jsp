@@ -18,7 +18,8 @@
 </c:if>
 <div id="HeadTemplate">
     <div><span>Интерактивное резюме на<br>позицию Java Junior Developer.<br><em>Панкратов Михаил</em></span></div>
-    <div><img  src="<c:url value="/resources/common_image/OCP_JavaSE7Programmer.gif"/>"  width="140" height="71" alt="OCP_JavaSE7Programmer.gif"></div>
+    <div><img  src="<c:url value="/resources/common_image/OCP_JavaSE7Programmer.gif"/>" title="Да. У меня есть этот сертификат — отличный способ систематизировать базовые знания по Java SE."  
+               width="140" height="71" alt="OCP_JavaSE7Programmer.gif"></div>
     <div  class="Navigation"><a title="Главная" href="<c:url value="index.jsp"/>" ><img class="UnActiveNavIco" alt="Главная" height="80" width="80" src="${ico1img}"> 
             <img class="ActiveNavIco" height="80" width="80" src="${icons}Home_active.png">
         </a>

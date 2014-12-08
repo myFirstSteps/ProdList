@@ -106,6 +106,7 @@
                     $(".AddEllement select").on("change", function() {
                         clearInfo();
                         var searchable = $(this).parents('div.AddEllement').next(".AddEllement").children("select");
+                         if($(searchable).length!==0){
                         $(this).parents('div.AddEllement').nextAll('div.AddEllement').css('display', 'none').find('option').remove();
                         $(searchable).html('<option></option>');
                         if (searchable.length > 0) {
@@ -118,43 +119,48 @@
                                     });
                                     return values;
                                 });
-
-                                var product = {'group': $(".AddEllement select[name='group']").filter(":visible").val(),
-                                    'name': $(".AddEllement select[name='name']").filter(":visible").val(),
-                                    'subName': $(".AddEllement select[name='subName']").filter(":visible").val(),
-                                    'producer': $(".AddEllement select[name='producer']").filter(":visible").val(),
-                                    'value': $(".AddEllement select[name='value']").filter(":visible").val(),
-                                };
                                 $(searchable).parents(".AddEllement").show();
-                                $.getJSON('<c:url value="ReadProduct.do"/>', {action: "products", product: JSON.stringify([product])}, function(data, status, xhr) {
-                                    if (data.products !== undefined && data.products.length === 1) {
-                                        product = data.products[0];
-                                        item = product.name + " " + product.subName + " " + product.producer + " " + product.value + " " + product.valueUnits + " " + product.price + "руб.";
-                                        item = item.replace(/любой/g, '');
-                                        var isOrigin = (product.origin === true ? '_o' : '');
-                                        id = product.id + '_' + product.originID + isOrigin;
-                                        $(listItem).children("input").val();
-                                        $(".AddEllementButton").show();
-                                    } else {
-                                        $(".AddEllementButton").hide();
-                                    }
-                                });
                             });
                         }
+                        }
+                        var product = {'group': $(".AddEllement select[name='group']").filter(":visible").val(),
+                            'name': $(".AddEllement select[name='name']").filter(":visible").val(),
+                            'subName': $(".AddEllement select[name='subName']").filter(":visible").val(),
+                            'producer': $(".AddEllement select[name='producer']").filter(":visible").val(),
+                            'value': $(".AddEllement select[name='value']").filter(":visible").val(),
+                        };
+                        $.getJSON('<c:url value="ReadProduct.do"/>', {action: "products", product: JSON.stringify([product])}, function(data, status, xhr) {
+                            if (data.products !== undefined && data.products.length === 1) {
+                                product = data.products[0];
+                                item = product.name + " " + product.subName + " " + product.producer + " " + product.value + " " + product.valueUnits + " " + product.price + "руб.";
+                                item = item.replace(/любой/g, '');
+                                var isOrigin = (product.origin === true ? '_o' : '');
+                                id = product.id + '_' + product.originID + isOrigin;
+                                $(listItem).children("input").val();
+                                $(".AddEllementButton").show();
+                            } else {
+                                $(".AddEllementButton").hide();
+                            }
+                        });
                     });
                 });
                 function saveList() {
                     clearInfo();
                     var items = '';
                     $("#list li").each(function(i, e) {
-                        items +=$(e).attr("id");
-                        items += "_" + $(e).children("input").val() + " ";
+                        items += $(e).attr("id");
+                        var temp = Math.ceil(isNaN(Number($(e).children("input").val())) ? 1 : Number($(e).children("input").val()));
+                        items += "_" + temp + " ";
                     });
-                    if(items.length===0){$("#error").text("Список пуст. Добавьте позиции в список."); return;};
-                    
+                    if (items.length === 0) {
+                        $("#error").text("Список пуст. Добавьте позиции в список.");
+                        return;
+                    }
+                    ;
+
                     var list = JSON.stringify({name: $("#listName").val(), items: items});
                     splash.show();
-                    $.post("List.do", {action: "save", list: list}, function(data, status, xhr) {
+                    $.post('<c:url value="List.do"/>', {action: "save", list: list}, function(data, status, xhr) {
                         if (data.error === undefined)
                             $("#success").text("Список '" + data.listNmae + "' успешно сохранен.");
                         else

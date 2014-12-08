@@ -136,7 +136,7 @@
             });
             var req = JSON.stringify([json]);
             $(o).append("<img src='${icons}loading.gif'>");
-            $.post("ChangeProducts.do", {product: req, action: "change"}, function(data, status, xhr) {
+            $.post('<c:url value= "ChangeProducts.do"/>', {product: req, action: "change"}, function(data, status, xhr) {
                 if (data.error === undefined) {
                     $.each(data.product, function(i, e) {
                         prodrow.children("td.proddata." + i + ".edited").text(e).css("color", "green").removeClass("edited").append(modifyButton);

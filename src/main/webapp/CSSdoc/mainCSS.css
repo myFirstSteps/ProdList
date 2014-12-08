@@ -24,7 +24,8 @@ h2#success{font-size: 20px;}
 .formitem { padding:10px; display: inline-block;}
 .formitem span{float: left;}
 .formitem *{ clear: left; }
-
+.center_form div.formitem {display: block;}
+.center_form div.formitem span{float: none;}
 
 .panel {background-color:#f0f0f0; border-radius:10px;   vertical-align: middle; padding: 10px; margin:10px auto 10px auto; clear: both; max-width: 90%; overflow: auto;}
 

@@ -34,7 +34,7 @@ public class Table {
         return tableName;
     }
 
-    private String[] parseConditionMap(TreeMap<Integer, String> s) throws JDBCDAOException {
+    private String[] parseConditionMap(Map<Integer, String> s) throws JDBCDAOException {
         String colNames = "";
         String colValues = "";
 
@@ -47,10 +47,17 @@ public class Table {
         colNames = colNames.replaceAll("^, ", "");
         return new String[]{colNames, colValues};
     }
+    private Map<Integer,String> escape(Map<Integer,String> s){
+        for (Map.Entry<Integer, String> escape : s.entrySet()) {
+            escape.setValue(escape.getValue().replace("'", "\\'"));
+        }
+        return s;
+    }
 
     protected boolean addRecord(TreeMap<Integer, String> c) throws JDBCDAOException {
         int i = 1;
-        String[] s = parseConditionMap(c);
+       
+        String[] s = parseConditionMap( escape(c));
         String params = "";
         String colsNames = s[0];
         String colValues = s[1];
@@ -101,7 +108,7 @@ public class Table {
         List<String> resultRow = new LinkedList<>();
 
         String param = "";
-        for (Entry<Integer, String> st : condition.entrySet()) {
+        for (Entry<Integer, String> st : (escape(condition)).entrySet()) {
             if (param.length() > 0) {
                 param += " and ";
             }
@@ -139,7 +146,7 @@ public class Table {
     protected ConcurrentSkipListSet<String> readColumn(int n, TreeMap<Integer, String> condition) throws JDBCDAOException {
         ConcurrentSkipListSet<String> result = new ConcurrentSkipListSet<>();
         String param = "";
-        for (Entry<Integer, String> st : condition.entrySet()) {
+        for (Entry<Integer, String> st : (escape(condition)).entrySet()) {
             if (param.length() > 0) {
                 param += " and ";
             }
@@ -165,7 +172,7 @@ public class Table {
         int res=0;
 
         String param = "";
-        for (Entry<Integer, String> st : values.entrySet()) {
+        for (Entry<Integer, String> st : (escape(values)).entrySet()) {
             param += ","+getColumnName(st.getKey()) + "= '" + ((x=st.getValue()).equals("\u007F")?"":x) + "'";
         }
         param=param.replaceFirst(",", "");

@@ -15,8 +15,8 @@
         <%--Форма регистрации --%>
         <div class="center_form panel" id="registration">
             <c:choose> <c:when test="${registration ne 'done'}">
-                    <form id="registration"  method="post" action="<c:url value='Registration.do'/>" >
-                        <div id='error' class='error'>${error}</div> 
+                    <form id="registrati"  method="post" action="<c:url value='Registration.do'/>" >
+                        <span id='error' class='error'>${error}</span> 
                         <h3>Добро пожаловать на страницу регистрации.</h3>
                         <p>
                             Заполните необходимые поля и нажмите кнопку зарегистрировать. 

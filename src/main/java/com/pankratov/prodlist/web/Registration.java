@@ -42,7 +42,6 @@ public class Registration extends HttpServlet {
         }
 
         response.setContentType("text/plain");
-        response.setCharacterEncoding("UTF-8");
         response.getWriter().print(result);
     }
 
@@ -50,7 +49,7 @@ public class Registration extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
-            request.setCharacterEncoding("UTF-8");
+         
             String login = request.getParameter("login");
             String name = request.getParameter("name");
             String password = request.getParameter("password");
@@ -75,10 +74,8 @@ public class Registration extends HttpServlet {
             }
         } catch (JDBCDAOException ex) {
             log.error("Ошибка создания пользователя", ex);
-            System.out.println(ex);
         } catch (Exception e) {
             log.error("Ошибка регистрации пользователя", e);
-            System.out.println(e);
         }
     }
 }
