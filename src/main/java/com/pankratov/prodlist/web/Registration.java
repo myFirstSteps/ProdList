@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.pankratov.prodlist.web;
 
 import com.pankratov.prodlist.model.dao.DAOFactory;
@@ -24,7 +19,8 @@ public class Registration extends HttpServlet {
 
     private static final Logger log = LogManager.getLogger(Registration.class);
     private static ConcurrentSkipListSet<String> logins;
-    
+   
+    //Проверка уникальности вводимого пользователем login
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -70,6 +66,7 @@ public class Registration extends HttpServlet {
                     request.setAttribute("mailType", "registration");
                     request.getSession().setAttribute("user", user);
                     logins= dao.readUsersNames();
+                     request.getRequestDispatcher(response.encodeURL("/registration.jsp")).forward(request, response);
                 }
             }
         } catch (JDBCDAOException ex) {

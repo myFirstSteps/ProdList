@@ -29,10 +29,15 @@
                 </div>
             </c:forEach>
         </div>
+        <datalist id="ctegories">
+            <c:forEach  items="${categories}" varStatus="step" var="category">
+                <option value="${category}">
+            </c:forEach>
+        </datalist>
         <form  class="panel" id="newProduct" method="post"  enctype="multipart/form-data" action= '<c:url value="AddProduct.do"/>'>
 
             <h1>Редактор продуктов</h1>
-             <h4 id='error' class='error'>${error}</h4>
+            <h4 id='error' class='error'>${error}</h4>
             <img class="infographic" src="resources/common_image/Edit_products_infogr.png" alt=""/>       
             <c:set var="categoryValue" value="" /> 
             <c:if test="${newProduct.group ne null}"><c:set var="categoryValue" value="${newProduct.group}"/></c:if>
@@ -50,7 +55,7 @@
             <c:if test="${newProduct.comment ne null}"><c:set var="commentValue" value="${newProduct.comment}"/></c:if>
                 <div  class="formitem">
                     <span>Категория:</span><br>
-                    <input   size="15" type="text" name="group" class="validCheck autocomplDepended" value='${categoryValue}' id="CategorySelect" >
+                    <input list='categories'  size="15" type="text" name="group" class="validCheck autocomplDepended" value='${categoryValue}' id="CategorySelect" >
             </div>
             <div class="formitem">
                 <span>Название:</span><br>
@@ -89,8 +94,8 @@
                 <input class="pointer" type="file" id="a"   accept="image/jpeg,image/png,image/gif" name='imageFile'>
             </div>
             <div style="width:100%;">
-            <button type="button" onclick="validate(this.form)" title="Добавить продукт в базу."><img alt="Добавить" height="16" width="16" src="${icons}Add.gif"></button>    
-            <button formaction="<c:url value='ReadProduct.do'/>" title="Показать продукты."><span style="vertical-align: top;" id="found"></span><img alt="Показать" height="16" width="16" src="${icons}View.gif"></button><span id="found"></span>
+                <button type="button" onclick="validate(this.form)" title="Добавить продукт в базу."><img alt="Добавить" height="16" width="16" src="${icons}Add.gif"></button>    
+                <button formaction="<c:url value='ReadProduct.do'/>" title="Показать продукты."><span style="vertical-align: top;" id="found"></span><img alt="Показать" height="16" width="16" src="${icons}View.gif"></button><span id="found"></span>
             </div>
         </form>
         <c:if test='${products ne null}'>
@@ -102,69 +107,70 @@
         <script src="scripts/jquery-ui.js"></script>
         <script src="scripts/myJavaScript.js"></script>
         <script>
-                imgMenu = new ImgMenu($('.TabletMenu'), $("#CategorySelect"));
-                var testUnits = function(s) {
-                    switch (s) {
-                        case "кг":
-                            return "Вес:";
-                        case "л":
-                            return "Объем:";
-                        default :
-                            return "В единице:";
-                    }
-                };
-                $(document).ready(function() {
-                    $("#valueUnits").change(function() {
-                        $("#valueLabel").text(testUnits($("#valueUnits").val()));
-                    });
-                    $("#valueLabel").text(testUnits($("#valueUnits").val()));
-                    $("input.mandatory").on('blur keyup', function() {
-                        emptyCheck(this, "<span class='mandatory error'>Поле не может быть пустым</span><br class='mandatory error'>");
-                    });
-                    $("input.validCheck").on('keyup blur', function() {
-                        dataValidCheck(this, '^[a-z,A-z,a-я,А-Я,0-9]+', "<span class='invalid error'>Значение поля должно начинаться с цифры или буквы.\n\
-                 </span><br class='invalid error'>");
-                    });
-                    $("input.validNumberCheck").on('keyup blur', function() {
-                        dataValidCheck(this, '^[0-9]+(?:[.|,])?[0-9]*$', "<span class='invalid error'>Значение поля должно быть целым или десятичным числом.\n\
-                 </span><br class='invalid error'>");
-                    });
-                    $.each($("input.autocompl"), function(k, v) {
-                        prodAutoComplete(v, $("input.autocomplDepended"));
-                    });
-                });
-                function prodAutoComplete(field, dependent) {
-                    $(field).autocomplete({
-                        minLength: 2,
-                        source: function(request, response) {
-                            var term = request.term;
-                            request.term = JSON.stringify($(field).serializeArray().concat($(dependent).filter("[name!=" + $(field).attr("name") + "]").serializeArray()));
-                            $.getJSON("<c:url value="ProductAutocomplete.do"/>", request, function(data, status, xhr) {
-                                if (data.error === undefined) {
-                                    response(data);
-                                } else {
-                                    response(new (Object));
-                                }
-                            });
+                    imgMenu = new ImgMenu($('.TabletMenu'), $("#CategorySelect"));
+                    var testUnits = function(s) {
+                        switch (s) {
+                            case "кг":
+                                return "Вес:";
+                            case "л":
+                                return "Объем:";
+                            default :
+                                return "В единице:";
                         }
-                    });
-                }
-                ;
-                $("input[type='text']").on('change', function() {
-                    var product = {'group': $("input[name='group']").val(),
-                        'name': $("input[name='name']").val(),
-                        'subName': $("input[name='subName']").val(),
-                        'producer': $("input[name='producer']").val(),
-                        'value': $("input[name='value']").val(),
-                        'price': $("input[name='price']").val(),
-                        'comment': $("input[name='comment']").val()
                     };
-                    $.getJSON('<c:url value="ReadProduct.do"/>', {action: "count", product:JSON.stringify([product])}, function(data, status, xhr) {
-                        if (data.error === undefined) {
-                            $('#found').text("("+data.prodCount+")");
-                        }else  $('#found').text("");
+                    $(document).ready(function() {
+                        $("#valueUnits").change(function() {
+                            $("#valueLabel").text(testUnits($("#valueUnits").val()));
+                        });
+                        $("#valueLabel").text(testUnits($("#valueUnits").val()));
+                        $("input.mandatory").on('blur keyup', function() {
+                            emptyCheck(this, "<span class='mandatory error'>Поле не может быть пустым</span><br class='mandatory error'>");
+                        });
+                        $("input.validCheck").on('keyup blur', function() {
+                            dataValidCheck(this, '^[a-z,A-z,a-я,А-Я,0-9]+', "<span class='invalid error'>Значение поля должно начинаться с цифры или буквы.\n\
+                 </span><br class='invalid error'>");
+                        });
+                        $("input.validNumberCheck").on('keyup blur', function() {
+                            dataValidCheck(this, '^[0-9]+(?:[.|,])?[0-9]*$', "<span class='invalid error'>Значение поля должно быть целым или десятичным числом.\n\
+                 </span><br class='invalid error'>");
+                        });
+                        $.each($("input.autocompl"), function(k, v) {
+                            prodAutoComplete(v, $("input.autocomplDepended"));
+                        });
                     });
-                });
+                    function prodAutoComplete(field, dependent) {
+                        $(field).autocomplete({
+                            minLength: 2,
+                            source: function(request, response) {
+                                var term = request.term;
+                                request.term = JSON.stringify($(field).serializeArray().concat($(dependent).filter("[name!=" + $(field).attr("name") + "]").serializeArray()));
+                                $.getJSON("<c:url value="ProductAutocomplete.do"/>", request, function(data, status, xhr) {
+                                    if (data.error === undefined) {
+                                        response(data);
+                                    } else {
+                                        response(new (Object));
+                                    }
+                                });
+                            }
+                        });
+                    }
+                    ;
+                    $("input[type='text']").on('change', function() {
+                        var product = {'group': $("input[name='group']").val(),
+                            'name': $("input[name='name']").val(),
+                            'subName': $("input[name='subName']").val(),
+                            'producer': $("input[name='producer']").val(),
+                            'value': $("input[name='value']").val(),
+                            'price': $("input[name='price']").val(),
+                            'comment': $("input[name='comment']").val()
+                        };
+                        $.getJSON('<c:url value="ReadProduct.do"/>', {action: "count", product: JSON.stringify([product])}, function(data, status, xhr) {
+                            if (data.error === undefined) {
+                                $('#found').text("(" + data.prodCount + ")");
+                            } else
+                                $('#found').text("");
+                        });
+                    });
         </script>
     </body>
 </html>

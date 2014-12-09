@@ -28,7 +28,7 @@ class MailHttpServletResponse extends HttpServletResponseWrapper {
     }
 }
 
-@WebFilter(filterName = "MailFilter", urlPatterns = {"/Registration.do"}, dispatcherTypes = {DispatcherType.REQUEST})
+//@WebFilter(filterName = "MailFilter", urlPatterns = {"/Registration.do"}, dispatcherTypes = {DispatcherType.REQUEST})
 public class MailFilter implements Filter {
     public static final Logger log= LogManager.getLogger(MailFilter.class);
 
@@ -48,25 +48,27 @@ public class MailFilter implements Filter {
                 User user = (User) request.getAttribute("user");
                 if (mailType != null && user != null && !user.getEmail().equals("")) {
                     MailHttpServletResponse resp = new MailHttpServletResponse((HttpServletResponse) response);
+                    String alterMsg;
                     switch (mailType) {
                         case "registration":  
-                            ;
-                            request.getRequestDispatcher("/WEB-INF/template/registrationMail.jsp").include(request, resp);
+                            
+                            request.getRequestDispatcher("/WEB-INF/template/mailTemplate.jsp").include(request, resp);
 
-                            String alterMsg=String.format("Добро пожаловать %1$s!\nПоздравляем с успешной регистрацией.\n"
+                           alterMsg=String.format("Добро пожаловать %1$s!\nПоздравляем с успешной регистрацией.\n"
                                     + "Ваш логи:%s\nВаш пароль:%s",user.getLogin(),user.getPassword());
                             new MailAgent(getFilterConfig().getServletContext()).sendSingleMail(resp.getBuff().toString(),alterMsg,"registration",user.getEmail());
-                            
-                            request.getRequestDispatcher(resp.encodeURL("/registration.jsp")).forward(request, response);
-                        case "passrestore":;
+                                break;
+                        case "passrestore":
+                             request.getRequestDispatcher("/WEB-INF/template/mailTemplate.jsp").include(request, resp);
+                             alterMsg=String.format( "Вами были запрошены данные для аутентификации.\n Ваш логи:%s\nВаш пароль:%s",user.getLogin(),user.getPassword());
+                            new MailAgent(getFilterConfig().getServletContext()).sendSingleMail(resp.getBuff().toString(),alterMsg,"passrestore",user.getEmail());
+                            break;
                     }
-                }else
-                 request.getRequestDispatcher(((HttpServletResponse)response).encodeURL("/registration.jsp")).forward(request, response);
+                }
             } else {
                 chain.doFilter(request, response);
             }
         } catch (Throwable t) {
-            System.out.println(t);
            log.error(t);  
         }
 

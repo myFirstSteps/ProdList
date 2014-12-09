@@ -1,41 +1,40 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package com.pankratov.prodlist.model.users;
 
 import com.pankratov.prodlist.model.dao.jdbc.JDBCDAOException;
 
-/**
- *
- * @author pankratov
- */
 public class User {
-    private String login;
-    private String password;
-    private String [] roles;
-    private String firstName;
-    private String lastName;
-    private String email;
-    public User (String login, String password, String[] roles, String firstName,String lastname,String email)throws JDBCDAOException{
-        try{
-        this.login=login;
-        this.password=password;
-        this.roles=roles;
-        this.firstName=firstName;
-        this.lastName=lastname;
-        this.email=email;
-        }catch (Exception ex){ 
-            throw new JDBCDAOException("Не удалось создать пользователя",ex); }
+    private String login = "";
+    private String password = "";
+    private String[] roles = new String[0];
+    private String firstName = "";
+    private String lastName = "";
+    private String email = "";
+
+    public User(String login, String password, String[] roles, String firstName, String lastname, String email) throws JDBCDAOException {
+        this(login);
+        try {
+            this.password = password;
+            this.roles = roles;
+            this.firstName = firstName;
+            this.lastName = lastname;
+            this.email = email;
+        } catch (Exception ex) {
+            throw new JDBCDAOException("Не удалось создать пользователя", ex);
+        }
     }
+
+    public User(String login) throws JDBCDAOException {
+        this.login = login;
+    }
+
     @Override
-    public String toString(){
-        String role="";
-        for(String s:roles){role+=s+'\n';}
-        return ("login:"+this.login+'\n'+"Фамилия:"+this.lastName+'\n'+"имя:"+this.firstName+'\n'+"e-mail:"+this.email+'\n'+"роли: "+role+
-         '\n'+"пароль: "+this.password);
+    public String toString() {
+        String role = "";
+        for (String s : roles) {
+            role += s + '\n';
+        }
+        return ("login:" + this.login + '\n' + "Фамилия:" + this.lastName + '\n' + "имя:" + this.firstName + '\n' + "e-mail:" + this.email + '\n' + "роли: " + role
+                + '\n' + "пароль: " + this.password);
     }
 
     /**
@@ -107,7 +106,13 @@ public class User {
     public void setEmail(String email) {
         this.email = email;
     }
-    public String getLogin(){return login;}
-    public String getPassword(){return password;}
-    
+
+    public String getLogin() {
+        return login;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
 }

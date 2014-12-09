@@ -1,6 +1,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
 <c:set var="URL" value="${pageContext.servletContext.getInitParameter('APPLICATION_URL')}"/>
+
 <html>
 
 
@@ -14,10 +15,15 @@
         <tr>
             <td>
                 <div style=" margin: auto;   background-color:#f0f0f0;   padding: 4px;  height:auto;">
+                    <c:choose>
+                        <c:when test="${mailType eq 'registration'}">
                     <h2>Добро пожаловать, <em><c:choose> <c:when test="${user.firstName!=''}">${user.firstName}</c:when>
                                 <c:otherwise>${user.login}</c:otherwise></c:choose>!</em></h2>
                     <p>Поздравляю Вас, с успешной регистрацией на моем <a target="_blank" href="${URL}">портале</a>.
-                    </p>
+                    </p></c:when>
+                    <c:when test="${mailType eq 'passrestore'}">
+                        <h2>Вами были запрошены данные аутентификации на ${URL}:</h2>
+                    </c:when>
                     <p>Ваши данные для авторизации:<br>
                         <b>логин: <em>${user.login}</em></b><br>
                         <b>пароль: <em>${user.password}</em></b>
@@ -25,8 +31,10 @@
                     <p style="text-indent: 30px; ">
                         Напоминаю, что это всего лишь учебный проект. Целью проекта является - показать наличие у меня начальных навыков <em>Java EE</em>.
                         Данный проект бесконечно далек от завершения, а код - от идеала, надеюсь совершенствовать его длительное время пробуя на нем все новое и интересное с чем буду сталкиваться.
-                        Ну а пока оснавная цель найти работу Java Junior Developer. Чему, надеюсь, поспособствует этот ресурс.
+                        Ну а пока основная цель найти работу Java Junior Developer. Чему, надеюсь, поспособствует этот ресурс.
                     </p>
+                    
+                    </c:choose>
                     <a target="_blank" href="<c:url value="${URL}/editProduct.jsp"/>">Учебный проект</a>
                     &nbsp&nbsp&nbsp
                     <a target="_blank" href="https://github.com/Pankratovm/ProdList">Исходный код</a>

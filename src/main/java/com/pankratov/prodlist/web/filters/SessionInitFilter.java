@@ -79,6 +79,7 @@ public class SessionInitFilter implements Filter {
                
             }
         } catch (Throwable t) { log.error(t);
+           t.printStackTrace();
             throw new ServletException(t);
         }
         ;

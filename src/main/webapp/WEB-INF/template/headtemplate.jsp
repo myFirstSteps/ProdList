@@ -55,7 +55,7 @@
                     Вход не выполнен.<br>
                     <a  href='<c:url value="loginPage.jsp"/>'>вход</a><br>
                     <a href='<c:url value="registration.jsp"/>'>регистрация</a>
-                    <c:if test="${path ne '/errorPage.jsp'}">
+                    <c:if test="${path ne '/errorPage.jsp' and path ne '/passRestore.jsp'}">
                         <c:set var="lastPage" scope="session" value="${path}"/>
                     </c:if>
                 </c:if> 

@@ -12,7 +12,8 @@ function ImgMenu(content, owner) {
         var HorCount = Math.floor(menuWidth / tabletDim);
         var VerCount = Math.ceil(tablCount / HorCount);
         var left = (window.innerWidth - menuWidth) / 2;
-        var formBottom = $(owner).closest("form").position().top + $(owner).closest("form").outerHeight();
+        
+        var formBottom = $(owner).closest("div").position().top + $(owner).closest("div").outerHeight();
 
 
         $(content).innerWidth(tabletDim * HorCount + tabletDim * 0.35);

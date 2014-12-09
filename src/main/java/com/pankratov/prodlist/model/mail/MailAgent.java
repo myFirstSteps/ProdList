@@ -8,7 +8,7 @@ import org.apache.commons.mail.resolver.DataSourceUrlResolver;
 
 public class MailAgent {
 
-    final static Logger log = org.apache.logging.log4j.LogManager.getLogger(MailAgent.class);
+    private final static Logger log = org.apache.logging.log4j.LogManager.getLogger(MailAgent.class);
     final String HOST_NAME;
     final int HOST_PORT;
     final String ADDRESS;

@@ -3,11 +3,18 @@
 <!DOCTYPE html>
 <c:set scope="session" var="isAdmin" value="${role=='admin'}"/>
 <c:set var="icons" value='${pageContext.servletContext.getInitParameter("icons")}'/>
-<c:set var="OriginProdIco" value="<img class='prodStatIcon' title='Ключевой продукт. Продукт, являющийся прообразом для пользовательских продуктов.' height='16' width='16' src='resources/common_image/icons/Key.gif' alt='Ключевой'>"/>
-<c:set var="modifyButtonTemplate" value="<button onclick='edit(this)' title='Редактировать'><img height='16' width='16' alt='edit' src='${icons}Modify.gif'></button>"/>
-<c:set var="UsersProdIco" value="<img class='prodStatIcon' title='Пользовательская копия продукта. Вы можете изменить некоторые свойства продукта (задать свою цену, комментарий и т.д.). При этом не тронутые свойства будут соответствовать ключевому продукту.' height='16' width='16' src='resources/common_image/icons/Users.gif' alt='Пользовательский'>"/>
+<c:set var="OriginProdIco" value="<img class='prodStatIcon' title='Ключевой продукт. 
+       Этот продукт виден всем пользователям и являющийся прообразом для пользовательских продуктов.'
+       height='16' width='16' src='resources/common_image/icons/Key.gif' alt='Ключевой'>"/>
+<c:set var="modifyButtonTemplate" value="<button onclick='edit(this)' 
+       title='Редактировать'><img height='16' width='16' alt='edit' src='${icons}Modify.gif'></button>"/>
+<c:set var="UsersProdIco" value="<img class='prodStatIcon' title='Пользовательская копия продукта.
+       Вы можете изменить некоторые свойства своей копии  ключевого продукта (задать цену, комментарий и т.д.).
+       При этом, не тронутые свойства, будут соответствовать свойствам ключевого продукта.
+       ' height='16' width='16' src='resources/common_image/icons/Users.gif' alt='Пользовательский'>"/>
 <c:set var="newProdIco" value="<img class='prodStatIcon' 
-       title='Новый продукт. Этот продукт еще не прошел проверку и не добавлен в общую базу, но вы можете с ним работать, добавлять его в списки и редактировать.' 
+       title='Новый продукт. Этот продукт еще не прошел проверку и не добавлен в общую базу. 
+       Пока он виден только Вам, но Вы можете с ним работать, добавлять его в списки и редактировать.' 
        height='16' width='16' src='${icons}New.gif' alt='Новый'>"/>
 <c:if test="${products[0] ne null}">
 
