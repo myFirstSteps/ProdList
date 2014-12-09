@@ -69,6 +69,7 @@ public class MailFilter implements Filter {
                 chain.doFilter(request, response);
             }
         } catch (Throwable t) {
+            t.printStackTrace();
            log.error(t);  
         }
 

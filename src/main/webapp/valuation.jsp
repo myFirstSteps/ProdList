@@ -17,6 +17,11 @@
             <h2 id='success' > ${success}</h2>
             <img  src='resources/common_image/Valuation.png'>
             <c:if test="${success eq null}">
+            <p style="width: 50%; margin:10px auto;">Мне очень интересно и важно знать Ваше мнение. Потратте  пожалуйста ещё
+                пару минут и напишите несколько слов. Насколько вам понравился сайт?
+                Какое впечатление осталось от проделанной мной работы? 
+                Этот учебный проект повышает или снижает мои шансы трудоустроиться?</p>
+            
                 <form id="valuat" method="post" action="<c:url value='Valuation.do'/>">
                     <input type="hidden" name="action" value="write">
                     <span>Оценка:</span> <c:forEach begin="1" varStatus="st" end="5"> <input value="${st.index}" name="rating" type="radio">${st.index}</c:forEach>

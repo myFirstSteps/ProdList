@@ -6,11 +6,8 @@ import com.pankratov.prodlist.model.users.User;
 import java.io.*;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.*;
 import org.apache.logging.log4j.*;
-import org.json.simple.JSONObject;
 
 public class UserServlet extends HttpServlet {
 
@@ -36,10 +33,10 @@ public class UserServlet extends HttpServlet {
                     u = ud.readUser(request.getParameter("login"));
                     request.setAttribute("afterRestore", "done");
                     if (u == null){ request.setAttribute("error", 
-                            String.format("У нас нет пользователя с логином '%s'!\n Зарегистрируйтесь заново.", request.getParameter("login"))); 
+                            String.format("У нас нет пользователя с логином '%s'! Зарегистрируйтесь заново.", request.getParameter("login"))); 
                     dispatcher.forward(request, response); break;}
                     if ( u.getEmail().equals("")){request.setAttribute("error",
-                            String.format("Для пользователя с логином %s не задан e-mail.\n Восстановление пароля невозможно.", u.getLogin()));
+                            String.format("Для пользователя с логином %s не задан e-mail. Восстановление пароля невозможно.", u.getLogin()));
                     dispatcher.forward(request, response);
                     break;}
                     
