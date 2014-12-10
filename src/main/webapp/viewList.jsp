@@ -44,10 +44,6 @@
                         else
                             $('#show').hide();
                     }
-                    $(document).ready(function() {
-                        showButton();
-                        
-                    });
                     function showList() {
                         $("#error").text('');
                         splash.show();
@@ -76,6 +72,7 @@
                             var top = (window.innerHeight - $("#card").outerHeight()) / 2;
                             $("#card").css("left", left).css("top", top);
                             splash.hide();
+                            imgScreen();
                         });
                     }
         </script>

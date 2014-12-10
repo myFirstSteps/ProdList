@@ -82,7 +82,7 @@
         this.html = "<div id='processing' style='position: absolute; z-index:2; background-color: white; text-align: center; display:none; '>\n\
 <img style=' position: fixed;' src='${icons}ajax-loader.gif'></div>";
         this.calcSizePos = function() {
-            $('div#processing').width(window.innerWidth).height(document.body.scrollHeight); //- $("#HeadTemplate").height());
+            $('div#processing').width(window.innerWidth).height(document.body.scrollHeight); 
             var img = $('div#processing').children("img");
             var y = (window.innerHeight - $(img).height()) / 2;
             $(img).css('top', y);
@@ -129,6 +129,28 @@
     ;
     var banner = new Banner("valuation");
     var splash = new LoadingSplash();
+    
+    
+    function imgScreen(){
+        $("img.prodImg").click(function(){
+            if($("#bigImage").length===0){
+                $("body").append("<div  id='bigImage' class='panel' style='max-width:80%;\n\
+     position: fixed; border: solid black 1px; z-index:5;'><img class='pointer' onclick='$(this).parent().hide()' style='float:right' src='${icons}Close.gif'><img id='productImage'\n\
+width='95%' src=''></div>");
+            }
+            var imgdiv=$("#bigImage");
+            
+           
+            $("#bigImage #productImage").attr("src",$(this).attr("src"));
+            $("#bigImage").show();
+             var y = (window.innerHeight - $(imgdiv).height()) / 2;
+             var x = (window.innerWidth - $(imgdiv).width()) / 2;
+            $("#bigImage").css('left',x);
+            $("#bigImage").css('top',y);
+        });}
+    $(document).ready(function(){
+        imgScreen();
+    });
 
 </script>
 
