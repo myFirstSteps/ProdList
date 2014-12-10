@@ -1,9 +1,3 @@
-<%-- 
-    Document   : errorPage
-    Created on : 29.10.2014, 23:18:35
-    Author     : pankratov
---%>
-
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
 <%@taglib prefix="product" uri="ProductsEL" %>
