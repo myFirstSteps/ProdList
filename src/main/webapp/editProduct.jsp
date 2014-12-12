@@ -5,7 +5,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Редактор продуктов.</title>
+        <title>Редактор продуктов</title>
         <link href='CSSdoc/mainCSS.css' rel='stylesheet' type="text/css">
         <link rel="stylesheet" type="text/css" href='CSSdoc/jquery-ui.min.css'>
     </head>

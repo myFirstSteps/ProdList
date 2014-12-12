@@ -1,6 +1,6 @@
 package com.pankratov.prodlist.model.dao;
 
-import com.pankratov.prodlist.model.Valuation;
+import com.pankratov.prodlist.model.valuation.Valuation;
 import java.util.*;
 
 public interface ValuationDAO {

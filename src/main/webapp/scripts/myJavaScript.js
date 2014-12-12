@@ -16,7 +16,7 @@ function ImgMenu(content, owner) {
         var formBottom = $(owner).closest("div").position().top + $(owner).closest("div").outerHeight();
 
 
-        $(content).innerWidth(tabletDim * HorCount + tabletDim * 0.35);
+        $(content).innerWidth(tabletDim * HorCount + tabletDim * 0.40);
         $(content).innerHeight(tabletDim * VerCount);
         $(content).css("left", left);
         $(content).css("top", formBottom);

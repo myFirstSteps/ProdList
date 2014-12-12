@@ -38,7 +38,7 @@
                    
                     <a target="_blank" href="<c:url value="${URL}/editProduct.jsp"/>">Учебный проект</a>
                     &nbsp&nbsp&nbsp
-                    <a target="_blank" href="https://github.com/Pankratovm/ProdList">Исходный код</a>
+                    <a target="_blank" href="https://github.com/myFirstSteps/ProdList">Исходный код</a>
                     &nbsp&nbsp&nbsp
                     <a target="_blank" href="<c:url value="${URL}/valuation.jsp"/>">Оставить отзыв</a>.
                 </div>

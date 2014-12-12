@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html> 
     <head>
-        <title>Авторизация.</title>
+        <title>Авторизация</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <link href='CSSdoc/mainCSS.css' rel='stylesheet' type="text/css">
     </head>

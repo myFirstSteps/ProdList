@@ -1,4 +1,4 @@
-package com.pankratov.prodlist.model;
+package com.pankratov.prodlist.model.valuation;
 
 import java.text.DateFormat;
 import java.util.Date;
@@ -66,7 +66,7 @@ public class Valuation implements Comparable<Valuation> {
         try {
             this.time = java.sql.Timestamp.valueOf(time);
             this.timeStamp = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG,
-                    Locale.getDefault()).format(this.time);
+                    new Locale("ru","RU")).format(this.time);
         } catch (IllegalArgumentException e) {
         }
 

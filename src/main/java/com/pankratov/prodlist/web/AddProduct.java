@@ -69,7 +69,7 @@ public class AddProduct extends HttpServlet {
         String param = null;
         ServletContext context = config.getServletContext();
         param = context.getInitParameter("MAX_UPLOAD_FILE_SIZE");// Максимальный объем загружаемых файлов (байт)
-        Path appRoot = Paths.get(context.getRealPath(context.getContextPath())).getParent(); //Получение абсолютного пути к корню приложения
+        Path appRoot = Paths.get(context.getRealPath(context.getContextPath())); //Получение абсолютного пути к корню приложения
         maxImgSize = (param != null) ? Long.parseLong(param) : 512000;
         param = context.getInitParameter("MAX_FILE_MEMORY"); 
         maxMemSize = (param != null) ? Integer.parseInt(param) : 100 * 1024;
@@ -83,11 +83,8 @@ public class AddProduct extends HttpServlet {
         if (!absImgDir.isAbsolute()) {
             absImgDir = Paths.get(appRoot + "/" + absImgDir);
         }
-        relImgDir = Paths.get(context.getRealPath(context.getContextPath())).getParent(); 
-        if(relImgDir.endsWith("ROOT"))relImgDir=relImgDir.getParent();
-        System.out.println(relImgDir);
+        relImgDir = Paths.get(context.getRealPath(context.getContextPath()));    
         relImgDir = Paths.get(relImgDir.getRoot().toString() + absImgDir.subpath(relImgDir.getNameCount(), absImgDir.getNameCount()));
-        System.out.println(relImgDir);
         try {
             Files.createDirectories(absTempDir);
             Files.createDirectories(absImgDir);

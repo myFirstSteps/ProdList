@@ -68,13 +68,12 @@ form#newProduct  button { clear: both; }
 .proddata { vertical-align: middle; border: solid 1px #303030;  margin: 2px; padding:5px; }
 .prodImg {border: solid 2px #303030; max-width: 200px;}
 img.prodStatIcon { float: left;}
-
 #newList ol{left: 0px; clear: both; }
 
 #list  li {font-size: 16px;  cursor: move; text-align: left;}
 #list div {font-size: 16px; text-align: left; margin-left: 40px;  }
 
-#prodSelect div {display: inline-block; text-align: left; }
+#prodSelect div{display: inline-block; text-align: left; vertical-align: middle; }
 #card{position: fixed; left:-1000px; display: none; border: solid black 1px;}
 #valuations *{ text-indent: 40px;}
 #valuations {text-align: left; width: 80%; font-size: 14px; margin-top: 10px; padding: 10px 0px 0px 30px; }

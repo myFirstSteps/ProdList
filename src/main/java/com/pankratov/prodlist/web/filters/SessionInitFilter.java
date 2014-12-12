@@ -1,4 +1,3 @@
-
 package com.pankratov.prodlist.web.filters;
 
 import java.io.IOException;

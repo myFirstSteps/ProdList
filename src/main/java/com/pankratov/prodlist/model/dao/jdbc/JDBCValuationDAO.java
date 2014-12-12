@@ -1,7 +1,7 @@
 
 package com.pankratov.prodlist.model.dao.jdbc;
 
-import com.pankratov.prodlist.model.Valuation;
+import com.pankratov.prodlist.model.valuation.Valuation;
 import com.pankratov.prodlist.model.dao.DAOException;
 import com.pankratov.prodlist.model.dao.ValuationDAO;
 import java.sql.SQLException;

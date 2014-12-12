@@ -55,7 +55,7 @@
                 </select>
             </div >
             <div class="AddEllement formitem">
-                <span>Уточняющее название:</span><br>
+                <span>Уточн. название:</span><br>
                 <select name="subName" size="1"> 
                 </select>
             </div>

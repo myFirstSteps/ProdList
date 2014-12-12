@@ -47,7 +47,6 @@ public class ReadProduct extends HttpServlet {
                      request.setAttribute("products", ls);
                      request.setAttribute("productsOnly", true);
                      request.getRequestDispatcher("/WEB-INF/template/productinfo.jsp").forward(request, response);
-                     System.out.println("send");
                      result.put("card", ls.get(0).toJSON());
             }
         } catch (DAOException | ProductException e) {

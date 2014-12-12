@@ -39,6 +39,7 @@
                         <c:when test="${not prod.origin and prod.originID ne -1}">${UsersProdIco}</c:when>
                     </c:choose>    
                     <br>    
+
                     <img  class='prodImg pointer' height="80" onerror="this.src = '${icons}No_Image.gif'"   src='<c:choose> 
                               <c:when test="${prod.imageLinks[0] ne null}"><c:url value='${prod.imageLinks[0]}'/>
                               </c:when>

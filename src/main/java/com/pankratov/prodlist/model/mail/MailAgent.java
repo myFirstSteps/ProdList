@@ -22,7 +22,7 @@ public class MailAgent {
             HOST_PORT = Integer.parseInt(context.getInitParameter("APPMAIL_PORT").toString());
             ADDRESS = context.getInitParameter("APPMAIL_ADDRESS").toString();
             PWD = context.getInitParameter("APPMAIL_PWD").toString();
-            URL = new URL("http://127.0.0.1:8080/ProdList/"/*context.getInitParameter("APPLICATION_URL").toString()*/);
+            URL = new URL("http://localhost/"/*context.getInitParameter("APPLICATION_URL").toString()*/);
         } catch (Exception e) {
             log.error("Ошибка при создании MailAgent", e);
             throw e;
@@ -50,6 +50,7 @@ public class MailAgent {
                         email.send();
                     } catch (EmailException e) {
                         log.error(String.format("Ошибка при отправке \"%s\" email на: %s",subj,to),e);
+                        log.debug("URL:"+URL);
                     }
                 }
             ;

@@ -85,11 +85,11 @@ public class ProdList {
                  String temp;
                  String key=res.getId()+"_"+res.getOriginID()+(res.isOrigin()?"_o":"");
                  single.put("key", key);
-                 single.put("value", String.format("%d. %s %s %s %.2fруб.   %dшт.",
+                 single.put("value", String.format("%d. %s %s %s    %dшт.",
                          i,res.getName(),
                          (temp=res.getSubName()).equals("любой")?"":temp,
                          (temp=res.getProducer()).equals("любой")?"":temp, 
-                         res.getPrice(),
+                         
                   new Integer(item[item.length-1])       
                  ));
                  prods.add(single);
@@ -142,7 +142,7 @@ public class ProdList {
         try {
             this.time = java.sql.Timestamp.valueOf( timeStamp);
             this.timeStamp = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM,
-                    Locale.getDefault()).format(this.time);
+                    new Locale("ru","RU")).format(this.time);
         } catch (IllegalArgumentException e) {
         }
     }
