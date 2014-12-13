@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.pankratov.prodlist.web.el;
 
 import com.pankratov.prodlist.model.dao.DAOFactory;
@@ -20,10 +15,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import javax.servlet.ServletContext;
 
-/**
- *
- * @author pankratov
- */
 public class ProductEL {
 
     public static ArrayList getCategories(ServletContext context) throws Exception {
