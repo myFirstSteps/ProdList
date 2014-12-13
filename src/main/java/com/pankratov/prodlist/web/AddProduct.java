@@ -30,9 +30,9 @@ public class AddProduct extends HttpServlet {
     private static final org.apache.logging.log4j.Logger log = org.apache.logging.log4j.LogManager.getLogger(AddProduct.class);
 
     /*Не получилось быстро найти готовый класс для проверки сигнатуры файла на соответствие заявленному типу,
-     по этому вложенный класс.*/
+     поэтому вложенный класс.*/
     private static class CheckFileContent {
-        /*Метод проверяет содержится ли в файле f "magic number" соответствующий требуемому формату файла.
+        /*Метод проверяет содержится ли в файле f "magic number", соответствующий требуемому формату файла.
          Если сигнатура файла соответствует формату gif,jpeg или png, метод возвращает true.
          */
         static boolean isValid(File f) throws IOException {
