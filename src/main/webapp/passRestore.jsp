@@ -17,7 +17,7 @@
                 <c:when test="${afterRestore eq null}">
             <form method="post" action='<c:url value="/User.do"/>' >
                 <input type="hidden" name="action" value="passrestore">
-                Введите  логин для которого необходимо восстановить пароль. Пароль 
+                Введите  логин, для которого необходимо восстановить пароль. Пароль 
                 будет направлен Вам по e-mail.
                 <div class="formitem">
                 <input id='login' class="mandatory" type='text' name='login'/>
