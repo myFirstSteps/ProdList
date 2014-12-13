@@ -1,5 +1,5 @@
 package com.pankratov.prodlist.model.dao.jdbc;
-// Абстрактный класс реализующий JDBC DAO
+// Абстрактный класс, реализующий JDBC DAO
 import java.sql.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -10,7 +10,7 @@ public abstract class JDBCDAOObject implements AutoCloseable {
     private static final Logger log=LogManager.getLogger(JDBCDAOObject.class);
     abstract protected JDBCDAOObject newInstance()throws JDBCDAOException; 
      private long offerTime = System.currentTimeMillis();  //Время возвращения объекта в пул.
-     private boolean pensioner = false; // если true объект редко запрашивается из пула и его можно уничтожить
+     private boolean pensioner = false; // если true, объект редко запрашивается из пула и его можно уничтожить
      private Connection connection; 
   
     protected  JDBCDAOObject(ServletContext context, String DAO_NAME) throws JDBCDAOException {
@@ -23,7 +23,7 @@ public abstract class JDBCDAOObject implements AutoCloseable {
         catch (SQLException | NullPointerException e){ try{connection.close();}finally{ log.error(e); throw new JDBCDAOException (e);}}
         
     } 
-    //Чтение имен столбцов таблиц БД. Для удобствы разварачивания на разных серверах обращение к таблицам БД идет по номеру, а не по имени столбца.
+    //Чтение имен столбцов таблиц БД. Для удобства разворачивания на разных серверах обращение к таблицам БД идет по номеру, а не по имени столбца.
     protected ConcurrentHashMap<String, List<String>> initTables()throws SQLException{
          ConcurrentHashMap<String, List<String>> m = new ConcurrentHashMap<>();
         try (ResultSet colMetaData = connection.getMetaData().getColumns(null, null, null, null);) {
