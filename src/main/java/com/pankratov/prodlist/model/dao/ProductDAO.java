@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
 public interface ProductDAO extends AutoCloseable {
     @Override
     public void close() throws DAOException;
-    public enum KindOfProduct{ORIGINAL,USER_COPY,BOTH,COPY_ONLY} //Перечисление определяющее из какой группы необходимо считывать продукт(общие, пользовательские, оба).
+    public enum KindOfProduct{ORIGINAL,USER_COPY,BOTH,COPY_ONLY} //Перечисление, определяющее из какой группы необходимо считывать продукт(общие, пользовательские, обе).
     public List<Product> readProducts(Product product, KindOfProduct kind) throws DAOException;
     public Product readProduct(Product product, KindOfProduct kind) throws DAOException;
     public Product addProduct(Product product) throws DAOException;
