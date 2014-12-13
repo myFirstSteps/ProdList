@@ -36,7 +36,7 @@
                 <c:otherwise>
                     <h2>Добро пожаловать, <em><c:choose> <c:when test="${user.firstName!=''}">${user.firstName}</c:when>
                                 <c:otherwise>${user.login}</c:otherwise></c:choose>!</em></h2>
-                            <p>Поздравляем Вас, с успешной регистрацией на нашем портале.
+                            <p>Поздравляем Вас с успешной регистрацией на нашем портале.
                             </p><p>Ваши данные для авторизации:<br>
                                 <b>логин: <em>${user.login}</em></b><br>  
                         <b>пароль: <em>${user.password}</em></b>
@@ -62,7 +62,7 @@
                                     confirmationCheck(this, $("input.confirmt"), "<span class='confirm error'>Значение поля не совпадает с полем</span><br class='confirm error'>");
                             });
                             $("input[name='login']").bind('keyup', function() {
-                                uniqueCheck(this, {name: this.value}, "GET", "<c:url value='Registration.do'/>", "<span class='unique error'>К сожалению логин уже занят</span><br class='unique error'>");
+                                uniqueCheck(this, {name: this.value}, "GET", "<c:url value='Registration.do'/>", "<span class='unique error'>К сожалению, логин уже занят</span><br class='unique error'>");
                             });
 
                             $("input.confirm").bind('keyup', function() {
