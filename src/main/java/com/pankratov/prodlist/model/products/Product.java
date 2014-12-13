@@ -272,7 +272,7 @@ public class Product {
     @Override
     public String toString() {
         return String.format("id:%d\nНазвание:%s\nУточняющее название:%s\nПроизводитель:%s\n"
-                + "Объем:%7.2f\nЕдиници объема: %s\nГруппа: %s\nЦена:%7.2f\nКомментарий:%s\nДобавил:%s", id,
+                + "Объем:%7.2f\nЕдиницы объема: %s\nГруппа: %s\nЦена:%7.2f\nКомментарий:%s\nДобавил:%s", id,
                 name != null ? name : "null", subName != null ? subName : "Любой(-ая,-ое)", producer != null ? producer : "Любой(-ая,-ое)",
                 value, valueUnits != null ? valueUnits : "null", group != null ? group.toLowerCase() : "null", price, comment != null ? comment : "", author != null ? author : "гость");
     }
