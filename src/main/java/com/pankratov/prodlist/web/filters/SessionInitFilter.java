@@ -9,7 +9,7 @@ import javax.servlet.http.*;
 import org.apache.logging.log4j.Logger;
 /*Фильтр создает сессию (если она не создана). Ищет в cookie клиента «clid». Если «clid» найден, 
 он присваивается новой сессии, в противном случае — создается новый «clid». 
-«clid» - служит идентификатором неавторизованного пользователя, после авторизации
+«clid»  служит идентификатором неавторизованного пользователя, после авторизации
 идентификатором выступает логин. Фильтр собирает историю посещенных пользователем страниц.*/
 public class SessionInitFilter implements Filter {
     private final static Logger log= org.apache.logging.log4j.LogManager.getLogger(SessionInitFilter.class);
