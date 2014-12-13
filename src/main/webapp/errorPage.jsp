@@ -20,14 +20,14 @@
                   </c:when>
                   <c:when test="${pageContext.errorData.throwable ne null}">
                       <img class="errorImg" src=" resources/common_image/error_pics/exeption.png">
-                      <h4> Похоже я где-то ошибся. Если быть точнее: ${pageContext.exception.message}.</h4>
+                      <h4> Похоже, я где-то ошибся. Если быть точнее: ${pageContext.exception.message}.</h4>
                   </c:when>
                   <c:when test="${pageContext.errorData.statusCode ne 0}">     
                        <img class="errorImg" src="resources/common_image/error_pics/error_page.png">
-                       <h4> Что-то пошло не так. Надеемя это скоро пройдет.</h4>
+                       <h4> Что-то пошло не так. Надеемся, это скоро пройдет.</h4>
                   </c:when>
                   <c:otherwise>
-                     <h2>Кажется пока всё хорошо. Не на что жаловаться.</h2>
+                     <h2>Кажется, пока всё хорошо. Не на что жаловаться.</h2>
                   </c:otherwise>    
               </c:choose>
               
