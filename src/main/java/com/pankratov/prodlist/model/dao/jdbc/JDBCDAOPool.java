@@ -78,7 +78,7 @@ public class JDBCDAOPool<T extends JDBCDAOObject> {
                log.debug(String.format("%s is waiting for instance\n", Thread.currentThread()));
                 while (instance == null) {
                     /*Здесь хорошо бы усыплять поток до освобождения ресурса. Нужно продумать
-                     вариант с очередью (что бы обеспечить правильную очередность выдачи ресурсов).
+                     вариант с очередью (чтобы обеспечить правильную очередность выдачи ресурсов).
                      */
                     instance = DAOsPool.poll();
                 }
